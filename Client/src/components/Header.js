@@ -77,9 +77,11 @@ export default class Header extends Component {
                   </button>
                 </li>
                 <li className="nav-item ms-0 ms-lg-4">
-                  <button type="button" className="btn btn-primary">
-                    Registro
-                  </button>
+                  <a href="/registro">
+                    <button type="button" className="btn btn-primary">
+                      Registro
+                    </button>
+                  </a>
                 </li>
               </ul>
             </div>

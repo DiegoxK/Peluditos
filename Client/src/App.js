@@ -6,6 +6,8 @@ import "./assets/css/custom.css";
 
 // Index
 import Index from "./views/Index";
+// Register
+import Register from "./views/Register";
 
 class App extends Component {
   render() {
@@ -17,6 +19,12 @@ class App extends Component {
             path="/"
             render={() => {
               return <Index />;
+            }}
+          />
+          <Route
+            path="/Registro"
+            render={() => {
+              return <Register />;
             }}
           />
         </Router>
