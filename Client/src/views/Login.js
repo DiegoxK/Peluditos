@@ -46,7 +46,7 @@ export default class Login extends Component {
             </button>
           </form>
           <div className="mt-3">
-            <a href="registro" className="text-secondary">
+            <a href="registro" className="text-dark">
               Registrar cuenta
             </a>
           </div>

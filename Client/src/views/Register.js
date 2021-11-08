@@ -233,7 +233,7 @@ export default class Register extends Component {
             </button>
           </form>
           <div className="mt-3">
-            <a href="/login" className="text-secondary">
+            <a href="/login" className="text-dark">
               Ya tienes cuenta?
             </a>
           </div>

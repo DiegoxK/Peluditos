@@ -9,7 +9,7 @@ export default class Header extends Component {
       <div className="container-cstm">
         <nav className="navbar p-1 navbar-expand-lg navbar-light">
           <div className="container-fluid">
-            <a className="navbar-brand" href="#">
+            <a className="navbar-brand" href="/">
               <img src={Logo} alt="Logo" width={90} height={72} />
             </a>
             <button
@@ -24,7 +24,7 @@ export default class Header extends Component {
               <span className="navbar-toggler-icon" />
             </button>
             <div
-              className="ps-5 collapse navbar-collapse justify-content-between center"
+              className="collapse navbar-collapse justify-content-between center"
               id="navbarSupportedContent"
             >
               <ul className="navbar-nav me-auto mb-4 mb-lg-0 justify-content-start">
@@ -32,20 +32,20 @@ export default class Header extends Component {
                   <a
                     className="nav-link active fs-6"
                     aria-current="page"
-                    href="#"
+                    href="/"
                   >
                     Inicio
                   </a>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link fs-6" href="#">
+                  <a className="nav-link fs-6" href="/adoption">
                     Adopciones
                   </a>
                 </li>
                 <li className="nav-item dropdown">
                   <a
                     className="nav-link dropdown-toggle fs-6"
-                    href="#"
+                    href="/products"
                     id="navbarDropdown"
                     role="button"
                     data-bs-toggle="dropdown"
@@ -58,12 +58,12 @@ export default class Header extends Component {
                     aria-labelledby="navbarDropdown"
                   >
                     <li>
-                      <a className="dropdown-item" href="#">
+                      <a className="dropdown-item" href="/products">
                         Comida
                       </a>
                     </li>
                     <li>
-                      <a className="dropdown-item" href="#">
+                      <a className="dropdown-item" href="/products">
                         Juguetes!
                       </a>
                     </li>

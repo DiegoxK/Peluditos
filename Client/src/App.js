@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
-import axios from "axios";
+
 //CSS
 import "./assets/css/custom.css";
 // Index
@@ -8,6 +8,7 @@ import Index from "./views/Index";
 // Register
 import Register from "./views/Register";
 import Login from "./views/Login";
+import Adoption from "./views/Adoption";
 
 // URL
 let url = "http://localhost:3001";
@@ -34,6 +35,12 @@ class App extends Component {
             path="/login"
             render={() => {
               return <Login url={url} />;
+            }}
+          />
+          <Route
+            path="/adoption"
+            render={() => {
+              return <Adoption />;
             }}
           />
         </Router>

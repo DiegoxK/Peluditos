@@ -29,9 +29,14 @@ export default class Servicios extends Component {
                     puedes poner tu granito de arena, cada uno de estos
                     peluditos te lo agredecerá!.
                   </p>
-                  <button type="button" className="btn btn-primary ms-custom">
-                    Dona ya!
-                  </button>
+                  <a href="https://www.paypal.com/co/home" target="_blank">
+                    <button
+                      type="button"
+                      className="btn btn-primary ms-custom text-secondary"
+                    >
+                      Dona ya!
+                    </button>
+                  </a>
                 </div>
               </div>
             </div>
@@ -47,9 +52,14 @@ export default class Servicios extends Component {
                     si ya tienes mascota lo puedes consentir con los mejores
                     productos del mercado para aseo, alimentación y salud.
                   </p>
-                  <button type="button" className="btn btn-primary ms-4">
-                    Compra ya!
-                  </button>
+                  <a href="/products">
+                    <button
+                      type="button"
+                      className="btn btn-primary text-secondary ms-4"
+                    >
+                      Compra ya!
+                    </button>
+                  </a>
                 </div>
               </div>
               <div className="col-md-4">
@@ -79,9 +89,14 @@ export default class Servicios extends Component {
                     peluditos esperan por tí, de seguro hay uno que se quedatá
                     en tu corazón y en tu alma.
                   </p>
-                  <button type="button" className="btn btn-primary ms-custom">
-                    Adopta!!
-                  </button>
+                  <a href="/adoption">
+                    <button
+                      type="button"
+                      className="btn btn-primary ms-custom text-secondary"
+                    >
+                      Adopta!!
+                    </button>
+                  </a>
                 </div>
               </div>
             </div>
