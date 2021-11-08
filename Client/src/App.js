@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
-import axios from "axios";
+//import axios from "axios";
 //CSS
 import "./assets/css/custom.css";
 // Index
