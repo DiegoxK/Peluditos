@@ -7,6 +7,7 @@ import "./assets/css/custom.css";
 import Index from "./views/Index";
 // Register
 import Register from "./views/Register";
+import Login from "./views/Login";
 
 // URL
 let url = "http://localhost:3001";
@@ -24,9 +25,15 @@ class App extends Component {
             }}
           />
           <Route
-            path="/Registro"
+            path="/registro"
             render={() => {
               return <Register url={url} />;
+            }}
+          />
+          <Route
+            path="/login"
+            render={() => {
+              return <Login url={url} />;
             }}
           />
         </Router>
