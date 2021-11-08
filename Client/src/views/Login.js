@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from 'axios';
 
 // Assets
 import Logo from "../assets/images/Header/Logo.png";
@@ -7,11 +8,66 @@ import Logo from "../assets/images/Header/Logo.png";
 import Footer from "../components/Footer";
 
 export default class Login extends Component {
+  state = {
+    credentials: [this.state],
+    correoElectronico : "",
+    contraseña : ""
+  }
+  
+  onChange = (event) => {
+    this.setState({
+      [event.target.name]: event.target.value,
+    });
+  };
+  
+    componentDidMount() {
+    axios
+      .get(this.props.url + "/api/user")
+      .then((response) => {
+        this.setState({
+          credentials : response.data
+        })
+      })
+
+      .catch((e) => {
+        console.log("error" + e);
+      });
+  }
+
+  onSubmit = (event) => {
+    event.preventDefault();
+
+    let check = false;
+
+      for (let user of this.credentials) {
+        if (
+          user.correoElectronico === this.login.email &&
+          user.contraseña === this.login.password
+        ) {
+          document.cookie = `nombre=${user.nombre}`;
+          document.cookie = `adopcion=${user.capacidadDeAdopcion}`;
+          document.cookie = `userType=${user.userType}`;
+          document.cookie = `check=true`;
+          check = true;
+          
+          break;
+        }
+      }
+      if(check === false){
+        document.cookie = `check=false`;
+        console.log("nologeado");
+      }
+      else{
+        window.location.href = "/";
+      }
+
+  }
+
   render() {
     return (
       <div className="text-center">
         <main className="form-signin mt-5 p-3 border border-3 border-primary">
-          <form className>
+          <form  onSubmit={this.onSubmit}>
             <a href="/">
               <img className="mb-4" src={Logo} alt="Logo" />
             </a>
@@ -22,6 +78,9 @@ export default class Login extends Component {
               <input
                 type="email"
                 className="form-control"
+                name="correoElectronico"
+                onChange={this.onChange}
+                value={this.state.correoElectronico}
                 id="floatingMail"
                 placeholder="nombre@ejemplo.com"
               />
@@ -31,6 +90,9 @@ export default class Login extends Component {
               <input
                 type="password"
                 className="form-control"
+                name="contraseña"
+                onChange={this.onChange}
+                value={this.state.contraseña}
                 id="floatingPassword"
                 placeholder="Contraseña"
               />
