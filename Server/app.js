@@ -44,7 +44,7 @@ app.use(history());
 app.use(express.static("./static"));
 
 //puerto
-app.set("port", process.env.PORT || 3000);
+app.set("port", process.env.PORT || 3001);
 app.listen(app.get("port"), () => {
   console.log("Server listen to port: " + app.get("port"));
 });
