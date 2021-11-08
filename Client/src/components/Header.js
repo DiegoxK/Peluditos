@@ -72,9 +72,14 @@ export default class Header extends Component {
               </ul>
               <ul className="navbar-nav mb-lg-0 justify-content-end">
                 <li className="nav-item">
-                  <button type="button" className="btn btn-light mb-2 mb-lg-0">
-                    Ingresar
-                  </button>
+                  <a href="/login">
+                    <button
+                      type="button"
+                      className="btn btn-light mb-2 mb-lg-0"
+                    >
+                      Ingresar
+                    </button>
+                  </a>
                 </li>
                 <li className="nav-item ms-0 ms-lg-4">
                   <a href="/registro">
