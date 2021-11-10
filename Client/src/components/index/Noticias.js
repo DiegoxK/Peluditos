@@ -19,6 +19,7 @@ export default class Noticias extends Component {
                   <a
                     href="https://www.univision.com/local/houston-kxln/mascotas-adopcion-houston-fotos"
                     className="header-text"
+                    rel="noreferrer"
                     target="_blank"
                   >
                     ¿Podrías darles un hogar? Ofrecen 50% en tarifas de adopción
@@ -38,6 +39,7 @@ export default class Noticias extends Component {
                   <a
                     href="https://www.eltiempo.com/bogota/adopcion-de-perros-y-gatos-en-bogota-una-tendencia-que-crece-desde-2020-598818"
                     className="header-text"
+                    rel="noreferrer"
                     target="_blank"
                   >
                     Adopción de perros y gatos en Bogotá, tendencia que crece
@@ -58,6 +60,7 @@ export default class Noticias extends Component {
                   <a
                     href="https://cnnespanol.cnn.com/2019/12/23/navidad-regalo-perfecto-mascota-porque-animales-no/"
                     className="header-text"
+                    rel="noreferrer"
                     target="_blank"
                   >
                     ¿Por qué los animales no son el regalo perfecto de Navidad?

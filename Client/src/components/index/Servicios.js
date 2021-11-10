@@ -29,7 +29,11 @@ export default class Servicios extends Component {
                     puedes poner tu granito de arena, cada uno de estos
                     peluditos te lo agredecerá!.
                   </p>
-                  <a href="https://www.paypal.com/co/home" target="_blank">
+                  <a
+                    href="https://www.paypal.com/co/home"
+                    rel="noreferrer"
+                    target="_blank"
+                  >
                     <button
                       type="button"
                       className="btn btn-primary ms-custom text-secondary"

@@ -14,6 +14,7 @@ export default class Footer extends Component {
           </ul>
           <a
             href="https://github.com/DiegoxK/G11_ProyectoG7_Ciclo4"
+            rel="noreferrer"
             target="_blank"
             className="nav-link px-2 text-muted text-center"
           >
