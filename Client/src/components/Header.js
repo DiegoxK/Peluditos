@@ -3,6 +3,8 @@ import React, { Component } from "react";
 // Assets
 import Logo from "../assets/images/Header/Logo.png";
 
+//Login
+import Login from "../views/Login"
 export default class Header extends Component {
   render() {
     return (
