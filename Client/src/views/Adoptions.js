@@ -4,6 +4,7 @@ import axios from "axios";
 
 // Components
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import PetCard from "../components/adoptions/PetCard";
 
 function Adoption(props) {
@@ -39,6 +40,7 @@ function Adoption(props) {
       return (
         <PetCard
           key={pet._id}
+          id={pet._id}
           img={pet.img}
           name={pet.nombre}
           age={pet.edadMascota}
@@ -48,7 +50,7 @@ function Adoption(props) {
     });
 
   return (
-    <div>
+    <>
       <Header />
       <section className="Adopcion">
         <h2 className="header">Adopta!</h2>
@@ -77,7 +79,8 @@ function Adoption(props) {
           />
         </div>
       </section>
-    </div>
+      <Footer />
+    </>
   );
 }
 

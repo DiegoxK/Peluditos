@@ -9,9 +9,16 @@ import Footer from "../components/Footer";
 
 export default class Login extends Component {
   state = {
+    checkRemember: false,
     credentials: [],
     correoElectronico: "",
     contraseña: "",
+  };
+
+  checkRememberChange = () => {
+    this.setState({
+      checkRemember: !this.state.checkRemember,
+    });
   };
 
   onChange = (event) => {
@@ -37,23 +44,31 @@ export default class Login extends Component {
   onSubmit = (event) => {
     event.preventDefault();
 
-    let check = false;
+    let logCheck = false;
 
     for (let user of this.state.credentials) {
       if (
         user.correoElectronico === this.state.correoElectronico &&
         user.contraseña === this.state.contraseña
       ) {
-        document.cookie = `nombre=${user.nombre}`;
-        document.cookie = `adopcion=${user.capacidadDeAdopcion}`;
-        document.cookie = `userType=${user.userType}`;
-        document.cookie = `check=true`;
-        check = true;
-
+        if (this.state.checkRemember) {
+          document.cookie = `nombre=${user.nombre}`;
+          document.cookie = `adopcion=${user.capacidadDeAdopcion}`;
+          document.cookie = `userType=${user.userType}`;
+          document.cookie = `check=true`;
+          console.log("Expira true");
+        } else {
+          document.cookie = `nombre=${user.nombre}; expires=`;
+          document.cookie = `adopcion=${user.capacidadDeAdopcion}; expires=`;
+          document.cookie = `userType=${user.userType}; expires=`;
+          document.cookie = `check=true; expires=`;
+          console.log("Expira false");
+        }
+        logCheck = true;
         break;
       }
     }
-    if (check === false) {
+    if (logCheck === false) {
       document.cookie = `check=false`;
       console.log("nologeado");
     } else {
@@ -98,7 +113,12 @@ export default class Login extends Component {
             </div>
             <div className="checkbox mb-3">
               <label>
-                <input type="checkbox" defaultValue="remember-me" /> Recuerdame
+                <input
+                  type="checkbox"
+                  defaultValue="remember-me"
+                  onChange={this.checkRememberChange}
+                />
+                Recuerdame
               </label>
             </div>
             <button className="w-100 btn btn-lg btn-primary" type="submit">

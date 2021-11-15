@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 
 function PetCard(props) {
-  const [img, setImg] = useState(props.img);
-  const [name, setName] = useState(props.name);
-  const [age, setAge] = useState(props.age);
-  const [description, setDescription] = useState(props.description);
+  const id = props.id;
+  const img = props.img;
+  const name = props.name;
+  const age = props.age;
+  const description = props.description;
 
   return (
     <div className="col">
@@ -18,7 +19,7 @@ function PetCard(props) {
           <p className="card-text">{description}</p>
         </div>
         <div className="bg-primary d-flex justify-content-center">
-          <a href={`/adoption/${name}`}>
+          <a href={`/adoption/${id}`}>
             <button type="button" className="card my-3 btn btn-light">
               Adoptar
             </button>

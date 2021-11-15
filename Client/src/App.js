@@ -46,7 +46,7 @@ class App extends Component {
           <Route
             path="/adoption/:petId"
             render={() => {
-              return <PetInfo />;
+              return <PetInfo url={url} />;
             }}
           />
         </Router>
