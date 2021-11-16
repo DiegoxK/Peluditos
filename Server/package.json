@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "babel-node app.js --exec",
-    "dev": "nodemon app.js",
+    "dev": "nodemon --exec babel-node app.js",
     "devbabel": "nodemon app.js --exec babel-node"
   },
   "keywords": [],
@@ -19,10 +19,10 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.15.7",
-    "@babel/core": "^7.15.5",
-    "@babel/node": "^7.15.4",
-    "@babel/preset-env": "^7.15.6",
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "@babel/node": "^7.16.0",
+    "@babel/preset-env": "^7.16.0",
     "nodemon": "^2.0.13"
   }
 }

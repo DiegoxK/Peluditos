@@ -9,6 +9,7 @@ import Register from "./views/Register";
 import Login from "./views/Login";
 import Adoptions from "./views/Adoptions";
 import PetInfo from "./views/PetInfo";
+import UsersCrud from "./views/UsersCrud";
 
 // URL
 const url = "http://localhost:3001";
@@ -41,6 +42,12 @@ class App extends Component {
             path="/adoptions"
             render={() => {
               return <Adoptions url={url} />;
+            }}
+          />
+          <Route
+            path="/usersCrud"
+            render={() => {
+              return <UsersCrud url={url} />;
             }}
           />
           <Route

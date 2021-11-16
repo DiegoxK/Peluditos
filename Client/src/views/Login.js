@@ -56,13 +56,11 @@ export default class Login extends Component {
           document.cookie = `adopcion=${user.capacidadDeAdopcion}`;
           document.cookie = `userType=${user.userType}`;
           document.cookie = `check=true`;
-          console.log("Expira true");
         } else {
           document.cookie = `nombre=${user.nombre}; expires=`;
           document.cookie = `adopcion=${user.capacidadDeAdopcion}; expires=`;
           document.cookie = `userType=${user.userType}; expires=`;
           document.cookie = `check=true; expires=`;
-          console.log("Expira false");
         }
         logCheck = true;
         break;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 // Assets
 import Logo from "../assets/images/Header/Logo.png";
@@ -20,10 +20,17 @@ const readCookie = (cname) => {
 };
 
 function Header() {
+  const [check, setCheck] = useState(readCookie("check"));
+
   const userName = readCookie("nombre");
-  const check = readCookie("check");
   const userType = readCookie("userType");
   const adopcion = readCookie("adopcion");
+
+  const logOut = () => {
+    document.cookie = `check=false`;
+    setCheck(readCookie("check"));
+    window.location.href = "/";
+  };
 
   return (
     <div className="container-cstm">
@@ -86,22 +93,74 @@ function Header() {
                   </li>
                 </ul>
               </li>
+              {userType === "admin" && (
+                <li className="nav-item dropdown">
+                  <a
+                    className="nav-link dropdown-toggle fs-6"
+                    href="/products"
+                    id="navbarDropdown"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    Admin
+                  </a>
+                  <ul
+                    className="dropdown-menu"
+                    aria-labelledby="navbarDropdown"
+                  >
+                    <li>
+                      <a className="dropdown-item" href="/usersCrud">
+                        Crud Usuarios
+                      </a>
+                    </li>
+                    <li>
+                      <a className="dropdown-item" href="/petRegister">
+                        Registrar Mascota
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+              )}
             </ul>
             <ul className="navbar-nav mb-lg-0 justify-content-end">
-              <li className="nav-item">
-                <a href="/login">
-                  <button type="button" className="btn btn-light mb-2 mb-lg-0">
-                    Ingresar
-                  </button>
-                </a>
-              </li>
-              <li className="nav-item ms-0 ms-lg-4">
-                <a href="/registro">
-                  <button type="button" className="btn btn-primary">
-                    Registro
-                  </button>
-                </a>
-              </li>
+              {check === "true" && (
+                <div>
+                  <li className="nav-item ms-0 ms-lg-4 text-center pb-1">
+                    Bienvenido <span className="fw-bold">{userName}</span>
+                  </li>
+                  <li className="nav-item ms-0 ms-lg-4">
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={logOut}
+                    >
+                      Cerrar Sesion
+                    </button>
+                  </li>
+                </div>
+              )}
+              {check != "true" && (
+                <>
+                  <li className="nav-item">
+                    <a href="/login">
+                      <button
+                        type="button"
+                        className="btn btn-light mb-2 mb-lg-0"
+                      >
+                        Ingresar
+                      </button>
+                    </a>
+                  </li>
+                  <li className="nav-item ms-0 ms-lg-4">
+                    <a href="/registro">
+                      <button type="button" className="btn btn-primary">
+                        Registro
+                      </button>
+                    </a>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
         </div>
