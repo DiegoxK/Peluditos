@@ -43,8 +43,8 @@ function PetInfo(props) {
                 <div className="bg-secondary shadow-sm rounded p-5 mx-3 mb-4">
                   <h3 className="mb-4 fw-bold">{name}</h3>
                   <ul className="d-flex flex-row">
-                    <li className="card-text fw-bold">Adulto</li>
-                    <li className="ms-5 card-text fw-bold">Femenino</li>
+                    <li className="card-text fw-bold">Edad</li>
+                    <li className="ms-5 card-text fw-bold">Genero</li>
                     <li className="ms-5 card-text fw-bold">Tamaño</li>
                   </ul>
                   <hr />
@@ -53,13 +53,15 @@ function PetInfo(props) {
                       <tr>
                         <th scope="col">Castrado</th>
                         <th scope="col">Vacunado</th>
-                        <th scope="col">Amoroso</th>
+                        <th scope="col">Niños</th>
+                        <th scope="col">Otras mascotas</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
                         <td>Sis</td>
                         <td>Non</td>
+                        <td>100%</td>
                         <td>100%</td>
                       </tr>
                     </tbody>
