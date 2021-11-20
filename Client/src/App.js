@@ -11,6 +11,7 @@ import Adoptions from "./views/Adoptions";
 import PetInfo from "./views/PetInfo";
 import UsersCrud from "./views/UsersCrud";
 import PetRegister from "./views/PetRegister";
+import Products from "./views/Products";
 
 // URL
 const url = "http://localhost:3001";
@@ -61,6 +62,12 @@ class App extends Component {
             path="/petRegister"
             render={() => {
               return <PetRegister />;
+            }}
+          />
+          <Route
+            path="/products/:productId"
+            render={() => {
+              return <Products url={url} />;
             }}
           />
         </Router>

@@ -5,7 +5,7 @@ const mascotasSchema = Schema({
   img: { type: String, required: [true, "Enlace de imagen Obligatorio"] },
   nombre: { type: String, required: [true, "Nombre Obligatorio"] },
   descripcion: { type: String, required: [true, "Descripción Obligatoria"] },
-  edadAnosMascota: Number,
+  edadAñosMascota: Number,
   edadMesesMascota: Number,
   genero: { type: String, required: [true, "Género Obligatorio"] },
   tamaño: { type: String, required: [true, "Tamaño Obligatorio"] },
