@@ -12,6 +12,7 @@ import PetInfo from "./views/PetInfo";
 import UsersCrud from "./views/UsersCrud";
 import PetRegister from "./views/PetRegister";
 import Products from "./views/Products";
+import Payment from "./views/Payment";
 
 // URL
 const url = "http://localhost:3001";
@@ -68,6 +69,12 @@ class App extends Component {
             path="/products/:productId"
             render={() => {
               return <Products url={url} />;
+            }}
+          />
+          <Route
+            path="/payment"
+            render={() => {
+              return <Payment />;
             }}
           />
         </Router>

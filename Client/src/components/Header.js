@@ -28,6 +28,7 @@ function Header() {
 
   const logOut = () => {
     document.cookie = `check=false`;
+    document.cookie = `userType=false`;
     setCheck(readCookie("check"));
     window.location.href = "/";
   };

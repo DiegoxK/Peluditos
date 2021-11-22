@@ -31,9 +31,11 @@ function ProductCard(props) {
             </p>
             <p className="card-text pt-2">{description}</p>
             <div className="d-flex justify-content-end">
-              <button className="btn btn-primary me-5 text-secondary">
-                Comprar
-              </button>
+              <a href="/payment">
+                <button className="btn btn-primary me-5 text-secondary">
+                  Comprar
+                </button>
+              </a>
             </div>
           </div>
         </div>
