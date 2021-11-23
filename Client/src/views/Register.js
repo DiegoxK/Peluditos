@@ -24,7 +24,7 @@ export default class Register extends Component {
     event.preventDefault();
     axios
       .post(this.props.url + "/api/user", this.parseInfo(this.state))
-      .then((res) => {
+      .then(() => {
         this.setState({
           nombre: "",
           apellido: "",
@@ -36,7 +36,6 @@ export default class Register extends Component {
           correoElectronico: "",
           contraseña: "",
         });
-        console.log(res);
         window.location.href = "/login";
       })
       .catch((e) => {

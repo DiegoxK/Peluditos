@@ -72,9 +72,9 @@ class App extends Component {
             }}
           />
           <Route
-            path="/payment"
+            path="/payment/:productId"
             render={() => {
-              return <Payment />;
+              return <Payment url={url} />;
             }}
           />
         </Router>

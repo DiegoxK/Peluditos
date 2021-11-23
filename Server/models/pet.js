@@ -11,7 +11,7 @@ const mascotasSchema = Schema({
   tamaño: { type: String, required: [true, "Tamaño Obligatorio"] },
   castrado: { type: Boolean, default: false },
   vacunado: { type: Boolean, default: false },
-  ninos: { type: Boolean, default: false },
+  niños: { type: Boolean, default: false },
   otrasMascotas: { type: Boolean, default: false },
   direccion: { type: String, required: [true, "Dirección Obligatoria"] },
   correoDeContacto: { type: String, required: [true, "Correo Obligatorio"] },

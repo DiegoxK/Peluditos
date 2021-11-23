@@ -58,6 +58,7 @@ function Products(props) {
       return (
         <ProductCard
           key={product._id}
+          id={product._id}
           img={product.img}
           name={product.nombre}
           productType={product.tipoProducto}
