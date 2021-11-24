@@ -28,6 +28,7 @@ function Header() {
 
   const logOut = () => {
     document.cookie = `check=false`;
+    document.cookie = `userType=false`;
     setCheck(readCookie("check"));
     window.location.href = "/";
   };
@@ -82,13 +83,33 @@ function Header() {
                 </a>
                 <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
                   <li>
-                    <a className="dropdown-item" href="/products">
-                      Comida
+                    <a className="dropdown-item" href="/products/productos">
+                      Todos
                     </a>
                   </li>
                   <li>
-                    <a className="dropdown-item" href="/products">
-                      Juguetes!
+                    <a className="dropdown-item" href="/products/aseo">
+                      Aseo
+                    </a>
+                  </li>
+                  <li>
+                    <a className="dropdown-item" href="/products/alimentos">
+                      Alimentos
+                    </a>
+                  </li>
+                  <li>
+                    <a className="dropdown-item" href="/products/snacks">
+                      Snacks
+                    </a>
+                  </li>
+                  <li>
+                    <a className="dropdown-item" href="/products/accesorios">
+                      Accesorios
+                    </a>
+                  </li>
+                  <li>
+                    <a className="dropdown-item" href="/products/juguetes">
+                      Juguetes
                     </a>
                   </li>
                 </ul>

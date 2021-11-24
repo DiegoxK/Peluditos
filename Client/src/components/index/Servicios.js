@@ -56,7 +56,7 @@ export default class Servicios extends Component {
                     si ya tienes mascota lo puedes consentir con los mejores
                     productos del mercado para aseo, alimentación y salud.
                   </p>
-                  <a href="/products">
+                  <a href="/products/productos">
                     <button
                       type="button"
                       className="btn btn-primary text-secondary ms-4"
