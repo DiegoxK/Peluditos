@@ -44,7 +44,7 @@ function PetRegister(props) {
   const onSubmit = (event) => {
     event.preventDefault();
     axios
-      .post(props.url + "/api/user", parseInfo(data))
+      .post(props.url + "/api/pet", parseInfo(data))
       .then(() => {
         setData({
           img: "",
@@ -77,165 +77,258 @@ function PetRegister(props) {
   };
 
   return (
-    <div className="text-center">
-      <main className="form-signin mt-5 p-3 border border-3 border-primary">
-        <form onSubmit={onSubmit}>
-          <a href="/">
-            <img className="mb-4" src={Logo} alt="Logo" />
-          </a>
-          <h1 className="h3 mb-2 fw-normal fw-bold text-primary">
-            Registrar mascota
-          </h1>
-          <div className="form-floating mt-5">
-            <input
-              type="text"
-              name="nombre"
-              onChange={onChange}
-              value={data.nombre}
-              className="form-control"
-              id="floatingName"
-              placeholder="Nombre"
-            />
-            <label htmlFor="floatingName">Nombre</label>
-          </div>
-          <div className="form-floating mt-3">
-            <input
-              type="text"
-              className="form-control"
-              name="apellido"
-              onChange={this.onChange}
-              value={this.state.apellido}
-              id="floatingLastname"
-              placeholder="Apellido"
-            />
-            <label htmlFor="floatingLastname">Apellido</label>
-          </div>
-          <div className="form-floating mt-3">
-            <input
-              type="email"
-              className="form-control"
-              name="correoElectronico"
-              onChange={this.onChange}
-              value={this.state.correoElectronico}
-              id="floatingMail"
-              placeholder="nombre@ejemplo.com"
-            />
-            <label htmlFor="floatingMail">Correo Electronico</label>
-          </div>
-          <div className="form-floating mt-3">
-            <input
-              type="tel"
-              name="telefono"
-              className="form-control"
-              onChange={this.onChange}
-              value={this.state.telefono}
-              id="floatingPhone"
-              placeholder="Telefono"
-            />
-            <label htmlFor="floatingPhone">Telefono</label>
-          </div>
-          <hr className="my-4" />
-          <div className="mt-3">
-            <select
-              className="form-select py-2"
-              name="tipoDeCasa"
-              onChange={this.onChange}
-              value={this.state.tipoDeCasa}
-            >
-              <option disabled value="">
-                Tipo de vivienda
-              </option>
-              <option>Casa</option>
-              <option>Apartamento</option>
-              <option>Finca o parcela</option>
-            </select>
-          </div>
-          <div className="mt-3">
-            <select
-              className="form-select py-2"
-              name="mascota"
-              onChange={this.onChange}
-              value={this.state.mascota}
-            >
-              <option disabled value="">
-                ¿Tiene mascota?
-              </option>
-              <option>Si</option>
-              <option>No</option>
-            </select>
-          </div>
-          <div>
-            {this.state.mascota === "Si" && (
-              <div>
-                <div className="row">
-                  <p className="mt-3 fs-4 fw-bold text-primary">Edad</p>
-                  <div className="col-6">
-                    <input
-                      name="edadMascota"
-                      onChange={this.onChange}
-                      value={this.state.edadMascota}
-                      type="number"
-                      className="form-control py-2"
-                      placeholder="Años"
-                    />
-                  </div>
-                  <div className="col-6">
-                    <input
-                      type="number"
-                      className="form-control py-2"
-                      placeholder="Meses"
-                    />
-                  </div>
-                </div>
-                <div className="mt-3">
-                  <select
-                    className="form-select py-2"
-                    placeholder="name@example.com"
-                    name="castrada"
-                    onChange={this.onChange}
-                    value={this.state.castrada}
-                  >
-                    <option disabled value="">
-                      ¿Esta castrada?
-                    </option>
-                    <option>Si</option>
-                    <option>No</option>
-                  </select>
-                </div>
+    <>
+      <div className="text-center">
+        <main className="form-signin mt-5 p-3 border border-3 border-primary">
+          <form onSubmit={onSubmit}>
+            <a href="/">
+              <img className="mb-4" src={Logo} alt="Logo" />
+            </a>
+            <h1 className="h3 mb-2 fw-normal fw-bold text-primary">
+              Registrar mascota
+            </h1>
+            <div className="form-floating mt-3">
+              <input
+                type="text"
+                name="nombre"
+                onChange={onChange}
+                value={data.nombre}
+                className="form-control"
+                id="floatingName"
+                placeholder="Nombre"
+              />
+              <label className="text-muted" htmlFor="floatingName">
+                Nombre Mascota
+              </label>
+            </div>
+            <div className="row">
+              <p className="mt-3 fs-4 fw-bold text-primary">Edad</p>
+              <div className="col-6">
+                <input
+                  type="number"
+                  name="edadAñosMascota"
+                  onChange={onChange}
+                  value={data.edadAñosMascota}
+                  className="form-control py-2"
+                  placeholder="Años"
+                />
               </div>
-            )}
-          </div>
+              <div className="col-6">
+                <input
+                  type="number"
+                  name="edadMesesMascota"
+                  onChange={onChange}
+                  value={data.edadMesesMascota}
+                  className="form-control py-2"
+                  placeholder="Meses"
+                />
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-6">
+                <p className="mt-3 fs-4 fw-bold text-primary">Genero</p>
+                <select
+                  name="genero"
+                  onChange={onChange}
+                  value={data.genero}
+                  className="form-select py-2"
+                >
+                  <option disabled value="">
+                    Genero
+                  </option>
+                  <option>Masculino</option>
+                  <option>Femenino</option>
+                </select>
+              </div>
+              <div className="col-6">
+                <p className="mt-3 fs-4 fw-bold text-primary">Tamaño</p>
+                <select
+                  name="tamaño"
+                  onChange={onChange}
+                  value={data.tamaño}
+                  className="form-select py-2"
+                >
+                  <option disabled value="">
+                    Tamaño
+                  </option>
+                  <option>Pequeño</option>
+                  <option>Medio</option>
+                  <option>Grande</option>
+                </select>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-6">
+                <p className="mt-3 fs-4 fw-bold text-primary">Castrado</p>
+                <select
+                  name="castrado"
+                  onChange={onChange}
+                  value={data.castrado}
+                  className="form-select py-2"
+                >
+                  <option disabled value="">
+                    ¿Castrado?
+                  </option>
+                  <option>Si</option>
+                  <option>No</option>
+                </select>
+              </div>
+              <div className="col-6">
+                <p className="mt-3 fs-4 fw-bold text-primary">Vacunas</p>
+                <select
+                  name="vacunado"
+                  onChange={onChange}
+                  value={data.vacunado}
+                  className="form-select py-2"
+                >
+                  <option disabled value="">
+                    ¿Vacunado?
+                  </option>
+                  <option>Si</option>
+                  <option>No</option>
+                </select>
+              </div>
+            </div>
+            <p className="mt-3 fs-4 fw-bold text-primary">Se lleva bien con</p>
+            <div className="row">
+              <div className="col-6">
+                <p className="fs-4 fw-bold text-primary">Niños</p>
+                <select
+                  name="niños"
+                  onChange={onChange}
+                  value={data.niños}
+                  className="form-select py-2"
+                >
+                  <option disabled value="">
+                    Niños
+                  </option>
+                  <option>Si</option>
+                  <option>No</option>
+                </select>
+              </div>
+              <div className="col-6">
+                <p className="fs-4 fw-bold text-primary">Mascotas</p>
+                <select
+                  name="otrasMascotas"
+                  onChange={onChange}
+                  value={data.otrasMascotas}
+                  className="form-select py-2"
+                >
+                  <option disabled value="">
+                    Mascotas
+                  </option>
+                  <option>Si</option>
+                  <option>No</option>
+                </select>
+              </div>
+            </div>
+            <div className="mt-3 form-floating">
+              <textarea
+                className="form-control"
+                name="descripcion"
+                onChange={onChange}
+                value={data.descripcion}
+                placeholder="Leave a comment here"
+                id="floatingTextarea2"
+                style={{ height: 100 }}
+                defaultValue={""}
+              />
+              <label className="text-muted" htmlFor="floatingTextarea2">
+                Descripcion
+              </label>
+            </div>
 
-          <hr className="my-4" />
-          <div className="form-floating my-3">
-            <input
-              type="password"
-              className="form-control"
-              name="contraseña"
-              onChange={this.onChange}
-              value={this.state.contraseña}
-              id="floatingPassword"
-              placeholder="Contraseña"
-            />
-            <label htmlFor="floatingPassword">Contraseña</label>
-          </div>
-          <button className="w-100 btn btn-lg btn-primary" type="submit">
-            Registrarse
-          </button>
-        </form>
-        <div className="form-floating mt-3">
-          <textarea
-            className="form-control"
-            placeholder="Leave a comment here"
-            id="floatingTextarea2"
-            style={{ height: 100 }}
-            defaultValue={""}
-          />
-          <label htmlFor="floatingTextarea2">Comments</label>
-        </div>
-      </main>
+            <div className="mt-3 form-floating">
+              <textarea
+                className="form-control"
+                name="img"
+                onChange={onChange}
+                value={data.img}
+                placeholder="Leave a comment here"
+                id="floatingTextarea2"
+                style={{ height: 200 }}
+                defaultValue={""}
+              />
+              <label className="text-muted" htmlFor="floatingTextarea2">
+                Imagen (Link)
+              </label>
+            </div>
+            <p className="mt-3 fs-4 fw-bold text-primary">Contacto</p>
+            <div className="form-floating mt-3">
+              <input
+                type="text"
+                name="direccion"
+                onChange={onChange}
+                value={data.direccion}
+                className="form-control"
+                id="floatingAddress"
+                placeholder="Direccion"
+              />
+              <label className="text-muted" htmlFor="floatingAddress">
+                Direccion
+              </label>
+            </div>
+            <div className="form-floating mt-3">
+              <input
+                type="email"
+                name="correoDeContacto"
+                onChange={onChange}
+                value={data.correoDeContacto}
+                className="form-control"
+                id="floatingEmail"
+                placeholder="Email"
+              />
+              <label className="text-muted" htmlFor="floatingEmail">
+                Correo de contacto
+              </label>
+            </div>
+            <div className="form-floating mt-3">
+              <input
+                type="tel"
+                name="telefono"
+                onChange={onChange}
+                value={data.telefono}
+                className="form-control"
+                id="floatingTel"
+                placeholder="Telefono"
+              />
+              <label className="text-muted" htmlFor="floatingTel">
+                Telefono
+              </label>
+            </div>
+            <hr className="my-4" />
+            <div className="mt-3 form-floating">
+              <textarea
+                className="form-control"
+                name="localizacion"
+                onChange={onChange}
+                value={data.localizacion}
+                placeholder="Leave a comment here"
+                id="floatingTextarea2"
+                style={{ height: 100 }}
+                defaultValue={""}
+              />
+              <label className="text-muted" htmlFor="floatingTextarea2">
+                Ubicacion (Google Link)
+              </label>
+            </div>
+            <div className="d-flex justify-content-start mt-3">
+              <a target="_blank" href="https://www.embedgooglemap.net/">
+                Referencia
+              </a>
+            </div>
+            <div className="d-flex justify-content-start">
+              <p>Copiar y pegar contenido de "src"</p>
+            </div>
+            <button className="mt-3 w-100 btn btn-lg btn-primary" type="submit">
+              Registrar Mascota
+            </button>
+          </form>
+        </main>
+      </div>
+
       <Footer />
-    </div>
+    </>
   );
 }
 

@@ -12,10 +12,21 @@ import Footer from "../components/Footer";
 function PetInfo(props) {
   const { petId } = useParams();
 
-  const [img, setImg] = useState(props.img);
-  const [name, setName] = useState(props.name);
-  const [age, setAge] = useState(props.age);
-  const [description, setDescription] = useState(props.description);
+  const [img, setImg] = useState("");
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [yearAge, setYearAge] = useState("");
+  const [monthAge, setMonthAge] = useState("");
+  const [gender, setGender] = useState("");
+  const [petSize, setPetSize] = useState("");
+  const [castred, setCastred] = useState("");
+  const [vaccinated, setVaccinated] = useState("");
+  const [kids, setKids] = useState("");
+  const [otherPets, setOtherPets] = useState("");
+  const [address, setAddress] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [location, setLocation] = useState("");
 
   useEffect(() => {
     axios
@@ -23,8 +34,19 @@ function PetInfo(props) {
       .then((res) => {
         setImg(res.data.img);
         setName(res.data.nombre);
-        setAge(res.data.edadMascota);
         setDescription(res.data.descripcion);
+        setYearAge(res.data.edadAñosMascota);
+        setMonthAge(res.data.edadMesesMascota);
+        setGender(res.data.genero);
+        setPetSize(res.data.tamaño);
+        setCastred(res.data.castrado);
+        setVaccinated(res.data.vacunado);
+        setKids(res.data.niños);
+        setOtherPets(res.data.otrasMascotas);
+        setAddress(res.data.direccion);
+        setContactEmail(res.data.correoDeContacto);
+        setPhoneNumber(res.data.telefono);
+        setLocation(res.data.localizacion);
       })
       .catch((e) => {
         console.log(e.response);
@@ -43,9 +65,10 @@ function PetInfo(props) {
                 <div className="bg-secondary shadow-sm rounded p-5 mx-3 mb-4">
                   <h3 className="mb-4 fw-bold">{name}</h3>
                   <ul className="d-flex flex-row">
-                    <li className="card-text fw-bold">Edad</li>
-                    <li className="ms-5 card-text fw-bold">Genero</li>
-                    <li className="ms-5 card-text fw-bold">Tamaño</li>
+                    <li className="card-text fw-bold">{gender}</li>
+                    <li className="ms-5 card-text">
+                      Tamaño: <span className="fw-bold">{petSize}</span>
+                    </li>
                   </ul>
                   <hr />
                   <table className="table text-primary">
@@ -59,20 +82,24 @@ function PetInfo(props) {
                     </thead>
                     <tbody>
                       <tr>
-                        <td>Sis</td>
-                        <td>Non</td>
-                        <td>100%</td>
-                        <td>100%</td>
+                        <td>{castred === true ? "Si" : "No"}</td>
+                        <td>{vaccinated === true ? "Si" : "No"}</td>
+                        <td>{kids === true ? "Si" : "No"}</td>
+                        <td>{otherPets === true ? "Si" : "No"}</td>
                       </tr>
                     </tbody>
                   </table>
                   <p className="card-text fw-bold mt-5">Sobre {name}</p>
+                  <p>
+                    <span className="fw-bold">Años:</span> {yearAge}{" "}
+                    <span className="fw-bold">Meses:</span> {monthAge}
+                  </p>
                   <p className="card-text">{description}</p>
                 </div>
                 <div className="text-center w-100 px-3">
                   <iframe
                     className="rounded-3 shadow-sm"
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d253821.43534606486!2d-75.7364810050448!3d6.26900071367555!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e4428ef4e52dddb%3A0x722fd6c39270ac72!2sMedellin%2C%20Antioquia!5e0!3m2!1sen!2sco!4v1636581592062!5m2!1sen!2sco"
+                    src={location}
                     allowFullScreen
                     width="100%"
                     height={675}
@@ -95,15 +122,14 @@ function PetInfo(props) {
                 </div>
                 <div className="mx-4">
                   <p className="card-text mt-4">
-                    <span className="fw-bold">Localizacion:</span> Medellín,
-                    Medellin, Antioquia
+                    <span className="fw-bold">Localizacion:</span> {address}
                   </p>
                   <p className="card-text mt-4">
-                    <span className="fw-bold">Correo de contacto:</span>
-                    Adopciones@Empresa.com
+                    <span className="fw-bold">Correo de contacto: </span>
+                    {contactEmail}
                   </p>
                   <p className="card-text mt-4">
-                    <span className="fw-bold">Telefono:</span> (787) 722-2238
+                    <span className="fw-bold">Telefono:</span> {phoneNumber}
                   </p>
                   <div className="pt-5">
                     <h3 className="card-title">Productos</h3>
@@ -114,7 +140,7 @@ function PetInfo(props) {
                         className="img-hover rounded-3"
                       />
                       <div className="overlay">
-                        <a href="/productos" className="header-text">
+                        <a href="/products/productos" className="header-text">
                           Recuerda que puedes adquirir los mejores productos
                           para tu nuevo amigo, o si ya tienes mascota lo puedes
                           consentir con los mejores productos del mercado para

@@ -62,7 +62,7 @@ class App extends Component {
           <Route
             path="/petRegister"
             render={() => {
-              return <PetRegister />;
+              return <PetRegister url={url} />;
             }}
           />
           <Route
