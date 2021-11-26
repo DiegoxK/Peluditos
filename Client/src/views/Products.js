@@ -50,13 +50,14 @@ function Products(props) {
       .catch((e) => {
         console.log("error " + e);
       });
-  }, []);
+  }, [ProductCard]);
 
   const displayCards = actualProducts
     .slice(productsVisited, productsVisited + productsPerPage)
     .map((product) => {
       return (
         <ProductCard
+          url={props.url}
           key={product._id}
           id={product._id}
           img={product.img}
@@ -65,6 +66,7 @@ function Products(props) {
           description={product.descripcion}
           price={product.precio}
           stock={product.stock}
+          readCookie={props.readCookie}
         />
       );
     });

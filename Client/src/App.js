@@ -17,6 +17,23 @@ import Payment from "./views/Payment";
 // URL
 const url = "http://localhost:3001";
 
+// Cookies function
+const readCookie = (cname) => {
+  var name = cname + "=";
+  var decoded_cookie = decodeURIComponent(document.cookie);
+  var carr = decoded_cookie.split(";");
+  for (var i = 0; i < carr.length; i++) {
+    var c = carr[i];
+    while (c.charAt(0) === " ") {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) === 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+};
+
 class App extends Component {
   render() {
     return (
@@ -56,7 +73,7 @@ class App extends Component {
           <Route
             path="/adoption/:petId"
             render={() => {
-              return <PetInfo url={url} />;
+              return <PetInfo readCookie={readCookie} url={url} />;
             }}
           />
           <Route
@@ -68,7 +85,7 @@ class App extends Component {
           <Route
             path="/products/:productId"
             render={() => {
-              return <Products url={url} />;
+              return <Products readCookie={readCookie} url={url} />;
             }}
           />
           <Route
