@@ -1,5 +1,3 @@
-import React, { useState } from "react";
-
 // Assets
 import Logo from "../assets/images/Header/Logo.png";
 
@@ -20,11 +18,10 @@ const readCookie = (cname) => {
 };
 
 function Header() {
-  const [check, setCheck] = useState(readCookie("check"));
+  const check = readCookie("check");
 
   const userName = readCookie("nombre");
   const userType = readCookie("userType");
-  const adopcion = readCookie("adopcion");
 
   const deleteAllCookies = () => {
     var cookies = document.cookie.split(";");
@@ -175,7 +172,7 @@ function Header() {
                   </li>
                 </div>
               )}
-              {check != "true" && (
+              {check !== "true" && (
                 <>
                   <li className="nav-item">
                     <a href="/login">

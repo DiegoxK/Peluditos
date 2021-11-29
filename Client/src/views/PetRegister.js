@@ -1,4 +1,4 @@
-import React, { Component, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 
 // Assets
@@ -326,7 +326,11 @@ function PetRegister(props) {
               </label>
             </div>
             <div className="d-flex justify-content-start mt-3">
-              <a target="_blank" href="https://www.embedgooglemap.net/">
+              <a
+                target="_blank"
+                rel="noreferrer"
+                href="https://www.embedgooglemap.net/"
+              >
                 Referencia
               </a>
             </div>

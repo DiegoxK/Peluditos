@@ -581,6 +581,7 @@ function PetInfo(props) {
                         <div className="d-flex justify-content-start mt-3">
                           <a
                             target="_blank"
+                            rel="noreferrer"
                             href="https://www.embedgooglemap.net/"
                           >
                             Referencia

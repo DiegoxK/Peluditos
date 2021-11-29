@@ -4,7 +4,6 @@ function PetCard(props) {
   const id = props.id;
   const img = props.img;
   const name = props.name;
-  const age = props.age;
   const description = props.description;
 
   return (

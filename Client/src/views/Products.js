@@ -50,7 +50,7 @@ function Products(props) {
       .catch((e) => {
         console.log("error " + e);
       });
-  }, [ProductCard]);
+  }, []);
 
   const displayCards = actualProducts
     .slice(productsVisited, productsVisited + productsPerPage)
@@ -97,7 +97,6 @@ function Products(props) {
             <div className="dropdown ms-5 py-3">
               <button
                 className="btn btn-secondary dropdown-toggle"
-                role="button"
                 id="dropdownMenuLink"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
