@@ -25,17 +25,6 @@ export default class Register extends Component {
     axios
       .post(this.props.url + "/api/user", this.parseInfo(this.state))
       .then(() => {
-        this.setState({
-          nombre: "",
-          apellido: "",
-          telefono: "",
-          tipoDeCasa: "",
-          mascota: "",
-          edadMascota: "",
-          castrada: "",
-          correoElectronico: "",
-          contraseña: "",
-        });
         window.location.href = "/login";
       })
       .catch((e) => {
@@ -96,6 +85,7 @@ export default class Register extends Component {
             </h1>
             <div className="form-floating mt-5">
               <input
+                required
                 type="text"
                 name="nombre"
                 onChange={this.onChange}
@@ -108,6 +98,7 @@ export default class Register extends Component {
             </div>
             <div className="form-floating mt-3">
               <input
+                required
                 type="text"
                 className="form-control"
                 name="apellido"
@@ -120,6 +111,7 @@ export default class Register extends Component {
             </div>
             <div className="form-floating mt-3">
               <input
+                required
                 type="email"
                 className="form-control"
                 name="correoElectronico"
@@ -132,6 +124,7 @@ export default class Register extends Component {
             </div>
             <div className="form-floating mt-3">
               <input
+                required
                 type="tel"
                 name="telefono"
                 className="form-control"
@@ -145,6 +138,7 @@ export default class Register extends Component {
             <hr className="my-4" />
             <div className="mt-3">
               <select
+                required
                 className="form-select py-2"
                 name="tipoDeCasa"
                 onChange={this.onChange}
@@ -160,6 +154,7 @@ export default class Register extends Component {
             </div>
             <div className="mt-3">
               <select
+                required
                 className="form-select py-2"
                 name="mascota"
                 onChange={this.onChange}
@@ -179,6 +174,7 @@ export default class Register extends Component {
                     <p className="mt-3 fs-4 fw-bold text-primary">Edad</p>
                     <div className="col-6">
                       <input
+                        required
                         name="edadMascota"
                         onChange={this.onChange}
                         value={this.state.edadMascota}
@@ -189,6 +185,7 @@ export default class Register extends Component {
                     </div>
                     <div className="col-6">
                       <input
+                        required
                         type="number"
                         className="form-control py-2"
                         placeholder="Meses"
@@ -197,6 +194,7 @@ export default class Register extends Component {
                   </div>
                   <div className="mt-3">
                     <select
+                      required
                       className="form-select py-2"
                       placeholder="name@example.com"
                       name="castrada"
@@ -217,6 +215,7 @@ export default class Register extends Component {
             <hr className="my-4" />
             <div className="form-floating my-3">
               <input
+                required
                 type="password"
                 className="form-control"
                 name="contraseña"
@@ -233,7 +232,7 @@ export default class Register extends Component {
           </form>
           <div className="mt-3">
             <a href="/login" className="text-dark">
-              Ya tienes cuenta?
+              ¿Ya tienes cuenta?
             </a>
           </div>
         </main>

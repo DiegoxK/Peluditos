@@ -11,6 +11,8 @@ import Footer from "../components/Footer";
 
 function PetInfo(props) {
   const userType = props.readCookie("userType");
+  const adopcion = props.readCookie("adopcion");
+  const userEmail = props.readCookie("userEmail");
 
   const { petId } = useParams();
 
@@ -86,7 +88,7 @@ function PetInfo(props) {
     axios
       .delete(`${props.url}/api/pet/${petId}`)
       .then(() => {
-        window.location.href = "/";
+        window.location.href = "/adoptions";
       })
       .catch((e) => {
         console.log(e.response);
@@ -162,27 +164,40 @@ function PetInfo(props) {
                       <img src={data.img} alt="Pet" />
                     </div>
                     {userType === "admin" && (
-                      <div className="d-flex justify-content-center">
+                      <div className="d-flex mt-3 justify-content-center">
                         <button
                           type="button"
-                          className="card mt-4 btn btn-danger"
-                          onClick={() => {
-                            deletePet(data.id);
-                          }}
+                          className="card mt-3 btn btn-danger"
+                          data-bs-toggle="modal"
+                          data-bs-target="#alertModal"
                         >
                           Eliminar mascota
                         </button>
                       </div>
                     )}
                     <div className="d-flex justify-content-center">
-                      <a href="#">
+                      {adopcion === "true" && (
                         <button
                           type="button"
                           className="card mt-4 btn btn-primary"
+                          data-bs-toggle="modal"
+                          data-bs-target="#adopcionModal"
                         >
                           ¡Darse a conocer!
                         </button>
-                      </a>
+                      )}
+
+                      {adopcion !== "true" && (
+                        <button
+                          type="button"
+                          className="card mt-4 btn btn-primary"
+                          data-bs-toggle="modal"
+                          data-bs-target="#registerModal"
+                        >
+                          ¡Darse a conocer!
+                        </button>
+                      )}
+
                       {userType === "admin" && (
                         <button
                           type="button"
@@ -228,6 +243,169 @@ function PetInfo(props) {
                             </a>
                           </div>
                         </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* Adopcion Modal */}
+                <div
+                  className="modal fade"
+                  id="adopcionModal"
+                  tabIndex={-1}
+                  aria-labelledby="adopcionModalLabel"
+                  aria-hidden="true"
+                >
+                  <div className="modal-dialog">
+                    <div className="modal-content bg-secondary">
+                      <div className="modal-header">
+                        <h5
+                          className="modal-title text-primary fw-bold"
+                          id="adopcionModalLabel"
+                        >
+                          ¡Gracias!
+                        </h5>
+                        <button
+                          type="button"
+                          className="btn-close"
+                          data-bs-dismiss="modal"
+                          aria-label="Close"
+                        />
+                      </div>
+
+                      <div className="d-flex justify-content-center">
+                        <img
+                          src="https://bestanimations.com/media/cats/868259556cute-kitty-animated-gif-35.gif"
+                          alt="Cat gif"
+                          width={250}
+                        />
+                      </div>
+                      <div className="text-center modal-body">
+                        <p className="fs-4 fw-bold">
+                          Nos contactaremos contigo con el sguiente correo:
+                        </p>
+                        <p className="fs-4">{userEmail}</p>
+                      </div>
+                      <div className="modal-footer">
+                        <button
+                          type="button"
+                          className="btn btn-secondary"
+                          data-bs-dismiss="modal"
+                        >
+                          Cerrar
+                        </button>
+                        <a href="/">
+                          <button type="button" className="btn btn-primary">
+                            Inicio
+                          </button>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* Registro Modal */}
+                <div
+                  className="modal fade"
+                  id="registerModal"
+                  tabIndex={-1}
+                  aria-labelledby="registerModalLabel"
+                  aria-hidden="true"
+                >
+                  <div className="modal-dialog">
+                    <div className="modal-content bg-secondary">
+                      <div className="modal-header">
+                        <button
+                          type="button"
+                          className="btn-close"
+                          data-bs-dismiss="modal"
+                          aria-label="Close"
+                        />
+                      </div>
+                      <div className="modal-body">
+                        <div className="d-flex justify-content-center">
+                          <img
+                            src="https://bestanimations.com/media/cats/1470871744cute-kitty-animated-gif-39.gif"
+                            alt="Cat gif"
+                            width={150}
+                          />
+                        </div>
+                        <div className="text-center modal-body">
+                          <p className="fs-4 fw-bold">
+                            Para continuar con el proceso de adopcion debes
+                            registrarte
+                          </p>
+                          <a href="/registro">
+                            <button type="button" className="btn btn-primary">
+                              Registrarse
+                            </button>
+                          </a>
+                          <p className="fs-4">{userEmail}</p>
+                        </div>
+                      </div>
+                      <div className="modal-footer">
+                        <button
+                          type="button"
+                          className="btn btn-secondary"
+                          data-bs-dismiss="modal"
+                        >
+                          Cerrar
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* Alert Modal */}
+                <div
+                  className="modal fade"
+                  id="alertModal"
+                  tabIndex={-1}
+                  aria-labelledby="alertModalLabel"
+                  aria-hidden="true"
+                >
+                  <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-content">
+                      <div className="modal-header">
+                        <h5
+                          className="modal-title fw-bold"
+                          id="alertModalLabel"
+                        >
+                          Eliminar mascota
+                        </h5>
+                        <button
+                          type="button"
+                          className="btn-close"
+                          data-bs-dismiss="modal"
+                          aria-label="Close"
+                        />
+                      </div>
+                      <div className="modal-body text-center">
+                        <div className="d-flex justify-content-center">
+                          <img
+                            src="https://vignette.wikia.nocookie.net/vsbattles/images/2/20/Annoying_Dog.gif/revision/latest?cb=20151208061831"
+                            alt="Cat gif"
+                            width={100}
+                          />
+                        </div>
+                        <p className="fw-bold fs-3">
+                          ¿Seguro desea eliminar la mascota?
+                        </p>
+                      </div>
+                      <div className="modal-footer">
+                        <button
+                          type="button"
+                          className="btn btn-secondary"
+                          data-bs-dismiss="modal"
+                        >
+                          Cerrar
+                        </button>
+                        <button
+                          onClick={() => {
+                            deletePet(petId);
+                          }}
+                          type="button"
+                          className="btn btn-danger"
+                        >
+                          Eliminar
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -464,14 +642,6 @@ function PetInfo(props) {
                         </div>
                       </div>
                       <div className="d-flex justify-content-center">
-                        <a href="#">
-                          <button
-                            type="button"
-                            className="card mt-4 btn btn-primary"
-                          >
-                            ¡Darse a conocer!
-                          </button>
-                        </a>
                         <button
                           type="submit"
                           className="card ms-2 mt-4 btn btn-warning"

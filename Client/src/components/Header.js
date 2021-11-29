@@ -149,6 +149,11 @@ function Header() {
                         Registrar Mascota
                       </a>
                     </li>
+                    <li>
+                      <a className="dropdown-item" href="/productRegister">
+                        Registrar Productos
+                      </a>
+                    </li>
                   </ul>
                 </li>
               )}

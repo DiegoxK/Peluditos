@@ -93,7 +93,7 @@ export default class Servicios extends Component {
                     peluditos esperan por tí, de seguro hay uno que se quedatá
                     en tu corazón y en tu alma.
                   </p>
-                  <a href="/adoption">
+                  <a href="/adoptions">
                     <button
                       type="button"
                       className="btn btn-primary ms-custom text-secondary"

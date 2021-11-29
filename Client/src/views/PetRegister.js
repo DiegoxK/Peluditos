@@ -89,6 +89,7 @@ function PetRegister(props) {
             </h1>
             <div className="form-floating mt-3">
               <input
+                required
                 type="text"
                 name="nombre"
                 onChange={onChange}
@@ -105,6 +106,7 @@ function PetRegister(props) {
               <p className="mt-3 fs-4 fw-bold text-primary">Edad</p>
               <div className="col-6">
                 <input
+                  required
                   type="number"
                   name="edadAñosMascota"
                   onChange={onChange}
@@ -115,6 +117,7 @@ function PetRegister(props) {
               </div>
               <div className="col-6">
                 <input
+                  required
                   type="number"
                   name="edadMesesMascota"
                   onChange={onChange}
@@ -128,6 +131,7 @@ function PetRegister(props) {
               <div className="col-6">
                 <p className="mt-3 fs-4 fw-bold text-primary">Genero</p>
                 <select
+                  required
                   name="genero"
                   onChange={onChange}
                   value={data.genero}
@@ -143,6 +147,7 @@ function PetRegister(props) {
               <div className="col-6">
                 <p className="mt-3 fs-4 fw-bold text-primary">Tamaño</p>
                 <select
+                  required
                   name="tamaño"
                   onChange={onChange}
                   value={data.tamaño}
@@ -161,6 +166,7 @@ function PetRegister(props) {
               <div className="col-6">
                 <p className="mt-3 fs-4 fw-bold text-primary">Castrado</p>
                 <select
+                  required
                   name="castrado"
                   onChange={onChange}
                   value={data.castrado}
@@ -176,6 +182,7 @@ function PetRegister(props) {
               <div className="col-6">
                 <p className="mt-3 fs-4 fw-bold text-primary">Vacunas</p>
                 <select
+                  required
                   name="vacunado"
                   onChange={onChange}
                   value={data.vacunado}
@@ -194,6 +201,7 @@ function PetRegister(props) {
               <div className="col-6">
                 <p className="fs-4 fw-bold text-primary">Niños</p>
                 <select
+                  required
                   name="niños"
                   onChange={onChange}
                   value={data.niños}
@@ -209,6 +217,7 @@ function PetRegister(props) {
               <div className="col-6">
                 <p className="fs-4 fw-bold text-primary">Mascotas</p>
                 <select
+                  required
                   name="otrasMascotas"
                   onChange={onChange}
                   value={data.otrasMascotas}
@@ -224,6 +233,7 @@ function PetRegister(props) {
             </div>
             <div className="mt-3 form-floating">
               <textarea
+                required
                 className="form-control"
                 name="descripcion"
                 onChange={onChange}
@@ -231,7 +241,6 @@ function PetRegister(props) {
                 placeholder="Leave a comment here"
                 id="floatingTextarea2"
                 style={{ height: 100 }}
-                defaultValue={""}
               />
               <label className="text-muted" htmlFor="floatingTextarea2">
                 Descripcion
@@ -240,6 +249,8 @@ function PetRegister(props) {
 
             <div className="mt-3 form-floating">
               <textarea
+                required
+                type="url"
                 className="form-control"
                 name="img"
                 onChange={onChange}
@@ -247,7 +258,6 @@ function PetRegister(props) {
                 placeholder="Leave a comment here"
                 id="floatingTextarea2"
                 style={{ height: 200 }}
-                defaultValue={""}
               />
               <label className="text-muted" htmlFor="floatingTextarea2">
                 Imagen (Link)
@@ -256,6 +266,7 @@ function PetRegister(props) {
             <p className="mt-3 fs-4 fw-bold text-primary">Contacto</p>
             <div className="form-floating mt-3">
               <input
+                required
                 type="text"
                 name="direccion"
                 onChange={onChange}
@@ -270,6 +281,7 @@ function PetRegister(props) {
             </div>
             <div className="form-floating mt-3">
               <input
+                required
                 type="email"
                 name="correoDeContacto"
                 onChange={onChange}
@@ -284,6 +296,7 @@ function PetRegister(props) {
             </div>
             <div className="form-floating mt-3">
               <input
+                required
                 type="tel"
                 name="telefono"
                 onChange={onChange}
@@ -299,6 +312,7 @@ function PetRegister(props) {
             <hr className="my-4" />
             <div className="mt-3 form-floating">
               <textarea
+                required
                 className="form-control"
                 name="localizacion"
                 onChange={onChange}
@@ -306,7 +320,6 @@ function PetRegister(props) {
                 placeholder="Leave a comment here"
                 id="floatingTextarea2"
                 style={{ height: 100 }}
-                defaultValue={""}
               />
               <label className="text-muted" htmlFor="floatingTextarea2">
                 Ubicacion (Google Link)
