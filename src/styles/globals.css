@@ -11,6 +11,8 @@
 
 body {
   background-image: url("/background/geometric-leaves.png");
+  background-repeat: repeat;
+  background-size: 15em;
 }
 
 @theme inline {
