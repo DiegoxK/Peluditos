@@ -17,6 +17,9 @@
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.9.1",
+    "@radix-ui/react-dialog": "^1.1.13",
+    "@radix-ui/react-separator": "^1.1.6",
+    "@radix-ui/react-slot": "^1.2.2",
     "@t3-oss/env-nextjs": "^0.12.0",
     "@tanstack/react-query": "^5.69.0",
     "@trpc/client": "^11.0.0",
@@ -33,6 +36,7 @@
     "server-only": "^0.0.1",
     "superjson": "^2.2.1",
     "tailwind-merge": "^3.3.0",
+    "vaul": "^1.1.2",
     "zod": "^3.24.2"
   },
   "devDependencies": {
