@@ -16,6 +16,8 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
+    MONGODB_URI: z.string(),
+    MONGODB_DATABASE_NAME: z.string(),
   },
 
   /**
@@ -36,6 +38,8 @@ export const env = createEnv({
     AUTH_DISCORD_ID: process.env.AUTH_DISCORD_ID,
     AUTH_DISCORD_SECRET: process.env.AUTH_DISCORD_SECRET,
     NODE_ENV: process.env.NODE_ENV,
+    MONGODB_URI: process.env.MONGODB_URI,
+    MONGODB_DATABASE_NAME: process.env.MONGODB_DATABASE_NAME,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**
