@@ -5,15 +5,15 @@ interface NavigationLink {
 
 export const navigation: NavigationLink[] = [
   {
-    label: "home",
+    label: "Inicio",
     href: "/",
   },
   {
-    label: "about",
+    label: "Acerca",
     href: "/about",
   },
   {
-    label: "products",
+    label: "productos",
     href: "/products",
   },
 ];
