@@ -101,7 +101,7 @@ const Footer = () => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="text-secondary mt-10 border-t pt-10 text-center text-sm">
+      <div className="mt-10 border-t pt-10 text-center text-sm text-white">
         © {new Date().getFullYear()} Proyecto Peluditos.
       </div>
     </footer>
