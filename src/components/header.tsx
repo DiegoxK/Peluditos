@@ -12,7 +12,7 @@ export default function Header() {
             href="/"
             className="text-primary flex items-center gap-2 font-semibold"
           >
-            <Logo className="fill-primary" width={36} height={36} />
+            <Logo className="fill-primary" width={40} height={40} />
             <span className="text-2xl font-bold">Peluditos</span>
           </NavLink>
           <MainNav />
