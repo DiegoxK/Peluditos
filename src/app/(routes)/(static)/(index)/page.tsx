@@ -1,5 +1,8 @@
 import Header from "@/components/header";
 import HeroCarousel from "./_components/hero-carousel";
+import Services from "./_components/services";
+import News from "./_components/news";
+import Team from "./_components/team";
 
 export default function Home() {
   return (
@@ -21,6 +24,9 @@ export default function Home() {
       <h2 className="bg-primary w-full py-8 text-center text-3xl font-medium text-white">
         NUESTROS SERVICIOS!
       </h2>
+      <Services />
+      <News />
+      <Team />
     </main>
   );
 }
