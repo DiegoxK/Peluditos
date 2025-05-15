@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export default function News() {
   return (
-    <section className="bg-primary mt-4">
+    <section className="bg-primary">
       <div className="container mx-auto flex items-center justify-center space-y-10 py-10">
         <div className="flex">
           {/* New 1 */}
