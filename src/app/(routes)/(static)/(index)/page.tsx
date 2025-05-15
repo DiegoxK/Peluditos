@@ -25,6 +25,9 @@ export default function Home() {
         NUESTROS SERVICIOS!
       </h2>
       <Services />
+      <h2 className="bg-primary w-full py-8 text-center text-3xl font-medium text-white">
+        NOTICIAS!
+      </h2>
       <News />
       <Team />
     </main>
