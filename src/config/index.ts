@@ -13,6 +13,10 @@ export const navigation: NavigationLink[] = [
     href: "/about",
   },
   {
+    label: "Adopciones",
+    href: "/adopt",
+  },
+  {
     label: "productos",
     href: "/products",
   },
