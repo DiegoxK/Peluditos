@@ -25,7 +25,7 @@ export default function HeroCarousel() {
     >
       <CarouselContent>
         <CarouselItem className="pl-0">
-          <Image src={carousel1} alt="" />
+          <Image priority src={carousel1} alt="" />
         </CarouselItem>
         <CarouselItem className="pl-0">
           <Image src={carousel2} alt="" />
