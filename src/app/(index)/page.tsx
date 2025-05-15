@@ -8,7 +8,7 @@ export default function Home() {
       <div className="relative">
         <HeroCarousel />
         <div className="absolute top-0 flex h-full w-full items-center bg-black/50 px-50">
-          <div className="space-y-15 text-white text-shadow-lg">
+          <div className="space-y-15 font-medium text-white text-shadow-lg">
             <p className="text-4xl">
               PELUDITOS! Es un proyecto que consiste en apoyar fundaciónes dónde
               se impulse la adopción de perros o gatos.
@@ -18,6 +18,9 @@ export default function Home() {
             </p>
           </div>
         </div>
+      </div>
+      <div className="bg-primary w-full py-4 text-center font-semibold text-white">
+        NUESTROS SERVICIOS!
       </div>
     </div>
   );
