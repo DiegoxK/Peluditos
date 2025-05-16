@@ -1,9 +1,10 @@
 import { ObjectId } from "mongodb";
 import { z } from "zod";
 
-// export const PostSchema = z.object({
-//   _id: z.instanceof(ObjectId).optional(),
-//   name: z.string(),
-//   createdAt: z.date(),
-//   userId: z.string(),
-// });
+export const UserSchema = z.object({
+  _id: z.instanceof(ObjectId).optional(),
+  name: z.string(),
+  email: z.string().email(),
+  image: z.string().optional(),
+  emailVerified: z.date().optional(),
+});
