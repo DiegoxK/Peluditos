@@ -1,8 +1,20 @@
 import { type DefaultSession, type NextAuthConfig } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
 
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
-import client, { DB_NAME } from "@/server/db";
+import client, { db, DB_NAME } from "@/server/db";
+import EmailProvider from "next-auth/providers/email";
+import { env } from "@/env";
+
+import type { z } from "zod";
+import { cookies } from "next/headers";
+
+import {
+  sendVerificationRequest,
+  generateVerificationToken,
+} from "@/lib/email-config";
+import type { UserSchema } from "../db/schema";
+
+type User = z.infer<typeof UserSchema>;
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -31,11 +43,85 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authConfig = {
+  pages: {
+    signIn: "/auth/login",
+    error: "/auth/error", // Error code passed in query string as ?error=
+    verifyRequest: "/auth/verify-request", // (used for check email message)
+  },
+  callbacks: {
+    signIn: async ({ user, account }) => {
+      console.log(user, account);
+
+      if (account) {
+        const accountProvider = account.provider;
+
+        console.log(accountProvider);
+
+        // If the user is signing in with another provider, redirect them the provider sign in
+        if (accountProvider !== "email") {
+          return true;
+        }
+
+        /**  If the user is signing in with email, check if the email exists in the User db
+         *@see https://next-auth.js.org/providers/email#sending-magic-links-to-existing-users
+         */
+
+        const userEmail = user.email;
+
+        if (userEmail) {
+          const user = await db
+            .collection<User>("users")
+            .find({})
+            .limit(1)
+            .toArray();
+
+          const userExist = user.some((user) => user.email === userEmail);
+
+          console.log(userExist);
+
+          if (userExist) {
+            const cookieStore = await cookies();
+
+            cookieStore.set({
+              name: "otp-email",
+              value: userEmail,
+              maxAge: 10 * 60,
+              sameSite: "lax",
+            });
+            return true; //if the email exists in the User schema, email them a magic code link
+          }
+          return `/auth/login?error=${userEmail}`; //if the email does not exist in the User schema, redirect to login showing an email error
+        }
+      }
+      return false; // Return false to display a default error message
+    },
+    session: ({ session, user }) => ({
+      ...session,
+      user: {
+        ...session.user,
+        id: user.id,
+      },
+    }),
+  },
   adapter: MongoDBAdapter(client, {
     databaseName: DB_NAME,
   }),
   providers: [
-    DiscordProvider,
+    EmailProvider({
+      server: {
+        host: env.EMAIL_SERVER_HOST,
+        port: env.EMAIL_SERVER_PORT,
+        auth: {
+          user: env.EMAIL_SERVER_USER,
+          pass: env.EMAIL_SERVER_PASSWORD,
+        },
+      },
+      from: env.EMAIL_FROM,
+      maxAge: 10 * 60, // 10 minutes
+      sendVerificationRequest,
+      generateVerificationToken,
+    }),
+
     /**
      * ...add more providers here.
      *
@@ -46,13 +132,4 @@ export const authConfig = {
      * @see https://next-auth.js.org/providers/github
      */
   ],
-  callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
-  },
 } satisfies NextAuthConfig;
