@@ -87,7 +87,7 @@ body {
   --chart-4: oklch(0.8 0.18 90);
   --chart-5: oklch(0.72 0.16 70);
 
-  --sidebar: oklch(0.97 0.005 180);
+  --sidebar: oklch(0.97 0.0044 179.73 / 0.7);
   --sidebar-foreground: oklch(0.17 0.005 150);
   --sidebar-primary: oklch(0.44 0.15 175);
   --sidebar-primary-foreground: oklch(0.98 0.015 175);
