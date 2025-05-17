@@ -1,5 +1,3 @@
-import { Cat, PackageSearch, ShieldUser } from "lucide-react";
-
 import {
   Sidebar,
   SidebarContent,
@@ -9,40 +7,17 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuBadge,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSkeleton,
-  SidebarRail,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 
-import Link from "next/link";
-import { NavUser } from "./sidebar/nav-user";
+import { NavUser } from "../../../../components/sidebar/nav-user";
 import { Logo } from "@/assets/vectors";
+import SidebarNavigation from "./sidebar-navigation";
 
 const user = {
   name: "John Doe",
   email: "johndoe@example.com",
 };
-
-const items = [
-  {
-    title: "Pets",
-    url: "#",
-    icon: Cat,
-  },
-  {
-    title: "Productos",
-    url: "#",
-    icon: PackageSearch,
-  },
-  {
-    title: "Admins",
-    url: "#",
-    icon: ShieldUser,
-  },
-];
 
 export function AppSidebar() {
   return (
@@ -66,22 +41,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {Array.from({ length: 3 }).map((_, index) => (
-                <SidebarMenuItem key={index}>
-                  <SidebarMenuSkeleton showIcon />
-                </SidebarMenuItem>
-              ))}
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                  <SidebarMenuBadge>24</SidebarMenuBadge>
-                </SidebarMenuItem>
-              ))}
+              <SidebarNavigation />
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
