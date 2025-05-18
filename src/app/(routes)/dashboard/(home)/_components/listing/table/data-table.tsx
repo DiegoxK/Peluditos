@@ -29,10 +29,18 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, Download, Filter, Plus } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  Download,
+  Filter,
+  Plus,
+} from "lucide-react";
 
 interface DataTableProps<TData extends Pet, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -173,6 +181,29 @@ export function DataTable<TData extends Pet, TValue>({
               >
                 Nombre (Z-A)
               </DropdownMenuItem>
+              <div className="mx-2">
+                <DropdownMenuSeparator />
+              </div>
+
+              <DropdownMenuItem
+                className="group"
+                onClick={() =>
+                  table.setSorting([{ id: "status", desc: false }])
+                }
+              >
+                Estado (
+                <ArrowUp className="text-black group-focus:text-white" />)
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="group"
+                onClick={() => table.setSorting([{ id: "status", desc: true }])}
+              >
+                Estado ({" "}
+                <ArrowDown className="text-black group-focus:text-white" />)
+              </DropdownMenuItem>
+              <div className="mx-2">
+                <DropdownMenuSeparator />
+              </div>
               <DropdownMenuItem
                 onClick={() => table.setSorting([{ id: "age", desc: false }])}
               >
@@ -183,6 +214,9 @@ export function DataTable<TData extends Pet, TValue>({
               >
                 Edad (mayor a menor)
               </DropdownMenuItem>
+              <div className="mx-2">
+                <DropdownMenuSeparator />
+              </div>
               <DropdownMenuItem
                 onClick={() =>
                   table.setSorting([{ id: "entryDate", desc: true }])
