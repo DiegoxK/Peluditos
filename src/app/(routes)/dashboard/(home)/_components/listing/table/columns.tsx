@@ -5,6 +5,19 @@ import type { Pet } from "@/server/db/schema";
 import type { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
 
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return "";
+  try {
+    const date = new Date(dateStr);
+    return format(date, "dd/MM/yyyy", { locale: es });
+  } catch (error) {
+    return dateStr;
+  }
+};
+
 export const columns: ColumnDef<Pet>[] = [
   {
     accessorKey: "image",
@@ -51,6 +64,14 @@ export const columns: ColumnDef<Pet>[] = [
   {
     accessorKey: "age",
     header: "Edad",
+    cell: ({ row }) => {
+      const { age } = row.original;
+      return (
+        <span>
+          {age} {age === 1 ? "año" : "años"}
+        </span>
+      );
+    },
     enableGlobalFilter: false,
   },
   {
@@ -81,6 +102,10 @@ export const columns: ColumnDef<Pet>[] = [
   {
     accessorKey: "entryDate",
     header: "Fecha Ingreso",
+    cell: ({ row }) => {
+      const { entryDate } = row.original;
+      return <span>{formatDate(entryDate)}</span>;
+    },
     enableGlobalFilter: false,
   },
 ];
