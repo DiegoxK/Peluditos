@@ -9,6 +9,15 @@
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
+::selection {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+::-moz-selection {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
 body {
   background-image: url("/background/geometric-leaves.png");
   background-repeat: repeat;
