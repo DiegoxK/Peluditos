@@ -15,7 +15,7 @@ export const PetSchema = z.object({
   specie: z.string(),
   breed: z.string(),
   age: z.number(),
-  status: z.enum(["adoptado", "disponible"]),
+  status: z.enum(["adoptado", "disponible", "en tratamiento"]),
   image: z.string(),
   entryDate: z.string(),
   description: z.string(),
