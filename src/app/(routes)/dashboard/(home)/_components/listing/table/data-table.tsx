@@ -40,6 +40,7 @@ import {
   Download,
   Filter,
   Plus,
+  Search,
 } from "lucide-react";
 
 interface DataTableProps<TData extends Pet, TValue> {
@@ -275,7 +276,7 @@ export function DataTable<TData extends Pet, TValue>({
                   </TableHead>
                 );
               })}
-              <TableHead className="flex items-center justify-end font-semibold">
+              <TableHead className="mr-5 flex items-center justify-end font-semibold">
                 Acciones
               </TableHead>
             </TableRow>
@@ -293,7 +294,10 @@ export function DataTable<TData extends Pet, TValue>({
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
-                <TableCell className="mt-1 mr-4 flex items-center justify-end">
+                <TableCell className="mt-1 mr-4 flex items-center justify-end gap-2">
+                  <Button variant="ghost" size="icon">
+                    <Search className="size-4" />
+                  </Button>
                   <DataTableActions pet={row.original} />
                 </TableCell>
               </TableRow>
