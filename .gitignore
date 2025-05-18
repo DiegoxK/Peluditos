@@ -44,3 +44,6 @@ yarn-error.log*
 
 # idea files
 .idea
+
+# testing route
+src/app/\(routes\)/dashboard/test/page.tsx
