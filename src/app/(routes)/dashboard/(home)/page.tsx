@@ -3,6 +3,7 @@ import { api } from "@/trpc/server";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PetListing from "./_components/listing";
+import PetStats from "./_components/stats";
 
 export default async function Pets() {
   const data = await api.pet.getAllPets();
@@ -28,6 +29,9 @@ export default async function Pets() {
 
         <TabsContent value="listado" className="space-y-4">
           <PetListing pets={data} />
+        </TabsContent>
+        <TabsContent value="estadisticas" className="space-y-4">
+          <PetStats pets={data} />
         </TabsContent>
       </Tabs>
     </div>
