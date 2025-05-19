@@ -40,7 +40,7 @@ export const DialogProvider = ({ children }: { children: ReactNode }) => {
     <DialogContext.Provider value={{ openDialog, closeDialog }}>
       {children}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[80vh]">
           <DialogHeader>
             {dialogContent.title && (
               <DialogTitle>{dialogContent.title}</DialogTitle>
