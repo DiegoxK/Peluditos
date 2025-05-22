@@ -29,7 +29,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { useDialog } from "@/context/dialog-provider";
 import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 
 const formSchema = z.object({
@@ -92,8 +91,6 @@ const formSchema = z.object({
 });
 
 export default function CreatePetForm() {
-  const { openDialog, closeDialog } = useDialog();
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
