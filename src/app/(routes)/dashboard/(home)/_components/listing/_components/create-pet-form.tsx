@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { DialogClose, DialogFooter } from "@/components/ui/dialog";
+import type { Pet } from "@/server/db/schema";
 
 const formSchema = z.object({
   name: z
@@ -90,27 +91,39 @@ const formSchema = z.object({
   }),
 });
 
-export default function CreatePetForm() {
+interface CreatePetFormProps {
+  pet?: Pet;
+}
+
+export default function CreatePetForm({ pet }: CreatePetFormProps) {
+  const isEditMode = Boolean(pet);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      specie: "",
-      breed: "",
-      age: 0,
-      status: "disponible",
-      image: "",
-      entryDate: new Date(),
-      description: "",
-      gender: "Macho",
-      weight: 1,
-      vaccinated: false,
-      sterilized: false,
+      name: pet?.name ?? "",
+      specie: pet?.specie ?? "",
+      breed: pet?.breed ?? "",
+      age: pet?.age ?? 0,
+      status: pet?.status ?? "disponible",
+      image: pet?.image ?? "",
+      entryDate: pet?.entryDate ? new Date(pet.entryDate) : new Date(),
+      description: pet?.description ?? "",
+      gender: pet?.gender ?? "Macho",
+      weight: pet?.weight ?? 1,
+      vaccinated: pet?.vaccinated ?? false,
+      sterilized: pet?.sterilized ?? false,
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    if (isEditMode) {
+      console.log("Updating pet:", { id: pet?._id, ...values });
+      // await updatePet.mutateAsync({ id: pet.id, ...values })
+    } else {
+      console.log("Creating new pet:", values);
+      // await createPet.mutateAsync(values)
+    }
   }
 
   return (
@@ -351,7 +364,7 @@ export default function CreatePetForm() {
         </div>
 
         <DialogFooter className="mt-4">
-          <Button type="submit">Guardar</Button>
+          <Button type="submit">{isEditMode ? "Actualizar" : "Guardar"}</Button>
 
           <DialogClose asChild>
             <Button variant="outline">Cancelar</Button>
