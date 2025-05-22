@@ -12,7 +12,7 @@ import {
 type DialogOptions = {
   title?: string;
   description?: string;
-  content?: ReactNode;
+  content?: () => ReactNode;
 };
 
 type DialogContextType = {
@@ -33,14 +33,18 @@ export const DialogProvider = ({ children }: { children: ReactNode }) => {
 
   const closeDialog = () => {
     setIsOpen(false);
-    setDialogContent({});
+
+    // Delay unmounting until after dialog transition ends
+    setTimeout(() => {
+      setDialogContent({});
+    }, 200); // Match Dialog exit animation duration
   };
 
   return (
     <DialogContext.Provider value={{ openDialog, closeDialog }}>
       {children}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-h-[80vh]">
+        <DialogContent className="max-h-[90vh]">
           <DialogHeader>
             {dialogContent.title && (
               <DialogTitle>{dialogContent.title}</DialogTitle>
@@ -49,7 +53,7 @@ export const DialogProvider = ({ children }: { children: ReactNode }) => {
               <DialogDescription>{dialogContent.description}</DialogDescription>
             )}
           </DialogHeader>
-          {dialogContent.content}
+          {dialogContent.content?.()}
         </DialogContent>
       </Dialog>
     </DialogContext.Provider>
