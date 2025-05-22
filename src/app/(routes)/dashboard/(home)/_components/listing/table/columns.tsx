@@ -1,22 +1,10 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { formatDate } from "@/lib/utils";
 import type { Pet } from "@/server/db/schema";
 import type { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
-
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
-
-const formatDate = (dateStr: string) => {
-  if (!dateStr) return "";
-  try {
-    const date = new Date(dateStr);
-    return format(date, "dd/MM/yyyy", { locale: es });
-  } catch (error) {
-    return dateStr;
-  }
-};
 
 export const columns: ColumnDef<Pet>[] = [
   {
