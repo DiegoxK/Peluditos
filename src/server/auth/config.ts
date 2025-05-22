@@ -50,12 +50,8 @@ export const authConfig = {
   },
   callbacks: {
     signIn: async ({ user, account }) => {
-      console.log(user, account);
-
       if (account) {
         const accountProvider = account.provider;
-
-        console.log(accountProvider);
 
         // If the user is signing in with another provider, redirect them the provider sign in
         if (accountProvider !== "email") {
@@ -76,8 +72,6 @@ export const authConfig = {
             .toArray();
 
           const userExist = user.some((user) => user.email === userEmail);
-
-          console.log(userExist);
 
           if (userExist) {
             const cookieStore = await cookies();
