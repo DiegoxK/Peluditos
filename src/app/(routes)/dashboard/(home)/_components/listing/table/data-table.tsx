@@ -26,8 +26,10 @@ import { useState } from "react";
 import { useDebouncedValue } from "@/hooks/use-debounce-value";
 
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import { Pencil, Search } from "lucide-react";
 import DataTableHeader from "./data-table-header";
+import { useDialog } from "@/context/dialog-provider";
+import PetDetails from "../_components/pet-details";
 
 interface DataTableProps<TData extends Pet, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -38,6 +40,8 @@ export function DataTable<TData extends Pet, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const { openDialog } = useDialog();
+
   const [globalFilter, setGlobalFilter] = useState("");
   const [sorting, setSorting] = useState<SortingState>([]);
   const debouncedValue = useDebouncedValue(globalFilter, 500);
@@ -81,7 +85,7 @@ export function DataTable<TData extends Pet, TValue>({
                   </TableHead>
                 );
               })}
-              <TableHead className="mr-5 flex items-center justify-end font-semibold">
+              <TableHead className="mr-10 flex items-center justify-end font-semibold">
                 Acciones
               </TableHead>
             </TableRow>
@@ -100,8 +104,32 @@ export function DataTable<TData extends Pet, TValue>({
                   </TableCell>
                 ))}
                 <TableCell className="mt-1 mr-4 flex items-center justify-end gap-2">
-                  <Button variant="ghost" size="icon">
+                  <Button
+                    onClick={() =>
+                      openDialog({
+                        title: `Detalles de ${row.original.name}`,
+                        description: " Información completa de la mascota",
+                        content: () => <PetDetails pet={row.original} />,
+                      })
+                    }
+                    variant="ghost"
+                    size="icon"
+                  >
                     <Search className="size-4" />
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      openDialog({
+                        title: `Editar a ${row.original.name}`,
+                        description:
+                          "Complete los detalles de la mascota y guarde los cambios.",
+                        content: () => <PetDetails pet={row.original} />,
+                      })
+                    }
+                    variant="ghost"
+                    size="icon"
+                  >
+                    <Pencil className="size-4" />
                   </Button>
                   <DataTableActions pet={row.original} />
                 </TableCell>
