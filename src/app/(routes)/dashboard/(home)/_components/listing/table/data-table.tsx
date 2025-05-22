@@ -86,7 +86,7 @@ export function DataTable<TData extends Pet, TValue>({
                   </TableHead>
                 );
               })}
-              <TableHead className="mr-10 flex items-center justify-end font-semibold">
+              <TableHead className="mr-11 flex items-center justify-end font-semibold">
                 Acciones
               </TableHead>
             </TableRow>
