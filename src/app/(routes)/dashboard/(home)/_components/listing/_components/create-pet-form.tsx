@@ -199,8 +199,8 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="Macho">Perro</SelectItem>
-                      <SelectItem value="Hembra">Gato</SelectItem>
+                      <SelectItem value="Perro">Perro</SelectItem>
+                      <SelectItem value="Gato">Gato</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
