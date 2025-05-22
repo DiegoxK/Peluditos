@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import type { Dispatch, SetStateAction } from "react";
 import CreatePetForm from "../_components/create-pet-form";
+import { useDialog } from "@/context/dialog-provider";
 
 interface DataTableHeaderProps<TData extends Pet> {
   data: Pet[];
@@ -33,6 +34,8 @@ export default function DataTableHeader<TData extends Pet>({
   setGlobalFilter,
   table,
 }: DataTableHeaderProps<TData>) {
+  const { openDialog } = useDialog();
+
   const specieColumn = table.getColumn("specie");
   const statusColumn = table.getColumn("status");
 
@@ -51,7 +54,19 @@ export default function DataTableHeader<TData extends Pet>({
             {data.length} mascotas encontradas
           </span>
         </div>
-        <CreatePetForm />
+        <Button
+          onClick={() =>
+            openDialog({
+              title: "Nueva Mascota",
+              description:
+                "Complete los detalles de la mascota y guarde los cambios.",
+              content: () => <CreatePetForm />,
+            })
+          }
+        >
+          <Plus className="mr-2 h-4 w-4" />
+          Nueva Mascota
+        </Button>
       </div>
 
       <div className="flex w-full items-center gap-2">
