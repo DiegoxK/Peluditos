@@ -20,6 +20,7 @@ import {
 import type { Dispatch, SetStateAction } from "react";
 import CreatePetForm from "../_components/create-pet-form";
 import { useDialog } from "@/context/dialog-provider";
+import { exportToExcel } from "@/lib/utils";
 
 interface DataTableHeaderProps<TData extends Pet> {
   data: Pet[];
@@ -213,9 +214,7 @@ export default function DataTableHeader<TData extends Pet>({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => {
-              alert("export to exel");
-            }}
+            onClick={() => exportToExcel(data, "mascotas.xlsx")}
           >
             <Download className="mr-2 h-4 w-4" />
             Exportar
