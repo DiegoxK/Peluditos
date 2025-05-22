@@ -30,6 +30,7 @@ import { Pencil, Search } from "lucide-react";
 import DataTableHeader from "./data-table-header";
 import { useDialog } from "@/context/dialog-provider";
 import PetDetails from "../_components/pet-details";
+import CreatePetForm from "../_components/create-pet-form";
 
 interface DataTableProps<TData extends Pet, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -123,7 +124,7 @@ export function DataTable<TData extends Pet, TValue>({
                         title: `Editar a ${row.original.name}`,
                         description:
                           "Complete los detalles de la mascota y guarde los cambios.",
-                        content: () => <PetDetails pet={row.original} />,
+                        content: () => <CreatePetForm pet={row.original} />,
                       })
                     }
                     variant="ghost"

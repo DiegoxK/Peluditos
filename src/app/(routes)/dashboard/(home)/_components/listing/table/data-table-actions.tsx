@@ -14,6 +14,7 @@ import type { Pet } from "@/server/db/schema";
 import { ChevronDown } from "lucide-react";
 import PetDetails from "../_components/pet-details";
 import DeletePetAction from "../_components/delete-pet-action";
+import CreatePetForm from "../_components/create-pet-form";
 
 interface DataTableActionsInterface {
   pet: Pet;
@@ -35,7 +36,7 @@ export default function DataTableActions({ pet }: DataTableActionsInterface) {
           onClick={() =>
             openDialog({
               title: `Detalles de ${pet.name}`,
-              description: " Información completa de la mascota",
+              description: "Información completa de la mascota",
               content: () => <PetDetails pet={pet} />,
             })
           }
@@ -45,9 +46,10 @@ export default function DataTableActions({ pet }: DataTableActionsInterface) {
         <DropdownMenuItem
           onClick={() =>
             openDialog({
-              title: `Detalles de  ${pet.name}`,
-              description: " Información completa de la mascota",
-              content: () => <PetDetails pet={pet} />,
+              title: `Editar a ${pet.name}`,
+              description:
+                "Complete los detalles de la mascota y guarde los cambios.",
+              content: () => <CreatePetForm pet={pet} />,
             })
           }
         >
