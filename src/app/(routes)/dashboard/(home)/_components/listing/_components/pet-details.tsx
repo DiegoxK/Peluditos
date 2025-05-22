@@ -1,15 +1,19 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DialogClose, DialogFooter } from "@/components/ui/dialog";
+import { useDialog } from "@/context/dialog-provider";
 import { formatDate } from "@/lib/utils";
 import type { Pet } from "@/server/db/schema";
 import Image from "next/image";
+import CreatePetForm from "./create-pet-form";
 
 interface PetDetailsProps {
   pet: Pet;
 }
 
 export default function PetDetails({ pet }: PetDetailsProps) {
+  const { openDialog } = useDialog();
+
   return (
     <div>
       <div className="grid max-h-[60vh] gap-6 space-y-4 overflow-y-scroll py-4 ps-1 pr-2">
@@ -100,6 +104,18 @@ export default function PetDetails({ pet }: PetDetailsProps) {
         </div>
       </div>
       <DialogFooter className="mt-4">
+        <Button
+          onClick={() =>
+            openDialog({
+              title: `Editar a ${pet.name}`,
+              description:
+                "Complete los detalles de la mascota y guarde los cambios.",
+              content: () => <CreatePetForm pet={pet} />,
+            })
+          }
+        >
+          Editar
+        </Button>
         <DialogClose asChild>
           <Button variant="outline">Cerrar</Button>
         </DialogClose>
