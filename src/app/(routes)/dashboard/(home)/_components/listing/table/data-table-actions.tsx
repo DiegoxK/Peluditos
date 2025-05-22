@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { Pet } from "@/server/db/schema";
 import { ChevronDown } from "lucide-react";
+import PetDetails from "../_components/pet-details";
+import DeletePetAction from "../_components/delete-pet-action";
 
 interface DataTableActionsInterface {
   pet: Pet;
@@ -32,22 +34,33 @@ export default function DataTableActions({ pet }: DataTableActionsInterface) {
         <DropdownMenuItem
           onClick={() =>
             openDialog({
-              title: "Delete Account?",
-              description: "This action cannot be undone.",
-              content: (
-                <div className="space-y-4">
-                  <p>Are you really sure you want to delete your account?</p>
-                  <Button variant="destructive">Yes, delete it</Button>
-                </div>
-              ),
+              title: `Detalles de ${pet.name}`,
+              description: " Información completa de la mascota",
+              content: () => <PetDetails pet={pet} />,
             })
           }
         >
           Ver detalles
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => {}}>Editar</DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => {}}
+          onClick={() =>
+            openDialog({
+              title: `Detalles de  ${pet.name}`,
+              description: " Información completa de la mascota",
+              content: () => <PetDetails pet={pet} />,
+            })
+          }
+        >
+          Editar
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() =>
+            openDialog({
+              title: `Confirmar eliminación de ${pet.name}?`,
+              description: `¿Está seguro que desea eliminar a ${pet.name}? Esta acción no se puede deshacer.`,
+              content: () => <DeletePetAction pet={pet} />,
+            })
+          }
           className="text-destructive focus:text-destructive focus:bg-red-100"
         >
           Eliminar
