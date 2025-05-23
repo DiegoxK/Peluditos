@@ -81,7 +81,7 @@ export default function DataTableHeader<TData extends Pet>({
 
       <div className="flex flex-wrap items-center justify-between">
         {/* Filtrar por Especie */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
