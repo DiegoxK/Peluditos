@@ -21,6 +21,7 @@ export const env = createEnv({
     EMAIL_FROM: z.string().email(),
     MONGODB_URI: z.string(),
     MONGODB_DATABASE_NAME: z.string(),
+    UPLOADTHING_TOKEN: z.string(),
   },
 
   /**
@@ -46,6 +47,7 @@ export const env = createEnv({
     EMAIL_FROM: process.env.EMAIL_FROM,
     MONGODB_URI: process.env.MONGODB_URI,
     MONGODB_DATABASE_NAME: process.env.MONGODB_DATABASE_NAME,
+    UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**
