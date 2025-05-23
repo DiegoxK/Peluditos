@@ -26,7 +26,7 @@ export default function Header() {
   ];
 
   return (
-    <div className="bg-sidebar border-sidebar-border sticky top-0 flex items-center gap-2 border-b p-2">
+    <div className="bg-sidebar border-sidebar-border sticky top-0 z-10 flex items-center gap-2 border-b p-2">
       <SidebarTrigger />
       <span className="text-sm font-light text-gray-400">|</span>
       <span className="text-sm font-light text-gray-700">
