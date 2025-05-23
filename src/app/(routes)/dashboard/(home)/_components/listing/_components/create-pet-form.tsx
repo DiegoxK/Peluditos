@@ -129,7 +129,7 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="max-h-[60vh] space-y-4 overflow-y-scroll py-4 ps-1 pr-2">
+        <div className="max-h-[56vh] space-y-4 overflow-y-scroll py-4 ps-1 pr-2">
           <div className="flex gap-4">
             <FormField
               control={form.control}
