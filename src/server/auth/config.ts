@@ -67,7 +67,7 @@ export const authConfig = {
         if (userEmail) {
           const user = await db
             .collection<User>("users")
-            .find({})
+            .find({ email: userEmail })
             .limit(1)
             .toArray();
 
