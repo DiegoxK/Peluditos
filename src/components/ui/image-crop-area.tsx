@@ -200,7 +200,7 @@ export const ImageCropRoot: React.FC<ImageCropRootProps> = ({
       // If UI was closed (e.g. by Cancel) while re-cropping the trueOriginalFile
       setOriginalFile(null); // Clear the cropper's active image, so next "Select Image" is fresh
     }
-  }, [isCropperUIVisible, trueOriginalFile, originalFile, hasAppliedImage]); // Dependencies need care
+  }, [isCropperUIVisible, trueOriginalFile, originalFile, hasAppliedImage]);
 
   const handleFileSelect = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -283,7 +283,6 @@ export const ImageCropRoot: React.FC<ImageCropRootProps> = ({
       if (blob) {
         setCroppedBlob(blob);
         onChange(blob);
-        // trueOriginalFile remains, originalFile can be cleared as UI closes
         setOriginalFile(null);
         setLivePreviewBlob(null);
         setIsCropperUIVisible(false);
@@ -424,7 +423,7 @@ export const ImageCropHeader: React.FC<ImageCropHeaderProps> = ({
   children,
   ...props
 }) => (
-  <div className={cn("border-b p-4", className)} {...props}>
+  <div className={className} {...props}>
     {children}
   </div>
 );
@@ -528,10 +527,7 @@ export const ImageCropFooter: React.FC<ImageCropFooterProps> = ({
   children,
   ...props
 }) => (
-  <div
-    className={`image-crop-footer flex flex-wrap justify-end gap-2 border-t p-4 ${className ?? ""}`}
-    {...props}
-  >
+  <div className={cn("flex flex-wrap justify-end gap-2", className)} {...props}>
     {children}
   </div>
 );
