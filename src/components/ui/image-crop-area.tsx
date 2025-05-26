@@ -548,11 +548,11 @@ export const ImageCropApplyAction = React.forwardRef<
     onClick?.(event);
   };
   const isButtonDisabled =
-    disabled ??
-    isLoading ??
-    !currentCrop ??
-    currentCrop.width === 0 ??
-    currentCrop.height === 0;
+    (disabled ?? isLoading) ||
+    !currentCrop ||
+    (currentCrop && currentCrop.width === 0) ||
+    (currentCrop && currentCrop.height === 0);
+
   return (
     <Button
       type="button"
@@ -581,10 +581,10 @@ export const ImageCropCancelAction = React.forwardRef<
   return (
     <Button
       type="button"
-      variant="outline"
       ref={ref}
       onClick={handleClick}
       disabled={isLoading}
+      className="bg-red-500 hover:bg-red-400"
       {...props}
     >
       {children ?? "Cancel"}
@@ -607,10 +607,11 @@ export const ImageCropChangeAction = React.forwardRef<
   return (
     <Button
       type="button"
-      variant="ghost"
+      // variant="outline"
       ref={ref}
       onClick={handleClick}
       disabled={isLoading}
+      className="bg-indigo-500 hover:bg-indigo-400"
       {...props}
     >
       {children ?? "Change File"}
