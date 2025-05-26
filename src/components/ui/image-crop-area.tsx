@@ -1,4 +1,3 @@
-// src/components/ui/image-crop-area.tsx
 "use client";
 
 import React, {
@@ -14,12 +13,15 @@ import React, {
   type RefObject,
   type ChangeEvent,
 } from "react";
-import { type Crop } from "react-image-crop"; // Ensure this path is correct
-import { cropImage, type CropImageOptions } from "@/lib/utils"; // Adjust path
 
-import ReactCrop, { centerCrop, makeAspectCrop } from "react-image-crop";
+import { type Crop } from "react-image-crop";
+
+import { cn, cropImage, type CropImageOptions } from "@/lib/utils";
+
+import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { Button } from "@/components/ui/button";
+import { Image } from "lucide-react";
 
 // --- Types ---
 export interface ImageCropRootProps {
@@ -30,10 +32,8 @@ export interface ImageCropRootProps {
   maxFileSizeMB?: number;
   acceptedMimeTypes?: string[];
   outputOptions?: CropImageOptions;
-  // No initialCrop prop anymore, user draws first crop
-  // For controlled open state (optional)
   open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  onOpenChange?: Dispatch<SetStateAction<boolean>>;
 }
 
 export interface ImageCropContextType {
@@ -80,6 +80,10 @@ export const useImageCrop = () => {
 };
 
 // --- ImageCropRoot ---
+
+// aspectRatio={16 / 9} // (landscape)
+// aspectRatio={1 / 1} // (square)
+// aspectRatio={3 / 4} // (portrait)
 export const ImageCropRoot: React.FC<ImageCropRootProps> = ({
   children,
   value,
@@ -407,23 +411,20 @@ export const ImageCropContentArea: React.FC<ImageCropContentAreaProps> = ({
   const { isCropperUIVisible } = useImageCrop();
   if (!isCropperUIVisible) return null;
   return (
-    <div className={`image-crop-content-area ${className ?? ""}`} {...props}>
+    <div className={className} {...props}>
       {children}
     </div>
   );
 };
 
-// --- ImageCrop.Header, Title, Description (unchanged, simple wrappers) ---
+// --- ImageCrop.Header, Title, Description ---
 export type ImageCropHeaderProps = React.HTMLAttributes<HTMLDivElement>;
 export const ImageCropHeader: React.FC<ImageCropHeaderProps> = ({
   className,
   children,
   ...props
 }) => (
-  <div
-    className={`image-crop-header border-b p-4 ${className ?? ""}`}
-    {...props}
-  >
+  <div className={cn("border-b p-4", className)} {...props}>
     {children}
   </div>
 );
@@ -433,7 +434,7 @@ export const ImageCropTitle: React.FC<ImageCropTitleProps> = ({
   children,
   ...props
 }) => (
-  <h2 className={`text-lg font-semibold ${className ?? ""}`} {...props}>
+  <h2 className={cn("text-lg font-semibold", className)} {...props}>
     {children}
   </h2>
 );
@@ -444,17 +445,17 @@ export const ImageCropDescription: React.FC<ImageCropDescriptionProps> = ({
   children,
   ...props
 }) => (
-  <p className={`text-muted-foreground text-sm ${className ?? ""}`} {...props}>
+  <p className={cn("text-muted-foreground text-sm", className)} {...props}>
     {children}
   </p>
 );
 
 // --- ImageCrop.Cropper ---
 export interface ImageCropCropperProps {
-  imgStyle?: React.CSSProperties;
+  className?: string;
 }
 export const ImageCropCropper: React.FC<ImageCropCropperProps> = ({
-  imgStyle,
+  className,
 }) => {
   const {
     originalFileSrc,
@@ -470,33 +471,18 @@ export const ImageCropCropper: React.FC<ImageCropCropperProps> = ({
   const isCropAreaDefined =
     currentCrop && currentCrop.width > 0 && currentCrop.height > 0;
 
-  // No onImageLoad to set initial crop, user draws first.
-  // const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => { /* NO INITIAL CROP */ }
-
   if (!originalFileSrc)
     return (
-      <div className="text-muted-foreground p-4 text-center">
-        Loading image...
-      </div>
-    ); // Or some placeholder
+      <div className="text-muted-foreground p-4 text-center">Loading...</div>
+    );
 
   return (
-    <div className="image-crop-cropper-wrapper relative p-4">
-      {error && (
-        <div className="mb-2 text-sm text-red-600" role="alert">
-          {error}{" "}
-          <Button
-            type="button"
-            variant="link"
-            size="sm"
-            onClick={() => setError(null)}
-            className="ml-2 h-auto p-0"
-          >
-            Dismiss
-          </Button>
-        </div>
-      )}
+    <div className="relative rounded-md">
       <ReactCrop
+        style={{
+          display: "block",
+        }}
+        ruleOfThirds
         crop={currentCrop}
         onChange={setCurrentCrop} // Updates currentCrop continuously
         onComplete={updateLivePreview} // Updates live preview on drag/resize end
@@ -507,16 +493,28 @@ export const ImageCropCropper: React.FC<ImageCropCropperProps> = ({
           ref={imgRef}
           alt="Crop area"
           src={originalFileSrc}
-          /*onLoad={onImageLoad}*/
-          style={{ maxHeight: "60vh", ...imgStyle }}
+          className={className}
         />
       </ReactCrop>
       {!isCropAreaDefined && originalFileSrc && (
-        <div
-          className="bg-opacity-40 pointer-events-none absolute inset-0 top-4 right-4 bottom-4 left-4 flex items-center justify-center rounded-sm bg-black/40 text-sm text-white"
-          // Adjust inset to match padding of wrapper if ReactCrop image fills wrapper
-        >
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-md bg-black/50 text-sm text-white">
           Drag on image to select an area to crop
+        </div>
+      )}
+      {error && (
+        <div
+          className="absolute inset-0 z-40 flex flex-col items-center justify-center gap-2 rounded-md bg-black/50 text-red-600"
+          role="alert"
+        >
+          {error}
+          <Button
+            type="button"
+            variant="destructive"
+            size="sm"
+            onClick={() => setError(null)}
+          >
+            Dismiss
+          </Button>
         </div>
       )}
     </div>
@@ -624,53 +622,60 @@ ImageCropChangeAction.displayName = "ImageCropChangeAction";
 // --- ImageCrop.Preview ---
 export interface ImageCropPreviewProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
-  placeholder?: React.ReactNode;
   imgClassName?: string;
+  placeholder?: React.ReactNode;
   altText?: string;
 }
 export const ImageCropPreview: React.FC<ImageCropPreviewProps> = ({
-  placeholder,
-  imgClassName,
-  altText = "Image preview",
   className,
+  imgClassName,
+  placeholder,
+  altText = "Image preview",
   ...props
 }) => {
   const { livePreviewBlobUrl, croppedBlobUrl, isPreviewLoading } =
-    useImageCrop(); // Use live preview first
+    useImageCrop();
   const displayUrl = livePreviewBlobUrl ?? croppedBlobUrl;
 
   if (!displayUrl && !isPreviewLoading) {
     // Show placeholder if no URL and not loading a preview
-    if (placeholder)
-      return (
-        <div
-          className={`image-crop-preview-placeholder ${className ?? ""}`}
-          {...props}
-        >
-          {placeholder}
-        </div>
-      );
-    return null;
+    return (
+      <div
+        className={cn(
+          "text-muted flex aspect-[1/1] h-auto w-[200px] items-center justify-center rounded-lg border bg-slate-100 dark:bg-slate-800",
+          className,
+        )}
+      >
+        {/* eslint-disable-next-line jsx-a11y/alt-text */}
+        {placeholder ?? <Image className="size-12" strokeWidth={1.5} />}
+      </div>
+    );
   }
 
   return (
     <div
-      className={`image-crop-preview relative ${className ?? ""}`}
+      className={cn(
+        "text-muted flex aspect-[1/1] h-auto w-[200px] items-center justify-center rounded-lg border bg-slate-100 dark:bg-slate-800",
+        className,
+      )}
       {...props}
     >
       {isPreviewLoading &&
         !livePreviewBlobUrl &&
         !croppedBlobUrl && ( // Show loader only if no image is currently displayed
-          <div className="bg-background/50 absolute inset-0 flex items-center justify-center">
-            Loading Preview...
+          <div className="bg-background/50 flex items-center justify-center">
+            Loading...
           </div>
         )}
       {displayUrl && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={displayUrl} alt={altText} className={imgClassName} />
+        <img
+          src={displayUrl}
+          alt={altText}
+          className={cn("h-full w-full object-contain", imgClassName)}
+        />
       )}
-      {!displayUrl && isPreviewLoading && placeholder}{" "}
-      {/* Show placeholder under loader if it exists */}
+      {!displayUrl && isPreviewLoading && placeholder}
     </div>
   );
 };
