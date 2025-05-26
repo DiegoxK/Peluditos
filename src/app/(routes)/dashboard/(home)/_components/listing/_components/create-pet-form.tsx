@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -31,6 +32,22 @@ import {
 import { format } from "date-fns";
 import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import type { Pet } from "@/server/db/schema";
+import {
+  ImageCropApplyAction,
+  ImageCropCancelAction,
+  ImageCropChangeAction,
+  ImageCropContentArea,
+  ImageCropCropper,
+  ImageCropDescription,
+  ImageCropFooter,
+  ImageCropHeader,
+  ImageCropPreview,
+  ImageCropRoot,
+  ImageCropTitle,
+  ImageCropTrigger,
+} from "@/components/ui/image-crop-area";
+import { Cat } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 const formSchema = z.object({
   name: z
@@ -41,11 +58,9 @@ const formSchema = z.object({
     .string({ required_error: "La especie es obligatoria." })
     .min(1, { message: "La especie no puede estar vacía." }),
 
-  breed: z
-    .string({ required_error: "La raza es obligatoria." })
-    .min(1, { message: "La raza no puede estar vacía." }),
+  breed: z.string({ required_error: "La raza es obligatoria." }).optional(),
 
-  age: z
+  age: z.coerce
     .number({
       invalid_type_error: "La edad debe ser un número.",
       required_error: "La edad es obligatoria.",
@@ -57,13 +72,8 @@ const formSchema = z.object({
     invalid_type_error:
       "El estado debe ser uno de: adoptado, disponible, en tratamiento.",
   }),
-
-  image: z
-    .string({ required_error: "La URL de la imagen es obligatoria." })
-    .url({ message: "Debe ser una URL válida." }),
-
+  image: z.instanceof(Blob, { message: "La imagen es obligatoria." }),
   entryDate: z.date({ required_error: "La fecha de ingreso es obligatoria." }),
-
   description: z
     .string({ required_error: "La descripción es obligatoria." })
     .min(1, { message: "La descripción no puede estar vacía." }),
@@ -73,7 +83,7 @@ const formSchema = z.object({
     invalid_type_error: "El género debe ser Macho o Hembra.",
   }),
 
-  weight: z
+  weight: z.coerce
     .number({
       invalid_type_error: "El peso debe ser un número.",
       required_error: "El peso es obligatorio.",
@@ -271,10 +281,66 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
             name="image"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>URL de la imagen</FormLabel>
+                <FormLabel>Pet Image</FormLabel>
                 <FormControl>
-                  <Input placeholder="https://..." {...field} />
+                  <ImageCropRoot
+                    value={field.value}
+                    onChange={field.onChange}
+                    aspectRatio={1 / 1}
+                    maxFileSizeMB={4}
+                    outputOptions={{
+                      outputType: "image/webp",
+                      outputQuality: 0.8,
+                    }}
+                  >
+                    <div className="space-y-4">
+                      <div className="flex flex-col gap-1">
+                        <ImageCropTrigger className="w-auto" />{" "}
+                        <p className="text-muted-foreground text-sm">
+                          Máx 4MB. Recomendado: JPG, PNG, WEBP.
+                        </p>
+                      </div>
+
+                      <ImageCropContentArea className="bg-card mx-auto w-full rounded-lg border p-4 shadow-sm sm:max-w-lg">
+                        {/* Styling for the "dialog" */}
+                        <ImageCropHeader>
+                          <ImageCropTitle>Adjustar imagen</ImageCropTitle>
+                          <ImageCropDescription>
+                            Arrastra para seleccionar la mejor parte de la
+                            imagen.
+                            <br /> La vista previa se actualiza en tiempo real
+                            debajo del editor.
+                          </ImageCropDescription>
+                        </ImageCropHeader>
+                        {/* Cropper itself */}
+                        <Separator className="my-4" />
+                        <ImageCropCropper />
+                        <Separator className="my-4" />
+                        <ImageCropFooter>
+                          <ImageCropApplyAction />
+                          <ImageCropChangeAction />
+                          <ImageCropCancelAction />
+                        </ImageCropFooter>
+                      </ImageCropContentArea>
+
+                      <ImageCropPreview
+                        className="my-8 place-self-center rounded-full"
+                        placeholder={
+                          <div className="flex flex-col items-center">
+                            <Cat height={45} width={45} strokeWidth={1.2} />
+                            Pet Preview
+                          </div>
+                        }
+                      />
+                    </div>
+
+                    {/* The Cropping UI - Appears when an image is selected */}
+                  </ImageCropRoot>
                 </FormControl>
+                <FormDescription>
+                  Selecciona una imagen y ajusta el recorte para la foto de la
+                  mascota.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
