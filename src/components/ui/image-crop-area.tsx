@@ -652,7 +652,7 @@ export const ImageCropPreview: React.FC<ImageCropPreviewProps> = ({
   return (
     <div
       className={cn(
-        "text-muted flex aspect-[1/1] h-auto w-[200px] items-center justify-center rounded-lg border bg-slate-100 dark:bg-slate-800",
+        "text-muted flex aspect-[1/1] h-auto w-[200px] items-center justify-center overflow-hidden rounded-lg border bg-slate-100 dark:bg-slate-800",
         className,
       )}
       {...props}
