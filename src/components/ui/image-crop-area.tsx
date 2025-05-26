@@ -496,7 +496,7 @@ export const ImageCropCropper: React.FC<ImageCropCropperProps> = ({
         />
       </ReactCrop>
       {!isCropAreaDefined && originalFileSrc && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-md bg-black/50 text-sm text-white">
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-md bg-black/50 p-8 text-center text-sm text-white">
           Drag on image to select an area to crop
         </div>
       )}
