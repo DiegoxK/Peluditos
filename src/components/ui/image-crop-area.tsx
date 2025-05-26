@@ -476,7 +476,7 @@ export const ImageCropCropper: React.FC<ImageCropCropperProps> = ({
     );
 
   return (
-    <div className="relative rounded-md">
+    <div className="relative w-fit place-self-center rounded-md">
       <ReactCrop
         style={{
           display: "block",
