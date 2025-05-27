@@ -51,11 +51,12 @@ import { Cat } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 const PetImageSchema = z.union([
-  z.string().url({ message: "Must be a valid URL." }).optional().nullable(),
   z
-    .instanceof(Blob, { message: "Image must be a valid file." })
-    .optional()
-    .nullable(),
+    .string({
+      message: "La imagen de la mascota es obligatoria.",
+    })
+    .url({ message: "Must be a valid URL." }),
+  z.instanceof(Blob, { message: "Image must be a valid file." }),
 ]);
 
 const formSchema = z.object({
@@ -82,7 +83,9 @@ const formSchema = z.object({
       "El estado debe ser uno de: adoptado, disponible, en tratamiento.",
   }),
   image: PetImageSchema,
-  entryDate: z.date({ required_error: "La fecha de ingreso es obligatoria." }),
+  entryDate: z.date({
+    required_error: "La fecha de ingreso es obligatoria.",
+  }),
   description: z
     .string({ required_error: "La descripción es obligatoria." })
     .min(1, { message: "La descripción no puede estar vacía." }),
@@ -109,7 +112,6 @@ const formSchema = z.object({
     required_error: "Debe indicar si está esterilizado.",
   }),
 });
-
 interface CreatePetFormProps {
   pet?: Pet;
 }
@@ -125,7 +127,7 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
       breed: pet?.breed ?? "",
       age: pet?.age ?? 0,
       status: pet?.status ?? "disponible",
-      image: pet?.image ?? null,
+      image: pet?.image ?? "",
       entryDate: pet?.entryDate ? new Date(pet.entryDate) : new Date(),
       description: pet?.description ?? "",
       gender: pet?.gender ?? "Macho",
@@ -333,7 +335,9 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
                           <ImageCropChangeAction>
                             Cambiar archivo
                           </ImageCropChangeAction>
-                          <ImageCropDeleteAction />
+                          <ImageCropDeleteAction>
+                            Eliminar
+                          </ImageCropDeleteAction>
                         </ImageCropFooter>
                       </ImageCropContentArea>
 
