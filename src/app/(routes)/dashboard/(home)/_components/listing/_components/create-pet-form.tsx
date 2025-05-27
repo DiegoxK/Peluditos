@@ -49,6 +49,8 @@ import {
 } from "@/components/ui/image-crop-area";
 import { Cat } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { uploadFiles } from "@/lib/uploadthing";
+import { api } from "@/trpc/react";
 
 const PetImageSchema = z.union([
   z
@@ -119,6 +121,23 @@ interface CreatePetFormProps {
 export default function CreatePetForm({ pet }: CreatePetFormProps) {
   const isEditMode = Boolean(pet);
 
+  const { mutate: createPet } = api.pets.createPet.useMutation({
+    onSuccess: (data) => {
+      console.log("Pet created successfully:", data);
+    },
+    onError: (error) => {
+      console.error("Error creating pet:", error);
+    },
+  });
+  const { mutate: updatePet } = api.pets.updatePet.useMutation({
+    onSuccess: (data) => {
+      console.log("Pet created successfully:", data);
+    },
+    onError: (error) => {
+      console.error("Error creating pet:", error);
+    },
+  });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -137,13 +156,47 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    if (isEditMode) {
-      console.log("Updating pet:", { id: pet?._id, ...values });
-      // await updatePet.mutateAsync({ id: pet.id, ...values })
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const petImage = values.image;
+    let finalImageUrl: string | null = null;
+
+    if (petImage instanceof Blob) {
+      try {
+        const file = new File([petImage], `${pet?._id ?? "new"}.webp`, {
+          type: "image/webp",
+        });
+        const res = await uploadFiles("imageUploader", { files: [file] });
+        finalImageUrl = res[0]?.ufsUrl ?? null;
+
+        if (!finalImageUrl) {
+          console.error("Upload failed, no URL returned.");
+          return;
+        }
+
+        console.log("Image uploaded successfully:", finalImageUrl);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        return;
+      }
+    } else if (typeof petImage === "string" && petImage.trim()) {
+      finalImageUrl = petImage;
+      console.log("Using existing image URL:", finalImageUrl);
     } else {
-      console.log("Creating new pet:", values);
-      // await createPet.mutateAsync(values)
+      console.error("No image provided.");
+      return;
+    }
+
+    const payload = {
+      ...values,
+      image: finalImageUrl,
+    };
+
+    console.log("Submitting payload:", payload);
+
+    if (isEditMode && pet?._id) {
+      void updatePet({ _id: pet._id, ...payload });
+    } else {
+      void createPet(payload);
     }
   }
 
@@ -446,7 +499,9 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
         </div>
 
         <DialogFooter className="mt-4">
-          <Button type="submit">{isEditMode ? "Actualizar" : "Guardar"}</Button>
+          <Button disabled={!form.formState.isDirty} type="submit">
+            {isEditMode ? "Actualizar" : "Guardar"}
+          </Button>
 
           <DialogClose asChild>
             <Button variant="outline">Cancelar</Button>
