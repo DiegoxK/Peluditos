@@ -6,7 +6,7 @@ import PetListing from "./_components/listing";
 import PetStats from "./_components/stats";
 
 export default async function Pets() {
-  const data = await api.pet.getAllPets();
+  const data = await api.pets.getAllPets();
 
   return (
     <div className="p-6">

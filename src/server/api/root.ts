@@ -7,7 +7,7 @@ import { petRouter } from "./routers/pets";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  pet: petRouter,
+  pets: petRouter,
 });
 
 // export type definition of API
