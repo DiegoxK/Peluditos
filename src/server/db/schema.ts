@@ -9,11 +9,11 @@ export const UserSchema = z.object({
   emailVerified: z.date().optional(),
 });
 
-export const PetSchema = z.object({
+export const PetDbSchema = z.object({
   _id: z.instanceof(ObjectId).optional(),
   name: z.string(),
   specie: z.string(),
-  breed: z.string(),
+  breed: z.string().optional(),
   age: z.number(),
   status: z.enum(["adoptado", "disponible", "en tratamiento"]),
   image: z.string(),
@@ -24,5 +24,9 @@ export const PetSchema = z.object({
   vaccinated: z.boolean(),
   sterilized: z.boolean(),
 });
+export const PetSchema = PetDbSchema.extend({
+  _id: z.string(),
+});
 
 export type Pet = z.infer<typeof PetSchema>;
+export type PetDB = z.infer<typeof PetDbSchema>;
