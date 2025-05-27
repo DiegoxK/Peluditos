@@ -34,7 +34,7 @@ import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import type { Pet } from "@/server/db/schema";
 import {
   ImageCropApplyAction,
-  ImageCropCancelAction,
+  ImageCropCloseAction,
   ImageCropChangeAction,
   ImageCropContentArea,
   ImageCropCropper,
@@ -45,9 +45,18 @@ import {
   ImageCropRoot,
   ImageCropTitle,
   ImageCropTrigger,
+  ImageCropDeleteAction,
 } from "@/components/ui/image-crop-area";
 import { Cat } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+
+const PetImageSchema = z.union([
+  z.string().url({ message: "Must be a valid URL." }).optional().nullable(),
+  z
+    .instanceof(Blob, { message: "Image must be a valid file." })
+    .optional()
+    .nullable(),
+]);
 
 const formSchema = z.object({
   name: z
@@ -72,7 +81,7 @@ const formSchema = z.object({
     invalid_type_error:
       "El estado debe ser uno de: adoptado, disponible, en tratamiento.",
   }),
-  image: z.instanceof(Blob, { message: "La imagen es obligatoria." }),
+  image: PetImageSchema,
   entryDate: z.date({ required_error: "La fecha de ingreso es obligatoria." }),
   description: z
     .string({ required_error: "La descripción es obligatoria." })
@@ -116,7 +125,7 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
       breed: pet?.breed ?? "",
       age: pet?.age ?? 0,
       status: pet?.status ?? "disponible",
-      image: pet?.image ?? "",
+      image: pet?.image ?? null,
       entryDate: pet?.entryDate ? new Date(pet.entryDate) : new Date(),
       description: pet?.description ?? "",
       gender: pet?.gender ?? "Macho",
@@ -281,7 +290,7 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
             name="image"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Pet Image</FormLabel>
+                <FormLabel>Imagen</FormLabel>
                 <FormControl>
                   <ImageCropRoot
                     value={field.value}
@@ -295,7 +304,7 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
                   >
                     <div className="space-y-4">
                       <div className="flex flex-col gap-1">
-                        <ImageCropTrigger className="w-auto" />{" "}
+                        <ImageCropTrigger className="w-auto" />
                         <p className="text-muted-foreground text-sm">
                           Máx 4MB. Recomendado: JPG, PNG, WEBP.
                         </p>
@@ -317,9 +326,12 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
                         <ImageCropCropper />
                         <Separator className="my-4" />
                         <ImageCropFooter>
-                          <ImageCropApplyAction />
-                          <ImageCropChangeAction />
-                          <ImageCropCancelAction />
+                          <ImageCropApplyAction>Aplicar</ImageCropApplyAction>
+                          <ImageCropChangeAction>
+                            Cambiar archivo
+                          </ImageCropChangeAction>
+                          <ImageCropCloseAction />
+                          <ImageCropDeleteAction />
                         </ImageCropFooter>
                       </ImageCropContentArea>
 
@@ -327,8 +339,8 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
                         className="my-8 place-self-center rounded-full"
                         placeholder={
                           <div className="flex flex-col items-center">
-                            <Cat height={45} width={45} strokeWidth={1.2} />
-                            Pet Preview
+                            <Cat height={45} width={45} strokeWidth={1.1} />
+                            Tu mascota!
                           </div>
                         }
                       />
