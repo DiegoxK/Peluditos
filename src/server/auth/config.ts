@@ -11,7 +11,7 @@ import { cookies } from "next/headers";
 import {
   sendVerificationRequest,
   generateVerificationToken,
-} from "@/lib/email-config";
+} from "@/config/email-config";
 import type { UserSchema } from "../db/schema";
 
 type User = z.infer<typeof UserSchema>;
