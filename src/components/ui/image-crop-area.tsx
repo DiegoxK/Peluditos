@@ -7,6 +7,7 @@ import React, {
   useRef,
   useEffect,
   useCallback,
+  useMemo,
   type ReactNode,
   type Dispatch,
   type SetStateAction,
@@ -21,12 +22,12 @@ import { cn, cropImage, type CropImageOptions } from "@/lib/utils";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { Button } from "@/components/ui/button";
-import { Image as ImageIcon, X as XIcon } from "lucide-react";
+import { Image as ImageIcon, X as XIcon, Loader2 } from "lucide-react";
 
 // --- Types ---
 export interface ImageCropRootProps {
   value?: Blob | string | null;
-  onChange: (blob: Blob | null) => void;
+  onChange: (blobOrUrl: Blob | string | null) => void;
   children: ReactNode;
   aspectRatio?: number;
   maxFileSizeMB?: number;
@@ -75,6 +76,12 @@ export const useImageCrop = () => {
   return context;
 };
 
+interface CommittedStateSnapshot {
+  value: Blob | string | null;
+  trueOriginalFile: File | null;
+  initialDbUrl: string | null;
+}
+
 // --- ImageCropRoot ---
 export const ImageCropRoot: React.FC<ImageCropRootProps> = ({
   children,
@@ -86,67 +93,145 @@ export const ImageCropRoot: React.FC<ImageCropRootProps> = ({
   outputOptions = { outputType: "image/webp", outputQuality: 0.8 },
 }) => {
   const [isCropperUIVisible, setIsCropperUIVisible] = useState(false);
-
   const [trueOriginalFile, setTrueOriginalFile] = useState<File | null>(null);
   const [initialDbUrl, setInitialDbUrl] = useState<string | null>(null);
   const [originalFile, setOriginalFile] = useState<File | null>(null);
   const [originalFileSrc, setOriginalFileSrc] = useState<string | null>(null);
-
   const [croppedBlobUrl, setCroppedBlobUrl] = useState<string | null>(null);
-
   const [livePreviewBlob, setLivePreviewBlob] = useState<Blob | null>(null);
   const [livePreviewBlobUrl, setLivePreviewBlobUrl] = useState<string | null>(
     null,
   );
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
-
   const [currentCrop, setCurrentCrop] = useState<Crop | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [snapshotBeforeNewSelection, setSnapshotBeforeNewSelection] =
+    useState<CommittedStateSnapshot | null>(null);
 
   const imgRef = useRef<HTMLImageElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const hasAppliedImage = !!(croppedBlobUrl ?? initialDbUrl);
+  const hasAppliedImage = useMemo(
+    () => !!(initialDbUrl ?? (value instanceof Blob && croppedBlobUrl)),
+    [initialDbUrl, value, croppedBlobUrl],
+  );
 
   useEffect(() => {
-    setError(null);
+    console.log(
+      "EFFECT[value]: RHF value prop changed to:",
+      value,
+      "Current TOF:",
+      trueOriginalFile?.name,
+      "Current IDB:",
+      initialDbUrl,
+    );
+    let newDisplayUrl: string | null = null;
+    let newInitialDbUrlState: string | null = null;
+
     if (typeof value === "string" && value) {
-      setCroppedBlobUrl(value);
-      setInitialDbUrl(value);
+      newDisplayUrl = value;
+      newInitialDbUrlState = value;
 
-      setTrueOriginalFile(null);
-      setOriginalFile(null);
-      setLivePreviewBlob(null);
+      if (initialDbUrl !== value) {
+        console.log(
+          "EFFECT[value]: RHF value is a NEW DB URL. Clearing trueOriginalFile and originalFile.",
+          value,
+        );
+        setTrueOriginalFile(null);
+        setOriginalFile(null);
+        setCurrentCrop(undefined);
+        setLivePreviewBlob(null);
+      } else {
+        console.log(
+          "EFFECT[value]: RHF value is DB URL, but same as current initialDbUrl. No change to TOF/originalFile.",
+          value,
+        );
+      }
     } else if (value instanceof Blob) {
-      const blobUrl = URL.createObjectURL(value);
-      setCroppedBlobUrl(blobUrl);
-
-      setTrueOriginalFile(
-        new File([value], "initial-blob.bin", { type: value.type }),
+      console.log(
+        "EFFECT[value]: RHF value is a Blob. Creating object URL for display.",
       );
-      setInitialDbUrl(null);
-      setLivePreviewBlob(null);
+      newDisplayUrl = URL.createObjectURL(value);
+      newInitialDbUrlState = null;
+      if (
+        !initialDbUrl &&
+        !trueOriginalFile &&
+        !originalFile &&
+        !isCropperUIVisible
+      ) {
+        let fileName = "initial-blob-as-tof.bin";
+        if (value instanceof File) fileName = value.name;
+        console.log(
+          "EFFECT[value]: RHF value is Blob, NO other source context, setting trueOriginalFile:",
+          fileName,
+        );
+        setTrueOriginalFile(new File([value], fileName, { type: value.type }));
+      }
     } else {
-      setCroppedBlobUrl(null);
-      setInitialDbUrl(null);
-
-      setTrueOriginalFile(null);
-      setOriginalFile(null);
-      setLivePreviewBlob(null);
+      console.log("EFFECT[value]: RHF value is null/undefined.");
+      newInitialDbUrlState = null;
+      if (!snapshotBeforeNewSelection && !isCropperUIVisible) {
+        console.log(
+          "EFFECT[value]: RHF value is null, not reverting, not cropping; clearing trueOriginalFile and originalFile.",
+        );
+        setTrueOriginalFile(null);
+        setOriginalFile(null);
+        setCurrentCrop(undefined);
+      } else {
+        console.log(
+          "EFFECT[value]: RHF value is null, but either reverting or cropper is active; TOF/originalFile not cleared here.",
+        );
+      }
     }
-  }, [value]);
+
+    if (
+      croppedBlobUrl &&
+      croppedBlobUrl !== newDisplayUrl &&
+      !croppedBlobUrl.startsWith("http")
+    ) {
+      URL.revokeObjectURL(croppedBlobUrl);
+    }
+    setCroppedBlobUrl(newDisplayUrl);
+    setInitialDbUrl(newInitialDbUrlState);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    value,
+    isCropperUIVisible,
+    originalFile,
+    snapshotBeforeNewSelection,
+    initialDbUrl,
+    trueOriginalFile,
+  ]);
 
   useEffect(() => {
-    if (!originalFile) {
-      if (originalFileSrc) URL.revokeObjectURL(originalFileSrc);
+    console.log(
+      "EFFECT[originalFile]: originalFile changed to:",
+      originalFile?.name,
+    );
+    let objectUrl: string | null = null;
+    if (originalFile) {
+      objectUrl = URL.createObjectURL(originalFile);
+      console.log(
+        "EFFECT[originalFile]: Creating new originalFileSrc:",
+        objectUrl,
+      );
+      setOriginalFileSrc(objectUrl);
+    } else {
+      console.log(
+        "EFFECT[originalFile]: originalFile is null, setting originalFileSrc to null",
+      );
       setOriginalFileSrc(null);
-      return;
     }
-    const newUrl = URL.createObjectURL(originalFile);
-    setOriginalFileSrc(newUrl);
-    return () => URL.revokeObjectURL(newUrl);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      if (objectUrl) {
+        console.log(
+          "EFFECT[originalFile] CLEANUP: Revoking originalFileSrc:",
+          objectUrl,
+        );
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
   }, [originalFile]);
 
   useEffect(() => {
@@ -167,62 +252,136 @@ export const ImageCropRoot: React.FC<ImageCropRootProps> = ({
       setError(null);
       try {
         const response = await fetch(imageUrl);
-        if (!response.ok)
-          throw new Error(`Failed to fetch image: ${response.statusText}`);
+        if (!response.ok) {
+          throw new Error(
+            `Failed to fetch image: ${response.status} ${response.statusText}`,
+          );
+        }
         const blobData = await response.blob();
         const fileName =
-          imageUrl.substring(imageUrl.lastIndexOf("/") + 1) || "image_from_db";
+          imageUrl.substring(imageUrl.lastIndexOf("/") + 1) ||
+          "image_from_db.bin";
         const fileFromDb = new File([blobData], fileName, {
           type: blobData.type || "application/octet-stream",
         });
-
+        console.log(
+          "FETCH_IMAGE: Successfully fetched. Setting trueOriginalFile and originalFile:",
+          fileFromDb.name,
+        );
         setTrueOriginalFile(fileFromDb);
         setOriginalFile(fileFromDb);
         setCurrentCrop(undefined);
         setLivePreviewBlob(null);
       } catch (e) {
+        const errorMessage =
+          e instanceof Error ? e.message : "Could not load initial image.";
         console.error("Error fetching image for cropping:", e);
         setError(
-          "Could not load image for adjustment. Please select a new one.",
+          `Previous image unavailable: ${errorMessage} Please select a new image.`,
         );
-        setIsCropperUIVisible(false);
+        setTrueOriginalFile(null);
+        setOriginalFile(null);
+        setInitialDbUrl(null);
+        setCurrentCrop(undefined);
+        setLivePreviewBlob(null);
+        onChange(null);
       } finally {
         setIsLoading(false);
       }
     },
-    [setIsCropperUIVisible],
+    [onChange],
   );
 
   useEffect(() => {
+    console.log(
+      "EFFECT[isCropperUIVisible]: changed to",
+      isCropperUIVisible,
+      "hasAppliedImage:",
+      hasAppliedImage,
+      "originalFile:",
+      originalFile?.name,
+      "trueOriginalFile:",
+      trueOriginalFile?.name,
+      "initialDbUrl:",
+      initialDbUrl,
+    );
     if (isCropperUIVisible && hasAppliedImage && !originalFile) {
       if (trueOriginalFile) {
+        console.log(
+          "EFFECT[isCropperUIVisible]: Opening for Adjust Crop with existing trueOriginalFile:",
+          trueOriginalFile.name,
+        );
         setOriginalFile(trueOriginalFile);
         setCurrentCrop(undefined);
         setLivePreviewBlob(null);
         setError(null);
       } else if (initialDbUrl) {
+        console.log(
+          "EFFECT[isCropperUIVisible]: Opening for Adjust Crop by fetching initialDbUrl:",
+          initialDbUrl,
+        );
         void fetchAndSetImageForCropping(initialDbUrl);
+      } else {
+        console.warn(
+          "EFFECT[isCropperUIVisible]: 'Adjust Crop' but no trueOriginalFile or initialDbUrl. Value:",
+          value,
+        );
+
+        if (value instanceof Blob && !trueOriginalFile) {
+          let fileName = "adj-blob-as-tof.bin";
+          if (value instanceof File) fileName = value.name;
+          const tempTOF = new File([value], fileName, { type: value.type });
+          console.log(
+            "EFFECT[isCropperUIVisible]: Adjusting, TOF missing, recreating from RHF Blob value:",
+            tempTOF.name,
+          );
+          setTrueOriginalFile(tempTOF);
+          setOriginalFile(tempTOF);
+          setCurrentCrop(undefined);
+          setLivePreviewBlob(null);
+          setError(null);
+        } else {
+          console.log(
+            "EFFECT[isCropperUIVisible]: No source for Adjust Crop, user may need to Change File.",
+          );
+        }
       }
     } else if (!isCropperUIVisible && originalFile) {
+      console.log(
+        "EFFECT[isCropperUIVisible]: Cropper closing, clearing active originalFile:",
+        originalFile.name,
+      );
       setOriginalFile(null);
     }
-  }, [
-    isCropperUIVisible,
-    trueOriginalFile,
-    initialDbUrl,
-    originalFile,
-    hasAppliedImage,
-    fetchAndSetImageForCropping,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isCropperUIVisible, hasAppliedImage, fetchAndSetImageForCropping, value]); //
 
   const handleFileSelect = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
+      console.log(
+        "HANDLE_FILE_SELECT: Triggered. Current RHF value (value prop):",
+        value,
+        "Current TOF:",
+        trueOriginalFile?.name,
+      );
+      setSnapshotBeforeNewSelection({
+        value: value ?? null,
+        trueOriginalFile: trueOriginalFile,
+        initialDbUrl: initialDbUrl,
+      });
       setError(null);
       setLivePreviewBlob(null);
+      setCurrentCrop(undefined);
+
       const file = event.target.files?.[0];
       if (event.target.value) event.target.value = "";
 
-      if (!file) return;
+      if (!file) {
+        console.log("HANDLE_FILE_SELECT: No file selected.");
+        return;
+      }
+      console.log("HANDLE_FILE_SELECT: File selected:", file.name);
+
       if (!acceptedMimeTypes.includes(file.type)) {
         setError(`Invalid type. Accepted: ${acceptedMimeTypes.join(", ")}`);
         return;
@@ -231,17 +390,36 @@ export const ImageCropRoot: React.FC<ImageCropRootProps> = ({
         setError(`File too large. Max: ${maxFileSizeMB}MB`);
         return;
       }
-
+      console.log(
+        "HANDLE_FILE_SELECT: Setting trueOriginalFile and originalFile to new file:",
+        file.name,
+      );
       setTrueOriginalFile(file);
       setOriginalFile(file);
 
+      if (
+        croppedBlobUrl &&
+        !initialDbUrl &&
+        !croppedBlobUrl.startsWith("http")
+      ) {
+        URL.revokeObjectURL(croppedBlobUrl);
+      }
       setCroppedBlobUrl(null);
       setInitialDbUrl(null);
+
       onChange(null);
-      setCurrentCrop(undefined);
       setIsCropperUIVisible(true);
     },
-    [acceptedMimeTypes, maxFileSizeMB, onChange, setIsCropperUIVisible],
+    [
+      value,
+      trueOriginalFile,
+      initialDbUrl,
+      onChange,
+      acceptedMimeTypes,
+      maxFileSizeMB,
+      setIsCropperUIVisible,
+      croppedBlobUrl,
+    ],
   );
 
   const updateLivePreview = useCallback(
@@ -294,9 +472,12 @@ export const ImageCropRoot: React.FC<ImageCropRootProps> = ({
     try {
       const blob = await cropImage(imgRef.current, currentCrop, outputOptions);
       if (blob) {
+        console.log(
+          "APPLY_CROP: Applied. New blob created. Source (trueOriginalFile) remains:",
+          trueOriginalFile?.name,
+        );
         onChange(blob);
         setInitialDbUrl(null);
-        setOriginalFile(null);
         setLivePreviewBlob(null);
         setIsCropperUIVisible(false);
       } else {
@@ -307,6 +488,7 @@ export const ImageCropRoot: React.FC<ImageCropRootProps> = ({
       setError("Error during crop.");
     } finally {
       setIsLoading(false);
+      setSnapshotBeforeNewSelection(null);
     }
   }, [
     originalFile,
@@ -314,11 +496,12 @@ export const ImageCropRoot: React.FC<ImageCropRootProps> = ({
     onChange,
     outputOptions,
     setIsCropperUIVisible,
+    trueOriginalFile,
   ]);
 
   const clearImageAndClose = useCallback(() => {
+    console.log("CLEAR_IMAGE_CLOSE: Clearing all image states.");
     setTrueOriginalFile(null);
-    setOriginalFile(null);
     setInitialDbUrl(null);
     setCurrentCrop(undefined);
     setLivePreviewBlob(null);
@@ -327,25 +510,72 @@ export const ImageCropRoot: React.FC<ImageCropRootProps> = ({
     onChange(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
     setIsCropperUIVisible(false);
+    setSnapshotBeforeNewSelection(null);
   }, [onChange, setIsCropperUIVisible]);
 
   const closeCropperUI = useCallback(() => {
+    const uncommittedNewFileSession =
+      value === null && snapshotBeforeNewSelection !== null;
+    console.log(
+      "CLOSE_UI: Triggered. uncommittedNewFileSession:",
+      uncommittedNewFileSession,
+      "Snapshot:",
+      snapshotBeforeNewSelection,
+    );
+
     setIsCropperUIVisible(false);
-    if (originalFile === trueOriginalFile) {
-      if (!hasAppliedImage && trueOriginalFile) {
-        setTrueOriginalFile(null);
-      }
-      setOriginalFile(null);
-    }
     setLivePreviewBlob(null);
+    setCurrentCrop(undefined);
     setError(null);
-  }, [setIsCropperUIVisible, originalFile, trueOriginalFile, hasAppliedImage]);
+
+    if (uncommittedNewFileSession && snapshotBeforeNewSelection) {
+      console.log(
+        "CLOSE_UI: Reverting an uncommitted new file selection. Calling onChange with snapshot value:",
+        snapshotBeforeNewSelection.value,
+      );
+      onChange(snapshotBeforeNewSelection.value);
+
+      console.log(
+        "CLOSE_UI: Restoring trueOriginalFile to snapshot's TOF:",
+        snapshotBeforeNewSelection.trueOriginalFile?.name,
+      );
+      setTrueOriginalFile(snapshotBeforeNewSelection.trueOriginalFile);
+    }
+    setSnapshotBeforeNewSelection(null);
+  }, [setIsCropperUIVisible, value, onChange, snapshotBeforeNewSelection]);
 
   const triggerFileInput = useCallback(() => {
+    console.log("TRIGGER_FILE_INPUT: Called");
     fileInputRef.current?.click();
   }, []);
 
-  const contextValue: ImageCropContextType = {
+  const contextValue: ImageCropContextType = useMemo(() => {
+    console.log("CONTEXT_VALUE: Memoized context value recomputed.");
+    return {
+      originalFileSrc,
+      croppedBlobUrl,
+      livePreviewBlobUrl,
+      isPreviewLoading,
+      currentCrop,
+      isCropperUIVisible,
+      isLoading,
+      error,
+      aspectRatio,
+      acceptedMimeTypes,
+      hasAppliedImage,
+      imgRef,
+      fileInputRef,
+      setCurrentCrop,
+      updateLivePreview,
+      handleFileSelect,
+      applyCropAndClose,
+      clearImageAndClose,
+      closeCropperUI,
+      triggerFileInput,
+      setError,
+      setIsCropperUIVisible,
+    };
+  }, [
     originalFileSrc,
     croppedBlobUrl,
     livePreviewBlobUrl,
@@ -357,18 +587,16 @@ export const ImageCropRoot: React.FC<ImageCropRootProps> = ({
     aspectRatio,
     acceptedMimeTypes,
     hasAppliedImage,
-    imgRef,
-    fileInputRef,
-    setCurrentCrop,
     updateLivePreview,
     handleFileSelect,
     applyCropAndClose,
     clearImageAndClose,
     closeCropperUI,
     triggerFileInput,
+    setCurrentCrop,
     setError,
     setIsCropperUIVisible,
-  };
+  ]);
 
   return (
     <ImageCropContext.Provider value={contextValue}>
@@ -397,11 +625,24 @@ export const ImageCropTrigger = React.forwardRef<
     isCropperUIVisible,
     hasAppliedImage,
     originalFileSrc,
+    isLoading,
   } = useImageCrop();
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    console.log(
+      "TRIGGER_CLICK: hasAppliedImage:",
+      hasAppliedImage,
+      "originalFileSrc:",
+      !!originalFileSrc,
+      "isCropperUIVisible:",
+      isCropperUIVisible,
+    );
     if (hasAppliedImage && !originalFileSrc && !isCropperUIVisible) {
+      console.log("TRIGGER_CLICK: Opening for Adjust Crop");
       setIsCropperUIVisible(true);
     } else {
+      console.log(
+        "TRIGGER_CLICK: Triggering file input (for new selection or change within cropper)",
+      );
       triggerFileInput();
     }
     onClick?.(event);
@@ -413,7 +654,7 @@ export const ImageCropTrigger = React.forwardRef<
       type="button"
       ref={ref}
       onClick={handleClick}
-      disabled={isCropperUIVisible || disabled}
+      disabled={isCropperUIVisible || isLoading || disabled}
       {...props}
     >
       {buttonText}
@@ -490,17 +731,54 @@ export const ImageCropCropper: React.FC<ImageCropCropperProps> = ({
     imgRef,
     error,
     setError,
+    triggerFileInput,
+    isLoading,
   } = useImageCrop();
+  console.log(
+    "CROPPER_RENDER: originalFileSrc:",
+    originalFileSrc,
+    "Error:",
+    error,
+  );
   const isCropAreaDefined =
     currentCrop && currentCrop.width > 0 && currentCrop.height > 0;
-  if (!originalFileSrc)
+
+  if (!originalFileSrc) {
+    if (error) {
+      return (
+        <div className="text-destructive flex min-h-[200px] flex-col items-center justify-center gap-2 p-4 text-center">
+          <XIcon className="text-destructive h-10 w-10" />
+          <p className="font-semibold">Image Unavailable</p>
+          <p className="max-w-xs text-sm">{error}</p>
+          <Button
+            onClick={() => {
+              setError(null);
+              triggerFileInput();
+            }}
+            variant="outline"
+            size="sm"
+            className="mt-2"
+          >
+            Select New Image
+          </Button>
+        </div>
+      );
+    }
     return (
-      <div className="text-muted-foreground p-4 text-center">
-        Loading image for crop...
+      <div className="text-muted-foreground flex min-h-[200px] items-center justify-center p-4 text-center">
+        <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+        {isLoading ? "Loading image..." : "Waiting for image..."}
       </div>
     );
+  }
+
   return (
     <div className="relative w-fit place-self-center rounded-md p-4">
+      {error && !originalFileSrc && (
+        <div className="bg-destructive/20 text-destructive absolute top-0 right-0 left-0 z-10 p-2 text-center text-xs">
+          {error}
+        </div>
+      )}
       <ReactCrop
         style={{ display: "block" }}
         ruleOfThirds
@@ -520,22 +798,6 @@ export const ImageCropCropper: React.FC<ImageCropCropperProps> = ({
       {!isCropAreaDefined && originalFileSrc && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-md bg-black/50 p-8 text-center text-sm text-white">
           Drag on image to select an area to crop
-        </div>
-      )}
-      {error && (
-        <div
-          className="absolute inset-0 z-40 flex flex-col items-center justify-center gap-2 rounded-md bg-black/50 text-red-600"
-          role="alert"
-        >
-          {error}{" "}
-          <Button
-            type="button"
-            variant="destructive"
-            size="sm"
-            onClick={() => setError(null)}
-          >
-            Dismiss
-          </Button>
         </div>
       )}
     </div>
@@ -562,14 +824,14 @@ export type ImageCropApplyActionProps = ButtonProps;
 export const ImageCropApplyAction = React.forwardRef<
   HTMLButtonElement,
   ImageCropApplyActionProps
->(({ onClick, children, disabled, ...props }, ref) => {
+>(({ onClick, children, disabled: propDisabled, ...props }, ref) => {
   const { applyCropAndClose, isLoading, currentCrop } = useImageCrop();
   const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
     await applyCropAndClose();
     onClick?.(event);
   };
   const isButtonDisabled =
-    (disabled ?? isLoading) ||
+    (propDisabled ?? isLoading) ||
     !currentCrop ||
     currentCrop.width === 0 ||
     currentCrop.height === 0;
@@ -587,7 +849,7 @@ export const ImageCropApplyAction = React.forwardRef<
 });
 ImageCropApplyAction.displayName = "ImageCropApplyAction";
 
-// --- ImageCrop.DeleteAction (Renamed) ---
+// --- ImageCrop.DeleteAction ---
 export type ImageCropDeleteActionProps = ButtonProps;
 export const ImageCropDeleteAction = React.forwardRef<
   HTMLButtonElement,
@@ -639,7 +901,7 @@ export const ImageCropChangeAction = React.forwardRef<
 });
 ImageCropChangeAction.displayName = "ImageCropChangeAction";
 
-// --- ImageCrop.CloseAction (New) ---
+// --- ImageCrop.CloseAction ---
 export type ImageCropCloseActionProps = ButtonProps;
 export const ImageCropCloseAction = React.forwardRef<
   HTMLButtonElement,
@@ -679,11 +941,61 @@ export const ImageCropPreview: React.FC<ImageCropPreviewProps> = ({
   altText = "Image preview",
   ...props
 }) => {
-  const { livePreviewBlobUrl, croppedBlobUrl, isPreviewLoading } =
-    useImageCrop();
+  const {
+    livePreviewBlobUrl,
+    croppedBlobUrl,
+    isPreviewLoading: isLiveGenLoading,
+  } = useImageCrop();
   const displayUrl = livePreviewBlobUrl ?? croppedBlobUrl;
 
-  if (!displayUrl && !isPreviewLoading) {
+  const [isRemoteImgLoading, setIsRemoteImgLoading] = useState(false);
+  const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    if (
+      displayUrl &&
+      typeof displayUrl === "string" &&
+      !displayUrl.startsWith("blob:")
+    ) {
+      console.log(
+        "PREVIEW: Remote URL detected, setting loading true:",
+        displayUrl,
+      );
+      setIsRemoteImgLoading(true);
+      setImgError(false);
+    } else {
+      setIsRemoteImgLoading(false);
+    }
+  }, [displayUrl]);
+
+  const handleImageLoad = () => {
+    console.log("PREVIEW: Image loaded (onLoad):", displayUrl);
+    setIsRemoteImgLoading(false);
+    setImgError(false);
+  };
+  const handleImageError = () => {
+    console.log("PREVIEW: Image failed to load (onError):", displayUrl);
+    setIsRemoteImgLoading(false);
+    setImgError(true);
+  };
+
+  const showOverallLoading = isLiveGenLoading || isRemoteImgLoading;
+
+  if (imgError && !livePreviewBlobUrl) {
+    return (
+      <div
+        className={cn(
+          "text-destructive border-destructive/50 bg-destructive/10 flex aspect-square h-auto w-48 flex-col items-center justify-center rounded-lg border p-2 text-center text-xs",
+          className,
+        )}
+        {...props}
+      >
+        <XIcon className="mb-1 size-8" /> Error loading image.
+      </div>
+    );
+  }
+
+  if (!displayUrl && !showOverallLoading) {
     return (
       <div
         className={cn(
@@ -696,6 +1008,7 @@ export const ImageCropPreview: React.FC<ImageCropPreviewProps> = ({
       </div>
     );
   }
+
   return (
     <div
       className={cn(
@@ -704,9 +1017,9 @@ export const ImageCropPreview: React.FC<ImageCropPreviewProps> = ({
       )}
       {...props}
     >
-      {isPreviewLoading && !displayUrl && (
-        <div className="bg-background/50 absolute inset-0 flex items-center justify-center">
-          Loading Preview...
+      {showOverallLoading && (
+        <div className="bg-background/70 absolute inset-0 flex items-center justify-center">
+          <Loader2 className="text-primary h-8 w-8 animate-spin" />
         </div>
       )}
       {displayUrl && (
@@ -714,10 +1027,19 @@ export const ImageCropPreview: React.FC<ImageCropPreviewProps> = ({
         <img
           src={displayUrl}
           alt={altText}
-          className={cn("h-full w-full object-contain", imgClassName)}
+          className={cn(
+            "h-full w-full object-contain transition-opacity duration-300",
+            isRemoteImgLoading &&
+              displayUrl === croppedBlobUrl &&
+              !livePreviewBlobUrl
+              ? "opacity-0"
+              : "opacity-100",
+            imgClassName,
+          )}
+          onLoad={handleImageLoad}
+          onError={handleImageError}
         />
       )}
-      {!displayUrl && isPreviewLoading && placeholder}
     </div>
   );
 };
