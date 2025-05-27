@@ -311,26 +311,28 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
                       </div>
 
                       <ImageCropContentArea className="bg-card mx-auto w-full rounded-lg border p-4 shadow-sm sm:max-w-lg">
-                        {/* Styling for the "dialog" */}
                         <ImageCropHeader>
-                          <ImageCropTitle>Adjustar imagen</ImageCropTitle>
-                          <ImageCropDescription>
-                            Arrastra para seleccionar la mejor parte de la
-                            imagen.
-                            <br /> La vista previa se actualiza en tiempo real
-                            debajo del editor.
-                          </ImageCropDescription>
+                          <div className="flex-grow p-1">
+                            <ImageCropTitle>Adjustar imagen</ImageCropTitle>
+                            <ImageCropDescription>
+                              Arrastra para recortar.
+                            </ImageCropDescription>
+                          </div>
+                          <ImageCropCloseAction size="icon" variant="ghost" />
                         </ImageCropHeader>
+
                         {/* Cropper itself */}
                         <Separator className="my-4" />
                         <ImageCropCropper />
+                        <p className="text-muted-foreground mt-4 text-sm">
+                          La vista previa se actualiza debajo del editor.
+                        </p>
                         <Separator className="my-4" />
                         <ImageCropFooter>
                           <ImageCropApplyAction>Aplicar</ImageCropApplyAction>
                           <ImageCropChangeAction>
                             Cambiar archivo
                           </ImageCropChangeAction>
-                          <ImageCropCloseAction />
                           <ImageCropDeleteAction />
                         </ImageCropFooter>
                       </ImageCropContentArea>
@@ -345,8 +347,6 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
                         }
                       />
                     </div>
-
-                    {/* The Cropping UI - Appears when an image is selected */}
                   </ImageCropRoot>
                 </FormControl>
                 <FormDescription>
