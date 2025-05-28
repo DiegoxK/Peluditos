@@ -159,19 +159,25 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const petImage = values.image;
     let finalImageUrl: string | null = null;
+    let imageKey: string | null = null;
 
     if (petImage instanceof Blob) {
       try {
-        const file = new File([petImage], `${pet?._id ?? "new"}.webp`, {
+        const file = new File([petImage], `${values.name ?? "new"}.webp`, {
           type: "image/webp",
         });
-        const res = await uploadFiles("imageUploader", { files: [file] });
-        finalImageUrl = res[0]?.ufsUrl ?? null;
 
-        if (!finalImageUrl) {
-          console.error("Upload failed, no URL returned.");
+        const res = await uploadFiles("imageUploader", { files: [file] });
+
+        const uploadedFile = res?.[0];
+
+        if (!uploadedFile?.ufsUrl || !uploadedFile.key) {
+          console.error("Upload failed: invalid response from uploadFiles.");
           return;
         }
+
+        finalImageUrl = uploadedFile.ufsUrl;
+        imageKey = uploadedFile.key;
 
         console.log("Image uploaded successfully:", finalImageUrl);
       } catch (error) {
@@ -180,6 +186,7 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
       }
     } else if (typeof petImage === "string" && petImage.trim()) {
       finalImageUrl = petImage;
+      imageKey = pet?.imageKey ?? "";
       console.log("Using existing image URL:", finalImageUrl);
     } else {
       console.error("No image provided.");
@@ -189,6 +196,7 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
     const payload = {
       ...values,
       image: finalImageUrl,
+      imageKey,
     };
 
     console.log("Submitting payload:", payload);
