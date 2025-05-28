@@ -163,7 +163,7 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
 
     if (petImage instanceof Blob) {
       try {
-        const file = new File([petImage], `${values.name ?? "new"}.webp`, {
+        const file = new File([petImage], `${values.name.toLowerCase()}.webp`, {
           type: "image/webp",
         });
 
