@@ -3,6 +3,7 @@ import { PetSchema, type Pet, type PetDB } from "@/server/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
 import { ObjectId } from "mongodb";
+import { utapi } from "@/server/uploadthing";
 
 export const petRouter = createTRPCRouter({
   getAllPets: protectedProcedure.query(async ({ ctx }) => {
@@ -32,10 +33,21 @@ export const petRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { _id, ...updateData } = input;
 
-      const result = await ctx.db
+      const previousData = await ctx.db
         .collection<PetDB>("pets")
-        .updateOne({ _id: new ObjectId(_id) }, { $set: updateData });
+        .findOneAndUpdate(
+          { _id: new ObjectId(_id) },
+          { $set: updateData },
+          { returnDocument: "before" },
+        );
 
-      return result;
+      if (previousData?.imageKey) {
+        void utapi
+          .deleteFiles(previousData.imageKey)
+          .then((data) => console.log("Deletion success:", data.success))
+          .catch((err) => console.error("Image deletion failed:", err));
+      }
+
+      return previousData;
     }),
 });
