@@ -144,8 +144,6 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
   const { mutate: createPet } = api.pets.createPet.useMutation({
     // Optimistically update the cache before the mutation fires
     onMutate: async (newPet) => {
-      toast("Mutating data");
-
       // Cancel any ongoing fetches so they don't overwrite our optimistic update
       await utils.pets.getAllPets.cancel();
       // Snapshot the current data so we can rollback later if needed
@@ -167,31 +165,78 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
     },
     onSuccess: (data) => {
       console.log("Pet created successfully:", data);
-      toast("Pet created!");
     },
     onError: (error, _newPet, context) => {
       if (context?.previousPets) {
         utils.pets.getAllPets.setData(undefined, context.previousPets);
       }
-      console.error("Error creating pet:", error);
-      toast.error("Error creating pet");
+      console.error("Error al crear mascota:", error);
+      toast.error("Error creating pet", {
+        id: "pet-form",
+        duration: 4000,
+      });
     },
     onSettled: () => {
       void utils.pets.getAllPets.invalidate();
-      toast.success("Pet uploaded to the db successfully!");
+      toast.success("Mascota subida exitosamente!", {
+        id: "pet-form",
+        duration: 4000,
+      });
     },
   });
 
   const { mutate: updatePet } = api.pets.updatePet.useMutation({
-    onSuccess: (data) => {
-      console.log("Pet created successfully:", data);
+    onMutate: async (updatedPet) => {
+      await utils.pets.getAllPets.cancel();
+
+      const previousPets = utils.pets.getAllPets.getData();
+
+      // Optimistically update the cache
+      utils.pets.getAllPets.setData(
+        undefined,
+        (old) =>
+          old?.map((pet) =>
+            pet._id === updatedPet._id
+              ? { ...pet, ...updatedPet, updatedAt: new Date().toISOString() }
+              : pet,
+          ) ?? [],
+      );
+
+      // Return context for potential rollback
+      return { previousPets };
     },
-    onError: (error) => {
-      console.error("Error creating pet:", error);
+
+    // On error, rollback to previous state
+    onError: (error, _updatedPet, context) => {
+      if (context?.previousPets) {
+        utils.pets.getAllPets.setData(undefined, context.previousPets);
+      }
+      console.error("Error updating pet:", error);
+      toast.error("Error updating pet", {
+        id: "pet-form",
+        duration: 4000,
+      });
+    },
+
+    onSuccess: (data) => {
+      console.log("Pet updated successfully:", data);
+    },
+
+    onSettled: () => {
+      void utils.pets.getAllPets.invalidate();
+      toast.success("Mascota actualizada exitosamente!", {
+        id: "pet-form",
+        duration: 4000,
+      });
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    toast.loading(`${isEditMode ? "Actualizando" : "Creando"} mascota...`, {
+      id: "pet-form",
+      duration: Infinity,
+    });
+
     const petImage = values.image;
     let finalImageUrl: string | null = null;
     let imageKey: string | null = null;
@@ -208,6 +253,10 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
 
         if (!uploadedFile?.ufsUrl || !uploadedFile.key) {
           console.error("Upload failed: invalid response from uploadFiles.");
+          toast.error("Error al subir la imagen", {
+            id: "image-upload",
+            duration: 4000,
+          });
           return;
         }
 
@@ -217,6 +266,10 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
         console.log("Image uploaded successfully:", finalImageUrl);
       } catch (error) {
         console.error("Error uploading image:", error);
+        toast.error("Error al subir la imagen", {
+          id: "image-upload",
+          duration: 4000,
+        });
         return;
       }
     } else if (typeof petImage === "string" && petImage.trim()) {
