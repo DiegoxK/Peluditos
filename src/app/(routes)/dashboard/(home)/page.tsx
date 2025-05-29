@@ -3,8 +3,9 @@ import { api, HydrateClient } from "@/trpc/server";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PetListing from "./_components/listing";
-import PetStats from "./_components/stats";
+
 import { Suspense } from "react";
+import LoadingListing from "./_components/listing/loading";
 
 export default async function Pets() {
   void api.pets.getAllPets.prefetch();
@@ -30,7 +31,7 @@ export default async function Pets() {
 
         <HydrateClient>
           <TabsContent value="listado" className="space-y-4">
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<LoadingListing />}>
               <PetListing />
             </Suspense>
           </TabsContent>
