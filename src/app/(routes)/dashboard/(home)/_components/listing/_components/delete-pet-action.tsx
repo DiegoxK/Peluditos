@@ -8,9 +8,10 @@ import { toast } from "sonner";
 
 interface DeletePetProps {
   pet: Pet;
+  closeDialog: () => void;
 }
 
-export default function DeletePetAction({ pet }: DeletePetProps) {
+export default function DeletePetAction({ pet, closeDialog }: DeletePetProps) {
   const utils = api.useUtils();
 
   const { mutate: deletePet } = api.pets.deletePet.useMutation({
@@ -50,6 +51,7 @@ export default function DeletePetAction({ pet }: DeletePetProps) {
   });
 
   const handleDelete = () => {
+    closeDialog();
     deletePet({ _id: pet._id });
   };
 
