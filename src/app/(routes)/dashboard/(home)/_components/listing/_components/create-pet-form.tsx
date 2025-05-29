@@ -158,7 +158,7 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
           ...newPet,
           _id: "temp-id",
           createdAt: new Date().toISOString(),
-          entryDate: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         },
       ]);
 

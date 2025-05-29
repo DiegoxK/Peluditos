@@ -16,11 +16,12 @@ export const petRouter = createTRPCRouter({
     return JSON.parse(JSON.stringify(pets)) as Pet[];
   }),
   createPet: protectedProcedure
-    .input(PetSchema.omit({ _id: true, createdAt: true }))
+    .input(PetSchema.omit({ _id: true, createdAt: true, updatedAt: true }))
     .mutation(async ({ ctx, input }) => {
       const newPet = {
         ...input,
         createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
       const result = await ctx.db.collection<PetDB>("pets").insertOne(newPet);
@@ -29,7 +30,7 @@ export const petRouter = createTRPCRouter({
     }),
 
   updatePet: protectedProcedure
-    .input(PetSchema.omit({ createdAt: true }))
+    .input(PetSchema.omit({ createdAt: true, updatedAt: true }))
     .mutation(async ({ ctx, input }) => {
       const { _id, ...updateData } = input;
 
@@ -37,7 +38,7 @@ export const petRouter = createTRPCRouter({
         .collection<PetDB>("pets")
         .findOneAndUpdate(
           { _id: new ObjectId(_id) },
-          { $set: updateData },
+          { $set: { ...updateData, updatedAt: new Date().toISOString() } },
           { returnDocument: "before" },
         );
 
