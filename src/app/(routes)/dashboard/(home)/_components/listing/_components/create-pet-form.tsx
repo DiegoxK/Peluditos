@@ -120,13 +120,40 @@ interface CreatePetFormProps {
 
 export default function CreatePetForm({ pet }: CreatePetFormProps) {
   const isEditMode = Boolean(pet);
+  const utils = api.useUtils();
 
   const { mutate: createPet } = api.pets.createPet.useMutation({
+    // Optimistically update the cache before the mutation fires
+    onMutate: async (newPet) => {
+      // Cancel any ongoing fetches so they don't overwrite our optimistic update
+      await utils.pets.getAllPets.cancel();
+      // Snapshot the current data so we can rollback later if needed
+      const previousPets = utils.pets.getAllPets.getData();
+
+      // Optimistically add the new pet to the cache
+      utils.pets.getAllPets.setData(undefined, (old) => [
+        ...(old ?? []),
+        {
+          ...newPet,
+          _id: "temp-id",
+          entryDate: new Date().toISOString(),
+        },
+      ]);
+
+      // Return context for rollback
+      return { previousPets };
+    },
     onSuccess: (data) => {
       console.log("Pet created successfully:", data);
     },
-    onError: (error) => {
+    onError: (error, _newPet, context) => {
+      if (context?.previousPets) {
+        utils.pets.getAllPets.setData(undefined, context.previousPets);
+      }
       console.error("Error creating pet:", error);
+    },
+    onSettled: () => {
+      void utils.pets.getAllPets.invalidate();
     },
   });
 
