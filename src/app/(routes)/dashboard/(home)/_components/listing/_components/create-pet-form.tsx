@@ -179,12 +179,14 @@ export default function CreatePetForm({
       }
       console.error("Error al crear mascota:", error);
       toast.error("Error creating pet", {
+        id: "pet-form",
         duration: 3000,
       });
     },
     onSettled: () => {
       void utils.pets.getAllPets.invalidate();
       toast.success("Mascota subida exitosamente!", {
+        id: "pet-form",
         duration: 3000,
       });
       closeDialog();
@@ -237,8 +239,14 @@ export default function CreatePetForm({
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
-
     if (isEditMode) closeDialog();
+
+    if (!isEditMode) {
+      toast.loading("Subiendo mascota...", {
+        duration: Infinity,
+        id: "pet-form",
+      });
+    }
 
     const petImage = values.image;
     let finalImageUrl: string | null = null;
