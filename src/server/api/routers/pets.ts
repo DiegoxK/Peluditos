@@ -42,7 +42,9 @@ export const petRouter = createTRPCRouter({
           { returnDocument: "before" },
         );
 
-      if (previousData?.imageKey) {
+      const isSameImage = previousData?.image === input.image;
+
+      if (previousData?.imageKey && !isSameImage) {
         void utapi
           .deleteFiles(previousData.imageKey)
           .then((data) => console.log("Deletion success:", data.success))
