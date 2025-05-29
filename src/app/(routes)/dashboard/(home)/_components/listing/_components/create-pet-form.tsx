@@ -123,65 +123,6 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
   const isEditMode = Boolean(pet);
   const utils = api.useUtils();
 
-  const toastId = toast("Sonner");
-
-  const { mutate: createPet } = api.pets.createPet.useMutation({
-    // Optimistically update the cache before the mutation fires
-    onMutate: async (newPet) => {
-      toast("Mutating data", {
-        id: toastId,
-      });
-
-      // Cancel any ongoing fetches so they don't overwrite our optimistic update
-      await utils.pets.getAllPets.cancel();
-      // Snapshot the current data so we can rollback later if needed
-      const previousPets = utils.pets.getAllPets.getData();
-
-      // Optimistically add the new pet to the cache
-      utils.pets.getAllPets.setData(undefined, (old) => [
-        ...(old ?? []),
-        {
-          ...newPet,
-          _id: "temp-id",
-          entryDate: new Date().toISOString(),
-        },
-      ]);
-
-      // Return context for rollback
-      return { previousPets };
-    },
-    onSuccess: (data) => {
-      console.log("Pet created successfully:", data);
-      toast("Pet created!", {
-        id: toastId,
-      });
-    },
-    onError: (error, _newPet, context) => {
-      if (context?.previousPets) {
-        utils.pets.getAllPets.setData(undefined, context.previousPets);
-      }
-      console.error("Error creating pet:", error);
-      toast.error("Error creating pet", {
-        id: toastId,
-      });
-    },
-    onSettled: () => {
-      void utils.pets.getAllPets.invalidate();
-      toast.success("Pet uploaded to the db successfully!", {
-        id: toastId,
-      });
-    },
-  });
-
-  const { mutate: updatePet } = api.pets.updatePet.useMutation({
-    onSuccess: (data) => {
-      console.log("Pet created successfully:", data);
-    },
-    onError: (error) => {
-      console.error("Error creating pet:", error);
-    },
-  });
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -197,6 +138,56 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
       weight: pet?.weight ?? 1,
       vaccinated: pet?.vaccinated ?? false,
       sterilized: pet?.sterilized ?? false,
+    },
+  });
+
+  const { mutate: createPet } = api.pets.createPet.useMutation({
+    // Optimistically update the cache before the mutation fires
+    onMutate: async (newPet) => {
+      toast("Mutating data");
+
+      // Cancel any ongoing fetches so they don't overwrite our optimistic update
+      await utils.pets.getAllPets.cancel();
+      // Snapshot the current data so we can rollback later if needed
+      const previousPets = utils.pets.getAllPets.getData();
+
+      // Optimistically add the new pet to the cache
+      utils.pets.getAllPets.setData(undefined, (old) => [
+        ...(old ?? []),
+        {
+          ...newPet,
+          _id: "temp-id",
+          createdAt: new Date().toISOString(),
+          entryDate: new Date().toISOString(),
+        },
+      ]);
+
+      // Return context for rollback
+      return { previousPets };
+    },
+    onSuccess: (data) => {
+      console.log("Pet created successfully:", data);
+      toast("Pet created!");
+    },
+    onError: (error, _newPet, context) => {
+      if (context?.previousPets) {
+        utils.pets.getAllPets.setData(undefined, context.previousPets);
+      }
+      console.error("Error creating pet:", error);
+      toast.error("Error creating pet");
+    },
+    onSettled: () => {
+      void utils.pets.getAllPets.invalidate();
+      toast.success("Pet uploaded to the db successfully!");
+    },
+  });
+
+  const { mutate: updatePet } = api.pets.updatePet.useMutation({
+    onSuccess: (data) => {
+      console.log("Pet created successfully:", data);
+    },
+    onError: (error) => {
+      console.error("Error creating pet:", error);
     },
   });
 
@@ -239,6 +230,7 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
 
     const payload = {
       ...values,
+      entryDate: values.entryDate.toISOString(),
       image: finalImageUrl,
       imageKey,
     };

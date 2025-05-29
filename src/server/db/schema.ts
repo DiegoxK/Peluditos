@@ -19,6 +19,7 @@ export const PetDbSchema = z.object({
   image: z.string(),
   imageKey: z.string(),
   entryDate: z.string(),
+  createdAt: z.string(),
   description: z.string(),
   gender: z.enum(["Macho", "Hembra"]),
   weight: z.number(),
