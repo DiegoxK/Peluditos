@@ -1,12 +1,13 @@
-import { api } from "@/trpc/server";
+import { api, HydrateClient } from "@/trpc/server";
 
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PetListing from "./_components/listing";
 import PetStats from "./_components/stats";
+import { Suspense } from "react";
 
 export default async function Pets() {
-  const data = await api.pets.getAllPets();
+  void api.pets.getAllPets.prefetch();
 
   return (
     <div className="p-6">
@@ -27,12 +28,16 @@ export default async function Pets() {
           <TabsTrigger value="estadisticas">Estadísticas</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="listado" className="space-y-4">
-          <PetListing pets={data} />
-        </TabsContent>
-        <TabsContent value="estadisticas" className="space-y-4">
-          <PetStats pets={data} />
-        </TabsContent>
+        <HydrateClient>
+          <TabsContent value="listado" className="space-y-4">
+            <Suspense fallback={<div>Loading...</div>}>
+              <PetListing />
+            </Suspense>
+          </TabsContent>
+          <TabsContent value="estadisticas" className="space-y-4">
+            {/* <PetStats pets={data} /> */}
+          </TabsContent>
+        </HydrateClient>
       </Tabs>
     </div>
   );

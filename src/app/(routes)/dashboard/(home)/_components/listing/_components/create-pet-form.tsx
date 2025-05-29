@@ -129,6 +129,7 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
       console.error("Error creating pet:", error);
     },
   });
+
   const { mutate: updatePet } = api.pets.updatePet.useMutation({
     onSuccess: (data) => {
       console.log("Pet created successfully:", data);
