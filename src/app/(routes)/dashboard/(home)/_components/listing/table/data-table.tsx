@@ -41,7 +41,7 @@ export function DataTable<TData extends Pet, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const { openDialog } = useDialog();
+  const { openDialog, closeDialog } = useDialog();
 
   const [globalFilter, setGlobalFilter] = useState("");
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -124,7 +124,12 @@ export function DataTable<TData extends Pet, TValue>({
                         title: `Editar a ${row.original.name}`,
                         description:
                           "Complete los detalles de la mascota y guarde los cambios.",
-                        content: () => <CreatePetForm pet={row.original} />,
+                        content: () => (
+                          <CreatePetForm
+                            pet={row.original}
+                            closeDialog={closeDialog}
+                          />
+                        ),
                       })
                     }
                     variant="ghost"

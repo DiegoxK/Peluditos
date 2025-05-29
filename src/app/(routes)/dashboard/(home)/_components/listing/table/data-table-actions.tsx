@@ -21,7 +21,7 @@ interface DataTableActionsInterface {
 }
 
 export default function DataTableActions({ pet }: DataTableActionsInterface) {
-  const { openDialog } = useDialog();
+  const { openDialog, closeDialog } = useDialog();
 
   return (
     <DropdownMenu>
@@ -49,7 +49,9 @@ export default function DataTableActions({ pet }: DataTableActionsInterface) {
               title: `Editar a ${pet.name}`,
               description:
                 "Complete los detalles de la mascota y guarde los cambios.",
-              content: () => <CreatePetForm pet={pet} />,
+              content: () => (
+                <CreatePetForm pet={pet} closeDialog={closeDialog} />
+              ),
             })
           }
         >

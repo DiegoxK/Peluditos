@@ -117,9 +117,13 @@ const formSchema = z.object({
 });
 interface CreatePetFormProps {
   pet?: Pet;
+  closeDialog: () => void;
 }
 
-export default function CreatePetForm({ pet }: CreatePetFormProps) {
+export default function CreatePetForm({
+  pet,
+  closeDialog,
+}: CreatePetFormProps) {
   const isEditMode = Boolean(pet);
   const utils = api.useUtils();
 
@@ -182,6 +186,7 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
         id: "pet-form",
         duration: 4000,
       });
+      closeDialog();
     },
   });
 
@@ -228,6 +233,7 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
         id: "pet-form",
         duration: 4000,
       });
+      closeDialog();
     },
   });
 
