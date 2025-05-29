@@ -52,6 +52,7 @@ import { Separator } from "@/components/ui/separator";
 import { uploadFiles } from "@/lib/uploadthing";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
+import { useState } from "react";
 
 const PetImageSchema = z.union([
   z
@@ -124,6 +125,8 @@ export default function CreatePetForm({
   pet,
   closeDialog,
 }: CreatePetFormProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const isEditMode = Boolean(pet);
   const utils = api.useUtils();
 
@@ -233,6 +236,8 @@ export default function CreatePetForm({
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSubmitting(true);
+
     if (isEditMode) closeDialog();
 
     const petImage = values.image;
@@ -594,7 +599,10 @@ export default function CreatePetForm({
         </div>
 
         <DialogFooter className="mt-4">
-          <Button disabled={!form.formState.isDirty} type="submit">
+          <Button
+            disabled={!form.formState.isDirty || isSubmitting}
+            type="submit"
+          >
             {isEditMode ? "Actualizar" : "Guardar"}
           </Button>
 
