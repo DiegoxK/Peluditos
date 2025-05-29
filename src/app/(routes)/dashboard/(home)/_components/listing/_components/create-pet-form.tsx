@@ -176,15 +176,13 @@ export default function CreatePetForm({
       }
       console.error("Error al crear mascota:", error);
       toast.error("Error creating pet", {
-        id: "pet-form",
-        duration: 4000,
+        duration: 3000,
       });
     },
     onSettled: () => {
       void utils.pets.getAllPets.invalidate();
       toast.success("Mascota subida exitosamente!", {
-        id: "pet-form",
-        duration: 4000,
+        duration: 3000,
       });
       closeDialog();
     },
@@ -218,8 +216,7 @@ export default function CreatePetForm({
       }
       console.error("Error updating pet:", error);
       toast.error("Error updating pet", {
-        id: "pet-form",
-        duration: 4000,
+        duration: 3000,
       });
     },
 
@@ -230,18 +227,13 @@ export default function CreatePetForm({
     onSettled: () => {
       void utils.pets.getAllPets.invalidate();
       toast.success("Mascota actualizada exitosamente!", {
-        id: "pet-form",
-        duration: 4000,
+        duration: 3000,
       });
-      closeDialog();
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    toast.loading(`${isEditMode ? "Actualizando" : "Creando"} mascota...`, {
-      id: "pet-form",
-      duration: Infinity,
-    });
+    if (isEditMode) closeDialog();
 
     const petImage = values.image;
     let finalImageUrl: string | null = null;
@@ -261,7 +253,7 @@ export default function CreatePetForm({
           console.error("Upload failed: invalid response from uploadFiles.");
           toast.error("Error al subir la imagen", {
             id: "image-upload",
-            duration: 4000,
+            duration: 3000,
           });
           return;
         }
@@ -274,7 +266,7 @@ export default function CreatePetForm({
         console.error("Error uploading image:", error);
         toast.error("Error al subir la imagen", {
           id: "image-upload",
-          duration: 4000,
+          duration: 3000,
         });
         return;
       }
