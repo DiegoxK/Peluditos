@@ -51,6 +51,7 @@ import { Cat } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { uploadFiles } from "@/lib/uploadthing";
 import { api } from "@/trpc/react";
+import { toast } from "sonner";
 
 const PetImageSchema = z.union([
   z
@@ -122,9 +123,15 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
   const isEditMode = Boolean(pet);
   const utils = api.useUtils();
 
+  const toastId = toast("Sonner");
+
   const { mutate: createPet } = api.pets.createPet.useMutation({
     // Optimistically update the cache before the mutation fires
     onMutate: async (newPet) => {
+      toast("Mutating data", {
+        id: toastId,
+      });
+
       // Cancel any ongoing fetches so they don't overwrite our optimistic update
       await utils.pets.getAllPets.cancel();
       // Snapshot the current data so we can rollback later if needed
@@ -145,15 +152,24 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
     },
     onSuccess: (data) => {
       console.log("Pet created successfully:", data);
+      toast("Pet created!", {
+        id: toastId,
+      });
     },
     onError: (error, _newPet, context) => {
       if (context?.previousPets) {
         utils.pets.getAllPets.setData(undefined, context.previousPets);
       }
       console.error("Error creating pet:", error);
+      toast.error("Error creating pet", {
+        id: toastId,
+      });
     },
     onSettled: () => {
       void utils.pets.getAllPets.invalidate();
+      toast.success("Pet uploaded to the db successfully!", {
+        id: toastId,
+      });
     },
   });
 
