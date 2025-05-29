@@ -15,6 +15,7 @@ export const petRouter = createTRPCRouter({
 
     return JSON.parse(JSON.stringify(pets)) as Pet[];
   }),
+
   createPet: protectedProcedure
     .input(PetSchema.omit({ _id: true, createdAt: true, updatedAt: true }))
     .mutation(async ({ ctx, input }) => {
@@ -45,6 +46,25 @@ export const petRouter = createTRPCRouter({
       const isSameImage = previousData?.image === input.image;
 
       if (previousData?.imageKey && !isSameImage) {
+        void utapi
+          .deleteFiles(previousData.imageKey)
+          .then((data) => console.log("Deletion success:", data.success))
+          .catch((err) => console.error("Image deletion failed:", err));
+      }
+
+      return previousData;
+    }),
+
+  deletePet: protectedProcedure
+    .input(PetSchema.pick({ _id: true }))
+    .mutation(async ({ ctx, input }) => {
+      const { _id } = input;
+
+      const previousData = await ctx.db
+        .collection<PetDB>("pets")
+        .findOneAndDelete({ _id: new ObjectId(_id) });
+
+      if (previousData?.imageKey) {
         void utapi
           .deleteFiles(previousData.imageKey)
           .then((data) => console.log("Deletion success:", data.success))
