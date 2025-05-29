@@ -19,7 +19,7 @@ export default function PetDetails({ pet }: PetDetailsProps) {
       <div className="grid max-h-[60vh] gap-6 space-y-4 overflow-y-scroll py-4 ps-1 pr-2">
         <div className="flex flex-col items-center gap-4 sm:flex-row">
           <Image
-            src={pet.image || "/placeholder.svg"}
+            src={pet.image}
             alt={pet.name}
             width={128}
             height={128}
