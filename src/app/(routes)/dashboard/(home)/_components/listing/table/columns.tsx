@@ -15,14 +15,7 @@ export const columns: ColumnDef<Pet>[] = [
       const { name } = row.original;
       return (
         <div className="bg-accent ml-2 flex size-[35px] w-fit items-center overflow-hidden rounded-full">
-          <Image
-            src={
-              "https://d9kl8ewi09.ufs.sh/f/HkC5qL7fL2Jzu5CSNzBpzFNeaBDdPhftZ9iJsW5R1T8oICYU"
-            }
-            alt={name}
-            width={35}
-            height={35}
-          />
+          <Image src={image} alt={name} width={35} height={35} />
         </div>
       );
     },
