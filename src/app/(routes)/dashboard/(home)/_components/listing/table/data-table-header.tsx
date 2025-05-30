@@ -35,7 +35,7 @@ export default function DataTableHeader<TData extends Pet>({
   setGlobalFilter,
   table,
 }: DataTableHeaderProps<TData>) {
-  const { openDialog, closeDialog } = useDialog();
+  const { openDialog, closeDialog, setSubmitting } = useDialog();
 
   const specieColumn = table.getColumn("specie");
   const statusColumn = table.getColumn("status");
@@ -61,7 +61,12 @@ export default function DataTableHeader<TData extends Pet>({
               title: "Nueva Mascota",
               description:
                 "Complete los detalles de la mascota y guarde los cambios.",
-              content: () => <CreatePetForm closeDialog={closeDialog} />,
+              content: () => (
+                <CreatePetForm
+                  closeDialog={closeDialog}
+                  setSubmitting={setSubmitting}
+                />
+              ),
             })
           }
         >
