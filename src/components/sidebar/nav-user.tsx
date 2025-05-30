@@ -24,16 +24,14 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import type { UserSession } from "@/server/db/schema";
 
-export function NavUser({
-  user,
-}: {
-  user: {
-    name: string;
-    email: string;
-  };
-}) {
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+export function NavUser({ user }: { user: UserSession }) {
   const { isMobile } = useSidebar();
+
+  console.log(user.image);
 
   return (
     <SidebarMenu>
@@ -44,9 +42,10 @@ export function NavUser({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className="bg-accent text-accent-foreground flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-lg">
-                {user.name.slice(0, 1)}
-              </div>
+              <Avatar>
+                <AvatarImage src={user.image} />
+                <AvatarFallback>{user.name.slice(0, 1)}</AvatarFallback>
+              </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{user.name}</span>
                 <span className="truncate text-xs">{user.email}</span>
@@ -62,9 +61,10 @@ export function NavUser({
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <div className="bg-accent flex size-10 items-center justify-center rounded-full">
-                  {user.name.slice(0, 1)}
-                </div>
+                <Avatar>
+                  <AvatarImage src={user.image} />
+                  <AvatarFallback>{user.name.slice(0, 1)}</AvatarFallback>
+                </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{user.name}</span>
                   <span className="truncate text-xs">{user.email}</span>
