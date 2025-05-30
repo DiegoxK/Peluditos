@@ -12,6 +12,7 @@ export const UserSchema = z.object({
 export type User = z.infer<typeof UserSchema>;
 
 export interface UserSession {
+  id: string;
   email: string;
   image: string;
   name: string;
