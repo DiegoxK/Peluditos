@@ -119,11 +119,13 @@ const formSchema = z.object({
 interface CreatePetFormProps {
   pet?: Pet;
   closeDialog: () => void;
+  setSubmitting?: (submitting: boolean) => void;
 }
 
 export default function CreatePetForm({
   pet,
   closeDialog,
+  setSubmitting,
 }: CreatePetFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -189,6 +191,7 @@ export default function CreatePetForm({
         id: "pet-form",
         duration: 3000,
       });
+      if (setSubmitting) setSubmitting(false);
       closeDialog();
     },
   });
@@ -246,6 +249,7 @@ export default function CreatePetForm({
         duration: Infinity,
         id: "pet-form",
       });
+      if (setSubmitting) setSubmitting(true);
     }
 
     const petImage = values.image;
@@ -253,6 +257,10 @@ export default function CreatePetForm({
     let imageKey: string | null = null;
 
     if (petImage instanceof Blob) {
+      toast.loading("Subiendo imagen...", {
+        duration: Infinity,
+        id: "image-upload",
+      });
       try {
         const file = new File([petImage], `${values.name.toLowerCase()}.webp`, {
           type: "image/webp",
@@ -265,8 +273,8 @@ export default function CreatePetForm({
         if (!uploadedFile?.ufsUrl || !uploadedFile.key) {
           console.error("Upload failed: invalid response from uploadFiles.");
           toast.error("Error al subir la imagen", {
-            id: "image-upload",
             duration: 3000,
+            id: "image-upload",
           });
           return;
         }
@@ -275,11 +283,15 @@ export default function CreatePetForm({
         imageKey = uploadedFile.key;
 
         console.log("Image uploaded successfully:", finalImageUrl);
+        toast.success("Imagen subida con exito!", {
+          id: "image-upload",
+          duration: 3000,
+        });
       } catch (error) {
         console.error("Error uploading image:", error);
         toast.error("Error al subir la imagen", {
-          id: "image-upload",
           duration: 3000,
+          id: "image-upload",
         });
         return;
       }
@@ -462,7 +474,7 @@ export default function CreatePetForm({
                     maxFileSizeMB={4}
                     outputOptions={{
                       outputType: "image/webp",
-                      outputQuality: 0.8,
+                      outputQuality: 0.5,
                     }}
                   >
                     <div className="space-y-4">
