@@ -2,19 +2,16 @@ import { type DefaultSession, type NextAuthConfig } from "next-auth";
 
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import client, { db, DB_NAME } from "@/server/db";
-import EmailProvider from "next-auth/providers/email";
+import EmailProvider from "next-auth/providers/nodemailer";
 import { env } from "@/env";
 
-import type { z } from "zod";
 import { cookies } from "next/headers";
 
 import {
   sendVerificationRequest,
   generateVerificationToken,
 } from "@/config/email-config";
-import type { UserSchema } from "../db/schema";
-
-type User = z.infer<typeof UserSchema>;
+import type { User, UserSession } from "../db/schema";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -24,11 +21,7 @@ type User = z.infer<typeof UserSchema>;
  */
 declare module "next-auth" {
   interface Session extends DefaultSession {
-    user: {
-      id: string;
-      // ...other properties
-      // role: UserRole;
-    } & DefaultSession["user"];
+    user: UserSession;
   }
 
   // interface User {
@@ -92,8 +85,9 @@ export const authConfig = {
     session: ({ session, user }) => ({
       ...session,
       user: {
-        ...session.user,
-        id: user.id,
+        email: user.email,
+        image: user.image,
+        name: user.name,
       },
     }),
   },
