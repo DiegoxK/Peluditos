@@ -6,6 +6,7 @@ import { formatDate } from "@/lib/utils";
 import type { Pet } from "@/server/db/schema";
 import Image from "next/image";
 import CreatePetForm from "./create-pet-form";
+import { Loader2 } from "lucide-react";
 
 interface PetDetailsProps {
   pet: Pet;
@@ -18,13 +19,17 @@ export default function PetDetails({ pet }: PetDetailsProps) {
     <div>
       <div className="grid max-h-[60vh] gap-6 space-y-4 overflow-y-scroll py-4 ps-1 pr-2">
         <div className="flex flex-col items-center gap-4 sm:flex-row">
-          <Image
-            src={pet.image}
-            alt={pet.name}
-            width={128}
-            height={128}
-            className="rounded-full object-cover"
-          />
+          <div className="bg-accent relative ml-2 flex size-[128px] w-fit items-center overflow-hidden rounded-full">
+            <Loader2 className="absolute inset-1/2 size-8 -translate-1/2 animate-spin text-white/80" />
+            <Image
+              src={pet.image}
+              alt={pet.name}
+              width={128}
+              height={128}
+              className="relative rounded-full object-cover"
+            />
+          </div>
+
           <div className="space-y-1 text-center sm:text-left">
             <h3 className="text-2xl font-bold">{pet.name}</h3>
             <p className="text-muted-foreground">
