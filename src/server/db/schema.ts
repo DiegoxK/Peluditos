@@ -9,6 +9,14 @@ export const UserSchema = z.object({
   emailVerified: z.date().optional(),
 });
 
+export type User = z.infer<typeof UserSchema>;
+
+export interface UserSession {
+  email: string;
+  image: string;
+  name: string;
+}
+
 export const PetDbSchema = z.object({
   _id: z.instanceof(ObjectId).optional(),
   name: z.string(),
