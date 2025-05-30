@@ -26,7 +26,7 @@ export default async function Layout({
           <Header />
           {children}
         </main>
-        <Toaster expand={true} richColors />
+        <Toaster expand={true} richColors position="top-right" />
       </DialogProvider>
     </SidebarProvider>
   );
