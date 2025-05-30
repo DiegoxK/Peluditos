@@ -59,7 +59,7 @@ export default function LoginForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
 
-    await signIn("email", { email: values.email });
+    await signIn("nodemailer", { email: values.email });
   }
 
   return (
