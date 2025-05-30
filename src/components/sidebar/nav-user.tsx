@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles,
-} from "lucide-react";
+import { BadgeCheck, ChevronsUpDown, LogOut } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -27,6 +20,8 @@ import {
 import type { UserSession } from "@/server/db/schema";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+import { signOut } from "next-auth/react";
 
 export function NavUser({ user }: { user: UserSession }) {
   const { isMobile } = useSidebar();
@@ -75,13 +70,17 @@ export function NavUser({ user }: { user: UserSession }) {
 
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <BadgeCheck className="text-accent-foreground" />
+                <BadgeCheck className="focus:text-white" />
                 Account
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOut className="text-accent-foreground" />
+            <DropdownMenuItem
+              onClick={() => {
+                void signOut();
+              }}
+            >
+              <LogOut className="focus:text-white" />
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>
