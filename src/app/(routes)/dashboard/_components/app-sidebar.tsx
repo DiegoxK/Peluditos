@@ -13,13 +13,9 @@ import {
 import { NavUser } from "../../../../components/sidebar/nav-user";
 import { Logo } from "@/assets/vectors";
 import SidebarNavigation from "./sidebar-navigation";
+import type { UserSession } from "@/server/db/schema";
 
-const user = {
-  name: "John Doe",
-  email: "johndoe@example.com",
-};
-
-export function AppSidebar() {
+export function AppSidebar({ user }: { user: UserSession }) {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="flex-row items-center">

@@ -21,7 +21,7 @@ export default async function Layout({
   return (
     <SidebarProvider>
       <DialogProvider>
-        <AppSidebar />
+        <AppSidebar user={session.user} />
         <main className="w-full">
           <Header />
           {children}
