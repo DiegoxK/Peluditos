@@ -2,7 +2,7 @@ import { type DefaultSession, type NextAuthConfig } from "next-auth";
 
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import client, { db, DB_NAME } from "@/server/db";
-import EmailProvider from "next-auth/providers/nodemailer";
+import EmailProvider from "next-auth/providers/email";
 import { env } from "@/env";
 
 import { cookies } from "next/headers";

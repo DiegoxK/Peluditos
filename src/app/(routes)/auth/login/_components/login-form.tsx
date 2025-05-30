@@ -56,10 +56,9 @@ export default function LoginForm() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
-
-    await signIn("nodemailer", { email: values.email });
+    void signIn("email", { email: values.email });
   }
 
   return (
