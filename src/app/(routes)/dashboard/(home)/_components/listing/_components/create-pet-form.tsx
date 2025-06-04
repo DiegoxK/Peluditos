@@ -53,6 +53,8 @@ import { uploadFiles } from "@/lib/uploadthing";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
 import { useState } from "react";
+import { useDialog } from "@/context/dialog-provider";
+import { useTableState } from "@/context/table-state-provider";
 
 const PetImageSchema = z.union([
   z
@@ -118,16 +120,12 @@ const formSchema = z.object({
 });
 interface CreatePetFormProps {
   pet?: Pet;
-  closeDialog: () => void;
-  setSubmitting?: (submitting: boolean) => void;
 }
 
-export default function CreatePetForm({
-  pet,
-  closeDialog,
-  setSubmitting,
-}: CreatePetFormProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function CreatePetForm({ pet }: CreatePetFormProps) {
+  const { closeDialog, setSubmitting: setDialogSubmitting } = useDialog();
+  const { currentQueryInput, resetToFirstPage } = useTableState();
+  const [isFormSubmitting, setIsFormSubmitting] = useState(false);
 
   const isEditMode = Boolean(pet);
   const utils = api.useUtils();
@@ -151,97 +149,120 @@ export default function CreatePetForm({
   });
 
   const { mutate: createPet } = api.pets.createPet.useMutation({
-    // Optimistically update the cache before the mutation fires
-    onMutate: async (newPet) => {
-      // Cancel any ongoing fetches so they don't overwrite our optimistic update
-      await utils.pets.getAllPets.cancel();
-      // Snapshot the current data so we can rollback later if needed
-      const previousPets = utils.pets.getAllPets.getData();
+    onMutate: async (newPetApiInput) => {
+      // Cancel any ongoing fetches for the current query view
+      await utils.pets.getAllPets.cancel(currentQueryInput);
+      // Snapshot the current data for the current query view
+      const previousPetsResponse =
+        utils.pets.getAllPets.getData(currentQueryInput);
 
-      // Optimistically add the new pet to the cache
-      utils.pets.getAllPets.setData(undefined, (old) => [
-        ...(old ?? []),
-        {
-          ...newPet,
-          _id: "temp-id",
+      // Optimistically add the new pet to the cache for the *current* query view
+      utils.pets.getAllPets.setData(currentQueryInput, (oldResponse) => {
+        if (!oldResponse) return undefined;
+
+        // Construct the optimistic pet object.
+        const tempId = "temp-" + Math.random().toString(36).slice(2, 9);
+        const optimisticPetEntry: Pet = {
+          ...newPetApiInput,
+          _id: tempId,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-        },
-      ]);
+        };
 
-      // Return context for rollback
-      return { previousPets };
+        return {
+          ...oldResponse,
+          data: [optimisticPetEntry, ...oldResponse.data],
+          totalRowCount: oldResponse.totalRowCount + 1,
+        };
+      });
+      return { previousPetsResponse, queryInputUsed: currentQueryInput };
     },
     onSuccess: (data) => {
       console.log("Pet created successfully:", data);
     },
     onError: (error, _newPet, context) => {
-      if (context?.previousPets) {
-        utils.pets.getAllPets.setData(undefined, context.previousPets);
+      if (context?.previousPetsResponse) {
+        utils.pets.getAllPets.setData(
+          context.queryInputUsed,
+          context.previousPetsResponse,
+        );
       }
       console.error("Error al crear mascota:", error);
-      toast.error("Error creating pet", {
+      toast.error(`Error creando mascota: ${error.message}`, {
         id: "pet-form",
         duration: 3000,
       });
     },
-    onSettled: () => {
+    onSettled: (_data, error, _variables) => {
       void utils.pets.getAllPets.invalidate();
-      toast.success("Mascota subida exitosamente!", {
-        id: "pet-form",
-        duration: 3000,
-      });
-      if (setSubmitting) setSubmitting(false);
-      closeDialog();
+
+      if (!error) {
+        toast.success("Mascota subida exitosamente!", {
+          id: "pet-form",
+          duration: 3000,
+        });
+        resetToFirstPage();
+      }
+      if (setDialogSubmitting) setDialogSubmitting(false);
+      setIsFormSubmitting(false);
+      if (!error) closeDialog();
     },
   });
 
   const { mutate: updatePet } = api.pets.updatePet.useMutation({
-    onMutate: async (updatedPet) => {
-      await utils.pets.getAllPets.cancel();
+    onMutate: async (updatedPetPayload) => {
+      await utils.pets.getAllPets.cancel(currentQueryInput);
+      const previousPetsResponse =
+        utils.pets.getAllPets.getData(currentQueryInput);
 
-      const previousPets = utils.pets.getAllPets.getData();
-
-      // Optimistically update the cache
-      utils.pets.getAllPets.setData(
-        undefined,
-        (old) =>
-          old?.map((pet) =>
-            pet._id === updatedPet._id
-              ? { ...pet, ...updatedPet, updatedAt: new Date().toISOString() }
-              : pet,
-          ) ?? [],
-      );
-
-      // Return context for potential rollback
-      return { previousPets };
+      utils.pets.getAllPets.setData(currentQueryInput, (oldResponse) => {
+        if (!oldResponse) return undefined;
+        return {
+          ...oldResponse,
+          data: oldResponse.data.map((p) =>
+            p._id === updatedPetPayload._id
+              ? {
+                  ...p,
+                  ...updatedPetPayload,
+                  updatedAt: new Date().toISOString(),
+                }
+              : p,
+          ),
+        };
+      });
+      return { previousPetsResponse, queryInputUsed: currentQueryInput };
     },
-
-    // On error, rollback to previous state
     onError: (error, _updatedPet, context) => {
-      if (context?.previousPets) {
-        utils.pets.getAllPets.setData(undefined, context.previousPets);
+      if (context?.previousPetsResponse) {
+        utils.pets.getAllPets.setData(
+          context.queryInputUsed,
+          context.previousPetsResponse,
+        );
       }
       console.error("Error updating pet:", error);
-      toast.error("Error updating pet", {
+      toast.error(`Error actualizando mascota: ${error.message}`, {
         duration: 3000,
       });
     },
-
     onSuccess: (data) => {
       console.log("Pet updated successfully:", data);
     },
-
-    onSettled: () => {
+    onSettled: (_data, error, _variables) => {
       void utils.pets.getAllPets.invalidate();
-      toast.success("Mascota actualizada exitosamente!", {
-        duration: 3000,
-      });
+
+      if (!error) {
+        toast.success("Mascota actualizada exitosamente!", {
+          duration: 3000,
+        });
+      }
+      setIsFormSubmitting(false);
+      if (!error) closeDialog();
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsSubmitting(true);
+    setIsFormSubmitting(true);
+
     if (isEditMode) closeDialog();
 
     if (!isEditMode) {
@@ -249,7 +270,7 @@ export default function CreatePetForm({
         duration: Infinity,
         id: "pet-form",
       });
-      if (setSubmitting) setSubmitting(true);
+      setIsFormSubmitting(true);
     }
 
     const petImage = values.image;
@@ -508,9 +529,6 @@ export default function CreatePetForm({
                           <ImageCropChangeAction>
                             Cambiar archivo
                           </ImageCropChangeAction>
-                          <ImageCropDeleteAction>
-                            Eliminar
-                          </ImageCropDeleteAction>
                         </ImageCropFooter>
                       </ImageCropContentArea>
 
@@ -620,10 +638,12 @@ export default function CreatePetForm({
 
         <DialogFooter className="mt-4">
           <Button
-            disabled={!form.formState.isDirty || isSubmitting}
+            disabled={
+              (!form.formState.isDirty && isEditMode) || isFormSubmitting
+            }
             type="submit"
           >
-            {isEditMode ? "Actualizar" : "Guardar"}
+            {isEditMode ? "Actualizar Mascota" : "Guardar Mascota"}
           </Button>
 
           <DialogClose asChild>
