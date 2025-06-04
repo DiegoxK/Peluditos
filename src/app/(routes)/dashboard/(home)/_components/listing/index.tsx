@@ -6,11 +6,8 @@ import { DataTable } from "./table/data-table";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Cat, Dog, Squirrel } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { api } from "@/trpc/react";
 
 export default function PetListing() {
-  const [pets] = api.pets.getAllPets.useSuspenseQuery();
-
   return (
     <>
       <div className="grid gap-4 md:grid-cols-3">
@@ -23,7 +20,9 @@ export default function PetListing() {
             <Separator className="bg-input" />
           </div>
           <CardContent className="px-4">
-            <div className="text-primary text-2xl font-bold">{pets.length}</div>
+            <div className="text-primary text-2xl font-bold">
+              {/* {pets.length} */}5
+            </div>
           </CardContent>
         </Card>
 
@@ -37,7 +36,7 @@ export default function PetListing() {
           </div>
           <CardContent className="px-4">
             <div className="text-primary text-2xl font-bold">
-              {pets.filter((m) => m.status === "disponible").length}
+              {/* {pets.filter((m) => m.status === "disponible").length} */}5
             </div>
           </CardContent>
         </Card>
@@ -52,14 +51,14 @@ export default function PetListing() {
           </div>
           <CardContent className="px-4">
             <div className="text-primary text-2xl font-bold">
-              {pets.filter((m) => m.status === "adoptado").length}
+              {/* {pets.filter((m) => m.status === "adoptado").length} */}5
             </div>
           </CardContent>
         </Card>
       </div>
 
       <div className="bg-sidebar border-sidebar-border space-y-4 border p-4">
-        <DataTable columns={columns} data={pets} />
+        <DataTable columns={columns} />
       </div>
     </>
   );

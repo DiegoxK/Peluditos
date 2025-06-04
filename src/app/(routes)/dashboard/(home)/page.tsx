@@ -4,11 +4,12 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PetListing from "./_components/listing";
 
-import { Suspense } from "react";
-import LoadingListing from "./_components/listing/loading";
+import { TableStateProvider } from "@/context/table-state-provider";
 
-export default async function Pets() {
-  void api.pets.getAllPets.prefetch();
+import { defaultInitialTableQueryInput } from "@/config/pet-defaults";
+
+export default async function PetsPage() {
+  void api.pets.getAllPets.prefetch(defaultInitialTableQueryInput);
 
   return (
     <div className="p-6">
@@ -30,14 +31,14 @@ export default async function Pets() {
         </TabsList>
 
         <HydrateClient>
-          <TabsContent value="listado" className="space-y-4">
-            <Suspense fallback={<LoadingListing />}>
+          <TableStateProvider>
+            <TabsContent value="listado" className="space-y-4">
               <PetListing />
-            </Suspense>
-          </TabsContent>
-          <TabsContent value="estadisticas" className="space-y-4">
-            {/* <PetStats pets={data} /> */}
-          </TabsContent>
+            </TabsContent>
+            <TabsContent value="estadisticas" className="space-y-4">
+              {/* <PetStats pets={data} /> */}
+            </TabsContent>
+          </TableStateProvider>
         </HydrateClient>
       </Tabs>
     </div>
