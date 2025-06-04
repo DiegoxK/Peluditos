@@ -115,9 +115,7 @@ export default function PetDetails({ pet }: PetDetailsProps) {
               title: `Editar a ${pet.name}`,
               description:
                 "Complete los detalles de la mascota y guarde los cambios.",
-              content: () => (
-                <CreatePetForm pet={pet} closeDialog={closeDialog} />
-              ),
+              content: () => <CreatePetForm pet={pet} />,
             })
           }
         >
