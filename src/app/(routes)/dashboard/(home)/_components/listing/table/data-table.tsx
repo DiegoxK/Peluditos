@@ -2,11 +2,8 @@
 
 import {
   type ColumnDef,
-  type SortingState,
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 
@@ -20,10 +17,7 @@ import {
 } from "@/components/ui/table";
 import type { Pet } from "@/server/db/schema";
 import DataTableActions from "./data-table-actions";
-
-import { useState } from "react";
-
-import { useDebouncedValue } from "@/hooks/use-debounce-value";
+import { useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Pencil, Search } from "lucide-react";
@@ -32,50 +26,89 @@ import { useDialog } from "@/context/dialog-provider";
 import PetDetails from "../_components/pet-details";
 import CreatePetForm from "../_components/create-pet-form";
 
-interface DataTableProps<TData extends Pet, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+import { api } from "@/trpc/react";
+import { useTableState } from "@/context/table-state-provider";
+
+interface DataTableProps {
+  columns: ColumnDef<Pet, unknown>[];
 }
 
-export function DataTable<TData extends Pet, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) {
-  const { openDialog, closeDialog } = useDialog();
+export function DataTable({ columns }: DataTableProps) {
+  const { openDialog } = useDialog();
 
-  const [globalFilter, setGlobalFilter] = useState("");
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const debouncedValue = useDebouncedValue(globalFilter, 500);
+  const {
+    currentQueryInput,
+    sorting,
+    setSorting,
+    columnFilters,
+    setColumnFilters,
+    pagination,
+    setPagination,
+  } = useTableState();
 
-  const table = useReactTable({
-    data,
+  const {
+    data: serverResponse,
+    isFetching,
+    error,
+    status,
+  } = api.pets.getAllPets.useQuery(currentQueryInput, {
+    placeholderData: (prev) => prev,
+  });
+
+  const tableData = useMemo(
+    () => serverResponse?.data ?? [],
+    [serverResponse?.data],
+  );
+  const totalRowCount = useMemo(
+    () => serverResponse?.totalRowCount ?? 0,
+    [serverResponse?.totalRowCount],
+  );
+
+  const table = useReactTable<Pet>({
+    data: tableData,
     columns,
     state: {
       sorting,
-      globalFilter: debouncedValue,
+      columnFilters,
+      pagination,
     },
+    manualPagination: true,
+    manualSorting: true,
+    manualFiltering: true,
+    rowCount: totalRowCount,
     onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
-    onGlobalFilterChange: setGlobalFilter,
+    onColumnFiltersChange: setColumnFilters,
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    globalFilterFn: "includesString",
+    debugTable: process.env.NODE_ENV === "development",
   });
 
   return (
     <>
-      <DataTableHeader
-        data={data}
-        globalFilter={globalFilter}
-        setGlobalFilter={setGlobalFilter}
-        table={table}
-      />
-      <Table className="bg-background rounded-md border">
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
+      <DataTableHeader table={table} rowCount={totalRowCount} />
+
+      {status === "pending" && (
+        <div className="flex h-24 items-center justify-center">
+          Cargando mascotas...
+        </div>
+      )}
+      {isFetching && status === "success" && serverResponse && (
+        <div className="text-muted-foreground p-2 text-center text-sm">
+          Actualizando...
+        </div>
+      )}
+      {status === "error" && error && (
+        <div className="h-24 text-center text-red-500">
+          Error al cargar mascotas: {error.message}
+        </div>
+      )}
+
+      <div className="rounded-md border">
+        <Table className="bg-background">
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
                   <TableHead key={header.id}>
                     {header.isPlaceholder
                       ? null
@@ -84,72 +117,145 @@ export function DataTable<TData extends Pet, TValue>({
                           header.getContext(),
                         )}
                   </TableHead>
-                );
-              })}
-              <TableHead className="mr-11 flex items-center justify-end font-semibold">
-                Acciones
-              </TableHead>
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
                 ))}
-                <TableCell className="mt-1 mr-4 flex items-center justify-end gap-2">
-                  <Button
-                    onClick={() =>
-                      openDialog({
-                        title: `Detalles de ${row.original.name}`,
-                        description: " Información completa de la mascota",
-                        content: () => <PetDetails pet={row.original} />,
-                      })
-                    }
-                    variant="ghost"
-                    size="icon"
-                  >
-                    <Search className="size-4" />
-                  </Button>
-                  <Button
-                    onClick={() =>
-                      openDialog({
-                        title: `Editar a ${row.original.name}`,
-                        description:
-                          "Complete los detalles de la mascota y guarde los cambios.",
-                        content: () => (
-                          <CreatePetForm
-                            pet={row.original}
-                            closeDialog={closeDialog}
-                          />
-                        ),
-                      })
-                    }
-                    variant="ghost"
-                    size="icon"
-                  >
-                    <Pencil className="size-4" />
-                  </Button>
-                  <DataTableActions pet={row.original} />
-                </TableCell>
+                <TableHead className="text-right font-semibold">
+                  Acciones
+                </TableHead>
               </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length
+              ? table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                    <TableCell className="text-right">
+                      <div className="mt-1 mr-1 flex items-center justify-end gap-1">
+                        <Button
+                          onClick={() =>
+                            openDialog({
+                              title: `Detalles de ${row.original.name}`,
+                              description:
+                                " Información completa de la mascota",
+                              content: () => <PetDetails pet={row.original} />,
+                            })
+                          }
+                          variant="ghost"
+                          size="icon"
+                          aria-label={`Ver detalles de ${row.original.name}`}
+                        >
+                          <Search className="size-4" />
+                        </Button>
+                        <Button
+                          onClick={() =>
+                            openDialog({
+                              title: `Editar a ${row.original.name}`,
+                              description:
+                                "Complete los detalles de la mascota y guarde los cambios.",
+
+                              content: () => (
+                                <CreatePetForm pet={row.original} />
+                              ),
+                            })
+                          }
+                          variant="ghost"
+                          size="icon"
+                          aria-label={`Editar ${row.original.name}`}
+                        >
+                          <Pencil className="size-4" />
+                        </Button>
+
+                        <DataTableActions pet={row.original} />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              : status === "success" &&
+                !isFetching &&
+                !table.getRowModel().rows.length && (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length + 1}
+                      className="h-24 text-center"
+                    >
+                      No se encontraron resultados.
+                    </TableCell>
+                  </TableRow>
+                )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Pagination UI Controls */}
+      <div className="flex flex-wrap items-center justify-between gap-2 py-4">
+        <div className="text-muted-foreground text-sm">
+          {totalRowCount} mascota(s) en total.
+        </div>
+        <div className="flex items-center space-x-2">
+          <span className="text-muted-foreground text-sm">
+            Página{" "}
+            {totalRowCount > 0 ? table.getState().pagination.pageIndex + 1 : 0}{" "}
+            de {table.getPageCount()}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.firstPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            {"<<"}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Anterior
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Siguiente
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.lastPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            {">>"}
+          </Button>
+        </div>
+        <div>
+          <select
+            value={table.getState().pagination.pageSize}
+            onChange={(e) => {
+              table.setPageSize(Number(e.target.value));
+            }}
+            className="bg-background rounded-md border px-2 py-1.5 text-sm"
+          >
+            {[10, 25, 50, 100].map((size) => (
+              <option key={size} value={size}>
+                Mostrar {size}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
     </>
   );
 }
