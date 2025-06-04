@@ -20,14 +20,12 @@ export default async function Layout({
 
   return (
     <SidebarProvider>
-      <DialogProvider>
-        <AppSidebar user={session.user} />
-        <main className="w-full">
-          <Header />
-          {children}
-        </main>
-        <Toaster expand={true} theme="light" richColors position="top-right" />
-      </DialogProvider>
+      <AppSidebar user={session.user} />
+      <main className="w-full">
+        <Header />
+        {children}
+      </main>
+      <Toaster expand={true} theme="light" richColors position="top-right" />
     </SidebarProvider>
   );
 }

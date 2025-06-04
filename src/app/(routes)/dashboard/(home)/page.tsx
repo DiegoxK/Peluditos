@@ -7,6 +7,7 @@ import PetListing from "./_components/listing";
 import { TableStateProvider } from "@/context/table-state-provider";
 
 import { defaultInitialTableQueryInput } from "@/config/pet-defaults";
+import { DialogProvider } from "@/context/dialog-provider";
 
 export default async function PetsPage() {
   void api.pets.getAllPets.prefetch(defaultInitialTableQueryInput);
@@ -32,12 +33,14 @@ export default async function PetsPage() {
 
         <HydrateClient>
           <TableStateProvider>
-            <TabsContent value="listado" className="space-y-4">
-              <PetListing />
-            </TabsContent>
-            <TabsContent value="estadisticas" className="space-y-4">
-              {/* <PetStats pets={data} /> */}
-            </TabsContent>
+            <DialogProvider>
+              <TabsContent value="listado" className="space-y-4">
+                <PetListing />
+              </TabsContent>
+              <TabsContent value="estadisticas" className="space-y-4">
+                {/* <PetStats pets={data} /> */}
+              </TabsContent>
+            </DialogProvider>
           </TableStateProvider>
         </HydrateClient>
       </Tabs>
