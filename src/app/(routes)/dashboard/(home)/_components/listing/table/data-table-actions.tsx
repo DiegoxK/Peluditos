@@ -60,9 +60,7 @@ export default function DataTableActions({ pet }: DataTableActionsInterface) {
             openDialog({
               title: `Confirmar eliminación de ${pet.name}?`,
               description: `¿Está seguro que desea eliminar a ${pet.name}? Esta acción no se puede deshacer.`,
-              content: () => (
-                <DeletePetAction pet={pet} closeDialog={closeDialog} />
-              ),
+              content: () => <DeletePetAction pet={pet} />,
             })
           }
           className="text-destructive focus:text-destructive focus:bg-red-100"
