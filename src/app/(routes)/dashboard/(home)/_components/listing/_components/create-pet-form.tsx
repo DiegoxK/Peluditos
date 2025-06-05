@@ -45,7 +45,6 @@ import {
   ImageCropRoot,
   ImageCropTitle,
   ImageCropTrigger,
-  ImageCropDeleteAction,
 } from "@/components/ui/image-crop-area";
 import { Cat } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -70,9 +69,10 @@ const formSchema = z.object({
     .string({ required_error: "El nombre es obligatorio." })
     .min(1, { message: "El nombre no puede estar vacío." }),
 
-  specie: z
-    .string({ required_error: "La especie es obligatoria." })
-    .min(1, { message: "La especie no puede estar vacía." }),
+  specie: z.enum(["gato", "perro"], {
+    required_error: "La especie es obligatoria.",
+    invalid_type_error: "La especie debe ser Perro o Gato",
+  }),
 
   breed: z.string({ required_error: "La raza es obligatoria." }).optional(),
 
@@ -96,7 +96,7 @@ const formSchema = z.object({
     .string({ required_error: "La descripción es obligatoria." })
     .min(1, { message: "La descripción no puede estar vacía." }),
 
-  gender: z.enum(["Macho", "Hembra"], {
+  gender: z.enum(["macho", "hembra"], {
     required_error: "El género es obligatorio.",
     invalid_type_error: "El género debe ser Macho o Hembra.",
   }),
@@ -134,14 +134,14 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: pet?.name ?? "",
-      specie: pet?.specie ?? "",
+      specie: pet?.specie ?? "perro",
       breed: pet?.breed ?? "",
       age: pet?.age ?? 0,
       status: pet?.status ?? "disponible",
       image: pet?.image ?? "",
       entryDate: pet?.entryDate ? new Date(pet.entryDate) : new Date(),
       description: pet?.description ?? "",
-      gender: pet?.gender ?? "Macho",
+      gender: pet?.gender ?? "macho",
       weight: pet?.weight ?? 1,
       vaccinated: pet?.vaccinated ?? false,
       sterilized: pet?.sterilized ?? false,
@@ -375,8 +375,8 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="Macho">Macho</SelectItem>
-                      <SelectItem value="Hembra">Hembra</SelectItem>
+                      <SelectItem value="macho">Macho</SelectItem>
+                      <SelectItem value="hembra">Hembra</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -414,8 +414,8 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="Perro">Perro</SelectItem>
-                      <SelectItem value="Gato">Gato</SelectItem>
+                      <SelectItem value="perro">Perro</SelectItem>
+                      <SelectItem value="gato">Gato</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
