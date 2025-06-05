@@ -3,21 +3,20 @@
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { Pet } from "@/server/db/schema";
 import type { Table } from "@tanstack/react-table";
-import { ArrowUpDown, Download, Filter, ListRestart, Plus } from "lucide-react";
+import { ArrowUpDown, Download, ListRestart, Plus } from "lucide-react";
 
 import CreatePetForm from "./_components/create-pet-form";
 import { useDialog } from "@/context/dialog-provider";
 import { useTableState } from "@/context/table-state-provider";
 import { exportToExcel } from "@/lib/utils";
+import { MultiSelectFilter } from "./_components/multi-select-filter";
 
 interface DataTableHeaderProps {
   table: Table<Pet>;
@@ -110,115 +109,19 @@ export default function DataTableHeader({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
           {specieColumn && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Filter className="mr-2 h-4 w-4" />
-                  Especie
-                  {((specieColumn.getFilterValue() as string[])?.length ?? 0) >
-                    0 && (
-                    <span className="bg-primary text-primary-foreground ml-2 rounded-full px-2 py-0.5 text-xs">
-                      {(specieColumn.getFilterValue() as string[]).length}
-                    </span>
-                  )}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-[200px]">
-                <DropdownMenuLabel>Filtrar por Especie</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {especies.map((especie) => {
-                  const selectedValues =
-                    (specieColumn.getFilterValue() as string[] | undefined) ??
-                    [];
-                  const isSelected = selectedValues.includes(especie);
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={especie}
-                      checked={isSelected}
-                      className="capitalize"
-                      onCheckedChange={(checked) => {
-                        handleMultiSelectFilterChange(
-                          "specie",
-                          especie,
-                          !!checked,
-                        );
-                      }}
-                    >
-                      {especie}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-                {((specieColumn.getFilterValue() as string[])?.length ?? 0) >
-                  0 && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onSelect={() => specieColumn.setFilterValue(undefined)}
-                      className="text-destructive focus:text-destructive text-xs focus:bg-red-100"
-                    >
-                      Limpiar filtro de especie
-                    </DropdownMenuItem>
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <MultiSelectFilter
+              column={specieColumn}
+              title="Especie"
+              options={especies}
+            />
           )}
-
           {statusColumn && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Filter className="mr-2 h-4 w-4" />
-                  Estado
-                  {((statusColumn.getFilterValue() as string[])?.length ?? 0) >
-                    0 && (
-                    <span className="bg-primary text-primary-foreground ml-2 rounded-full px-2 py-0.5 text-xs">
-                      {(statusColumn.getFilterValue() as string[]).length}
-                    </span>
-                  )}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-[200px]">
-                <DropdownMenuLabel>Filtrar por Estado</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {estados.map((estado) => {
-                  const selectedValues =
-                    (statusColumn.getFilterValue() as string[] | undefined) ??
-                    [];
-                  const isSelected = selectedValues.includes(estado);
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={estado}
-                      className="capitalize"
-                      checked={isSelected}
-                      onCheckedChange={(checked) => {
-                        handleMultiSelectFilterChange(
-                          "status",
-                          estado,
-                          !!checked,
-                        );
-                      }}
-                    >
-                      {estado}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-                {((statusColumn.getFilterValue() as string[])?.length ?? 0) >
-                  0 && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onSelect={() => statusColumn.setFilterValue(undefined)}
-                      className="text-destructive focus:text-destructive text-xs focus:bg-red-100"
-                    >
-                      Limpiar filtro de estado
-                    </DropdownMenuItem>
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <MultiSelectFilter
+              column={statusColumn}
+              title="Estado"
+              options={estados}
+            />
           )}
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
