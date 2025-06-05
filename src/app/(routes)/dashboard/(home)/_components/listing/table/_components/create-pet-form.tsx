@@ -646,12 +646,7 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
           </Button>
 
           <DialogClose asChild>
-            <Button
-              disabled={
-                (!form.formState.isDirty && isEditMode) || isFormSubmitting
-              }
-              variant="outline"
-            >
+            <Button disabled={isFormSubmitting} variant="outline">
               Cerrar
             </Button>
           </DialogClose>
