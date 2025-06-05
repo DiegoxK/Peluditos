@@ -93,7 +93,7 @@ export function SortMenu<TData>({
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onSelect={() => table.resetSorting()}
-              className="text-destructive focus:bg-destructive text-xs transition-all focus:text-white"
+              className="text-destructive focus:bg-destructive transition-all focus:text-white"
             >
               Limpiar ordenamiento
             </DropdownMenuItem>
