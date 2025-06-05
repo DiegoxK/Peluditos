@@ -119,7 +119,7 @@ export function DataTable({ columns }: DataTableProps) {
                         )}
                   </TableHead>
                 ))}
-                <TableHead className="text-right font-semibold">
+                <TableHead className="pr-10 text-right font-semibold">
                   Acciones
                 </TableHead>
               </TableRow>
@@ -146,8 +146,7 @@ export function DataTable({ columns }: DataTableProps) {
                           onClick={() =>
                             openDialog({
                               title: `Detalles de ${row.original.name}`,
-                              description:
-                                " Información completa de la mascota",
+                              description: "Información completa de la mascota",
                               content: () => <PetDetails pet={row.original} />,
                             })
                           }
