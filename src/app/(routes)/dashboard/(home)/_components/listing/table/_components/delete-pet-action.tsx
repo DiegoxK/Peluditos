@@ -13,7 +13,7 @@ interface DeletePetProps {
 }
 
 export default function DeletePetAction({ pet }: DeletePetProps) {
-  const { closeDialog: closeParentDialog } = useDialog();
+  const { closeDialog: closeParentDialog, setPreventDialogClose } = useDialog();
   const { currentQueryInput } = useTableState();
   const utils = api.useUtils();
 
@@ -58,12 +58,14 @@ export default function DeletePetAction({ pet }: DeletePetProps) {
           toast.success("Mascota eliminada exitosamente!", {
             duration: 3000,
           });
+          setPreventDialogClose(false);
           closeParentDialog();
         }
       },
     });
 
   const handleDelete = () => {
+    setPreventDialogClose(true);
     deletePet({ _id: pet._id });
   };
 
