@@ -123,7 +123,7 @@ interface CreatePetFormProps {
 }
 
 export default function CreatePetForm({ pet }: CreatePetFormProps) {
-  const { closeDialog, setSubmitting: setDialogSubmitting } = useDialog();
+  const { closeDialog, setPreventDialogClose } = useDialog();
   const { currentQueryInput, resetToFirstPage } = useTableState();
   const [isFormSubmitting, setIsFormSubmitting] = useState(false);
 
@@ -195,6 +195,7 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
     },
     onSettled: (_data, error, _variables) => {
       void utils.pets.getAllPets.invalidate();
+      setPreventDialogClose(false);
 
       if (!error) {
         toast.success("Mascota subida exitosamente!", {
@@ -203,8 +204,6 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
         });
         resetToFirstPage();
       }
-      if (setDialogSubmitting) setDialogSubmitting(false);
-      setIsFormSubmitting(false);
       if (!error) closeDialog();
     },
   });
@@ -270,7 +269,7 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
         duration: Infinity,
         id: "pet-form",
       });
-      setIsFormSubmitting(true);
+      setPreventDialogClose(true);
     }
 
     const petImage = values.image;
@@ -525,10 +524,10 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
                         </p>
                         <Separator className="my-4" />
                         <ImageCropFooter>
-                          <ImageCropApplyAction>Aplicar</ImageCropApplyAction>
                           <ImageCropChangeAction>
                             Cambiar archivo
                           </ImageCropChangeAction>
+                          <ImageCropApplyAction>Aplicar</ImageCropApplyAction>
                         </ImageCropFooter>
                       </ImageCropContentArea>
 
