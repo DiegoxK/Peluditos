@@ -36,7 +36,7 @@ export default function DataTableHeader({
   const specieColumn = table.getColumn("specie");
   const statusColumn = table.getColumn("status");
 
-  const especies = ["Perro", "Gato"];
+  const especies = ["perro", "gato"];
   const estados = ["adoptado", "disponible", "en tratamiento"];
 
   const handleMultiSelectFilterChange = (
