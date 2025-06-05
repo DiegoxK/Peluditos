@@ -25,8 +25,20 @@ export default function DataTableHeader({
 }: DataTableHeaderProps) {
   const { openDialog } = useDialog();
 
-  const { globalFilter, setGlobalFilter, resetTableToDefaults } =
-    useTableState();
+  const {
+    globalFilter,
+    columnFilters,
+    sorting,
+    setGlobalFilter,
+    resetTableToDefaults,
+  } = useTableState();
+
+  const hasActiveGlobalFilter = globalFilter.trim() !== "";
+  const hasActiveColumnFilters = columnFilters.length > 0;
+  const hasActiveSorting = sorting.length > 0;
+
+  const canClear =
+    hasActiveGlobalFilter || hasActiveColumnFilters || hasActiveSorting;
 
   const specieColumn = table.getColumn("specie");
   const statusColumn = table.getColumn("status");
@@ -106,7 +118,12 @@ export default function DataTableHeader({
             <Download className="mr-2 h-4 w-4" />
             Exportar (Página Actual)
           </Button>
-          <Button variant="outline" size="sm" onClick={handleClearAll}>
+          <Button
+            disabled={!canClear}
+            variant="outline"
+            size="sm"
+            onClick={handleClearAll}
+          >
             <ListRestart className="mr-2 h-4 w-4" />
             Limpiar Todo
           </Button>
