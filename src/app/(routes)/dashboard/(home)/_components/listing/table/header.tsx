@@ -14,7 +14,7 @@ import type { Pet } from "@/server/db/schema";
 import type { Table } from "@tanstack/react-table";
 import { ArrowUpDown, Download, Filter, ListRestart, Plus } from "lucide-react";
 
-import CreatePetForm from "../_components/create-pet-form";
+import CreatePetForm from "./_components/create-pet-form";
 import { useDialog } from "@/context/dialog-provider";
 import { useTableState } from "@/context/table-state-provider";
 import { exportToExcel } from "@/lib/utils";

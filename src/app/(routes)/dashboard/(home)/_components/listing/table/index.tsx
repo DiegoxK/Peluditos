@@ -23,8 +23,8 @@ import { Button } from "@/components/ui/button";
 import { Pencil, Search } from "lucide-react";
 import DataTableHeader from "./header";
 import { useDialog } from "@/context/dialog-provider";
-import PetDetails from "../_components/pet-details";
-import CreatePetForm from "../_components/create-pet-form";
+import PetDetails from "./_components/pet-details";
+import CreatePetForm from "./_components/create-pet-form";
 
 import { api } from "@/trpc/react";
 import { useTableState } from "@/context/table-state-provider";

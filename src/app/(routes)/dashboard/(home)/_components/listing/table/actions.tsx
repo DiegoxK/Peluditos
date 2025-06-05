@@ -12,9 +12,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { Pet } from "@/server/db/schema";
 import { ChevronDown } from "lucide-react";
-import PetDetails from "../_components/pet-details";
-import DeletePetAction from "../_components/delete-pet-action";
-import CreatePetForm from "../_components/create-pet-form";
+import PetDetails from "./_components/pet-details";
+import DeletePetAction from "./_components/delete-pet-action";
+import CreatePetForm from "./_components/create-pet-form";
 
 interface DataTableActionsInterface {
   pet: Pet;
