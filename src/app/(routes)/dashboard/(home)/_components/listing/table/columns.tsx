@@ -17,7 +17,7 @@ export const columns: ColumnDef<Pet>[] = [
       const { name } = row.original;
       return (
         <div className="bg-accent ml-5 flex size-[35px] w-fit items-center overflow-hidden rounded-full">
-          <Image src={image} alt={name} width={35} height={35} />
+          {image && <Image src={image} alt={name} width={35} height={35} />}
         </div>
       );
     },
