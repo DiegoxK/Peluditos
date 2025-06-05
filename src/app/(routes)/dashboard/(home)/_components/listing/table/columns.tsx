@@ -9,12 +9,14 @@ import Image from "next/image";
 export const columns: ColumnDef<Pet>[] = [
   {
     accessorKey: "image",
-    header: "Imagen",
+    header: () => {
+      return <span className="pl-3">Imagen</span>;
+    },
     cell: ({ row }) => {
       const { image } = row.original;
       const { name } = row.original;
       return (
-        <div className="bg-accent ml-2 flex size-[35px] w-fit items-center overflow-hidden rounded-full">
+        <div className="bg-accent ml-5 flex size-[35px] w-fit items-center overflow-hidden rounded-full">
           <Image src={image} alt={name} width={35} height={35} />
         </div>
       );
