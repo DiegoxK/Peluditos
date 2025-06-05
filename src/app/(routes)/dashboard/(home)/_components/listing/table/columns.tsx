@@ -34,12 +34,20 @@ export const columns: ColumnDef<Pet>[] = [
   {
     accessorKey: "specie",
     header: "Especie",
+    cell: ({ row }) => {
+      const { specie } = row.original;
+      return <span className="capitalize">{specie}</span>;
+    },
     enableColumnFilter: true,
     enableGlobalFilter: true,
   },
   {
     accessorKey: "breed",
     header: "Raza",
+    cell: ({ row }) => {
+      const { breed } = row.original;
+      return <span className="capitalize">{breed}</span>;
+    },
     enableGlobalFilter: true,
   },
   {
