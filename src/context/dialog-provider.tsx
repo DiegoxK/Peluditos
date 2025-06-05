@@ -1,6 +1,14 @@
 "use client";
 
-import { createContext, useContext, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
+} from "react";
+
 import {
   Dialog,
   DialogContent,
@@ -18,7 +26,7 @@ type DialogOptions = {
 type DialogContextType = {
   openDialog: (options: DialogOptions) => void;
   closeDialog: () => void;
-  setSubmitting: (submitting: boolean) => void;
+  setPreventDialogClose: Dispatch<SetStateAction<boolean>>;
 };
 
 const DialogContext = createContext<DialogContextType | undefined>(undefined);
@@ -26,12 +34,7 @@ const DialogContext = createContext<DialogContextType | undefined>(undefined);
 export const DialogProvider = ({ children }: { children: ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [dialogContent, setDialogContent] = useState<DialogOptions>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Prevents user from clossing the modal
-  const setSubmitting = (submitting: boolean) => {
-    setIsSubmitting(submitting);
-  };
+  const [preventDialogClose, setPreventDialogClose] = useState(false);
 
   const openDialog = (options: DialogOptions) => {
     setDialogContent(options);
@@ -48,18 +51,20 @@ export const DialogProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <DialogContext.Provider value={{ openDialog, closeDialog, setSubmitting }}>
+    <DialogContext.Provider
+      value={{ openDialog, closeDialog, setPreventDialogClose }}
+    >
       {children}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent
           onEscapeKeyDown={(event) => {
-            if (isSubmitting) event.preventDefault();
+            if (preventDialogClose) event.preventDefault();
           }}
           onPointerDownOutside={(event) => {
-            if (isSubmitting) event.preventDefault();
+            if (preventDialogClose) event.preventDefault();
           }}
           onInteractOutside={(event) => {
-            if (isSubmitting) event.preventDefault();
+            if (preventDialogClose) event.preventDefault();
           }}
           className="max-h-[90vh]"
         >
