@@ -21,7 +21,7 @@ export interface UserSession {
 export const PetDbSchema = z.object({
   _id: z.instanceof(ObjectId).optional(),
   name: z.string(),
-  specie: z.string(),
+  specie: z.enum(["perro", "gato"]),
   breed: z.string().optional(),
   age: z.number(),
   status: z.enum(["adoptado", "disponible", "en tratamiento"]),
@@ -31,7 +31,7 @@ export const PetDbSchema = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
   description: z.string(),
-  gender: z.enum(["Macho", "Hembra"]),
+  gender: z.enum(["macho", "hembra"]),
   weight: z.number(),
   vaccinated: z.boolean(),
   sterilized: z.boolean(),
