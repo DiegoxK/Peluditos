@@ -1,7 +1,7 @@
 "use client";
 
 import { columns } from "./table/columns";
-import { DataTable } from "./table/data-table";
+import { DataTable } from "./table";
 
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Cat, Dog, Squirrel } from "lucide-react";
