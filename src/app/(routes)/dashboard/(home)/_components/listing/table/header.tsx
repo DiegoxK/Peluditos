@@ -1,22 +1,18 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import type { Pet } from "@/server/db/schema";
 import type { Table } from "@tanstack/react-table";
-import { ArrowUpDown, Download, ListRestart, Plus } from "lucide-react";
+import { Download, ListRestart, Plus } from "lucide-react";
 
 import CreatePetForm from "./_components/create-pet-form";
 import { useDialog } from "@/context/dialog-provider";
 import { useTableState } from "@/context/table-state-provider";
 import { exportToExcel } from "@/lib/utils";
 import { MultiSelectFilter } from "./_components/multi-select-filter";
+import { SortMenu } from "./_components/sort-menu";
+import { petSortGroups } from "./sort-groups";
 
 interface DataTableHeaderProps {
   table: Table<Pet>;
@@ -35,28 +31,8 @@ export default function DataTableHeader({
   const specieColumn = table.getColumn("specie");
   const statusColumn = table.getColumn("status");
 
-  const especies = ["perro", "gato"];
-  const estados = ["adoptado", "disponible", "en tratamiento"];
-
-  const handleMultiSelectFilterChange = (
-    columnId: string,
-    value: string,
-    isChecked: boolean,
-  ) => {
-    const column = table.getColumn(columnId);
-    if (!column) return;
-
-    const currentFilter =
-      (column.getFilterValue() as string[] | undefined) ?? [];
-    let newFilter: string[];
-
-    if (isChecked) {
-      newFilter = [...new Set([...currentFilter, value])];
-    } else {
-      newFilter = currentFilter.filter((v) => v !== value);
-    }
-    column.setFilterValue(newFilter.length > 0 ? newFilter : undefined);
-  };
+  const especies = ["perro", "gato"] as const;
+  const estados = ["adoptado", "disponible", "en tratamiento"] as const;
 
   const handleExport = () => {
     const dataToExport = table.options.data;
@@ -122,76 +98,7 @@ export default function DataTableHeader({
               options={estados}
             />
           )}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <ArrowUpDown className="mr-2 h-4 w-4" />
-                Ordenar
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-              <DropdownMenuItem
-                onClick={() => table.setSorting([{ id: "name", desc: false }])}
-              >
-                Nombre (A-Z)
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => table.setSorting([{ id: "name", desc: true }])}
-              >
-                Nombre (Z-A)
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() =>
-                  table.setSorting([{ id: "status", desc: false }])
-                }
-              >
-                Estado (A-Z)
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => table.setSorting([{ id: "status", desc: true }])}
-              >
-                Estado (Z-A)
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => table.setSorting([{ id: "age", desc: false }])}
-              >
-                Edad (Menor a Mayor)
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => table.setSorting([{ id: "age", desc: true }])}
-              >
-                Edad (Mayor a Menor)
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() =>
-                  table.setSorting([{ id: "entryDate", desc: true }])
-                }
-              >
-                Más Recientes
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() =>
-                  table.setSorting([{ id: "entryDate", desc: false }])
-                }
-              >
-                Más Antiguos
-              </DropdownMenuItem>
-              {table.getState().sorting.length > 0 && (
-                <>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onSelect={() => table.resetSorting()}
-                    className="text-destructive focus:text-destructive text-xs focus:bg-red-100"
-                  >
-                    Limpiar ordenamiento
-                  </DropdownMenuItem>
-                </>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <SortMenu table={table} sortGroups={petSortGroups} />
         </div>
 
         <div className="flex items-center gap-2">
