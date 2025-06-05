@@ -114,10 +114,6 @@ export default function DataTableHeader({
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={handleExport}>
-            <Download className="mr-2 h-4 w-4" />
-            Exportar (Página Actual)
-          </Button>
           <Button
             disabled={!canClear}
             variant="outline"
@@ -125,7 +121,11 @@ export default function DataTableHeader({
             onClick={handleClearAll}
           >
             <ListRestart className="mr-2 h-4 w-4" />
-            Limpiar Todo
+            Limpiar Filtros
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleExport}>
+            <Download className="mr-2 h-4 w-4" />
+            Exportar exel
           </Button>
         </div>
       </div>
