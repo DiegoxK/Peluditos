@@ -16,18 +16,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { Pet } from "@/server/db/schema";
-import DataTableActions from "./data-table-actions";
+import DataTableActions from "./actions";
 import { useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Pencil, Search } from "lucide-react";
-import DataTableHeader from "./data-table-header";
+import DataTableHeader from "./header";
 import { useDialog } from "@/context/dialog-provider";
 import PetDetails from "../_components/pet-details";
 import CreatePetForm from "../_components/create-pet-form";
 
 import { api } from "@/trpc/react";
 import { useTableState } from "@/context/table-state-provider";
+import DataTableFooter from "./footer";
 
 interface DataTableProps {
   columns: ColumnDef<Pet, unknown>[];
@@ -195,67 +196,7 @@ export function DataTable({ columns }: DataTableProps) {
           </TableBody>
         </Table>
       </div>
-
-      {/* Pagination UI Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-2 py-4">
-        <div className="text-muted-foreground text-sm">
-          {totalRowCount} mascota(s) en total.
-        </div>
-        <div className="flex items-center space-x-2">
-          <span className="text-muted-foreground text-sm">
-            Página{" "}
-            {totalRowCount > 0 ? table.getState().pagination.pageIndex + 1 : 0}{" "}
-            de {table.getPageCount()}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.firstPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            {"<<"}
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Anterior
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Siguiente
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.lastPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            {">>"}
-          </Button>
-        </div>
-        <div>
-          <select
-            value={table.getState().pagination.pageSize}
-            onChange={(e) => {
-              table.setPageSize(Number(e.target.value));
-            }}
-            className="bg-background rounded-md border px-2 py-1.5 text-sm"
-          >
-            {[10, 25, 50, 100].map((size) => (
-              <option key={size} value={size}>
-                Mostrar {size}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+      <DataTableFooter table={table} totalRowCount={totalRowCount} />
     </>
   );
 }
