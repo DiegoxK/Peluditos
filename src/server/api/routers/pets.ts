@@ -1,18 +1,27 @@
 import { z } from "zod";
 import { PetSchema, type Pet, type PetDB } from "@/server/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import { ObjectId } from "mongodb";
+import { ObjectId, type Filter } from "mongodb";
 import { utapi } from "@/server/uploadthing";
 import { TRPCError } from "@trpc/server";
 
-const SortingStateSchema = z
-  .array(
-    z.object({
-      id: z.string(),
-      desc: z.boolean(),
-    }),
-  )
-  .optional();
+const SortableFieldEnum = z.enum([
+  "name",
+  "specie",
+  "breed",
+  "status",
+  "age",
+  "entryDate",
+  "createdAt",
+  "updatedAt",
+]);
+
+const SortingObjectSchema = z.object({
+  id: SortableFieldEnum,
+  desc: z.boolean(),
+});
+
+const SortingStateSchema = z.array(SortingObjectSchema).optional();
 
 const FilterValueSchema = z.union([
   z.string(),
@@ -38,27 +47,9 @@ export const GetAllPetsInputSchema = z.object({
   columnFilters: ColumnFiltersStateSchema,
 });
 
-type SortablePetFields = keyof Pick<
-  PetDB,
-  "name" | "specie" | "breed" | "status" | "age" | "entryDate" | "createdAt"
->;
+export type SortablePetField = z.infer<typeof SortableFieldEnum>;
 
-type MongoSortOptions = Partial<Record<SortablePetFields, 1 | -1>> &
-  Record<string, 1 | -1>;
-
-interface MongoQueryFilter {
-  $or?: Array<
-    Partial<
-      Record<keyof Pick<PetDB, "name" | "specie" | "breed">, { $regex: RegExp }>
-    >
-  >;
-  name?: { $regex: RegExp } | string;
-  specie?: { $regex: RegExp } | string | { $in: string[] };
-  breed?: { $regex: RegExp } | string;
-  status?: string | { $in: string[] };
-
-  [key: string]: unknown;
-}
+type MongoSortOptions = Partial<Record<SortablePetField, 1 | -1>>;
 
 export const petRouter = createTRPCRouter({
   getAllPets: protectedProcedure
@@ -67,7 +58,7 @@ export const petRouter = createTRPCRouter({
       const { pageIndex, pageSize, sorting, globalFilter, columnFilters } =
         input;
 
-      const MONGODB_QUERY_FILTER_CONDITIONS: MongoQueryFilter = {};
+      const MONGODB_QUERY_FILTER_CONDITIONS: Filter<PetDB> = {};
 
       // Global Filter
       if (globalFilter && globalFilter.trim() !== "") {
@@ -83,7 +74,7 @@ export const petRouter = createTRPCRouter({
       if (columnFilters?.length) {
         columnFilters.forEach((filter) => {
           if (filter.value !== undefined && filter.value !== null) {
-            const filterKey = filter.id as keyof MongoQueryFilter;
+            const filterKey = filter.id as keyof Filter<PetDB>;
 
             if (filter.id === "specie" || filter.id === "status") {
               if (Array.isArray(filter.value) && filter.value.length > 0) {
@@ -102,39 +93,22 @@ export const petRouter = createTRPCRouter({
       }
 
       // Sorting (single-column)
-      let MONGODB_SORT_OPTIONS: MongoSortOptions = { createdAt: -1 };
+      let MONGODB_SORT_OPTIONS: MongoSortOptions = { updatedAt: -1 };
 
       if (sorting?.length && sorting[0]) {
         const { id, desc } = sorting[0];
 
-        const validSortKeys: SortablePetFields[] = [
-          "name",
-          "specie",
-          "breed",
-          "status",
-          "age",
-          "entryDate",
-          "createdAt",
-        ];
-        if (validSortKeys.includes(id as SortablePetFields)) {
-          MONGODB_SORT_OPTIONS = { [id as SortablePetFields]: desc ? -1 : 1 };
-        } else {
-          console.warn(
-            `Invalid sort key received: ${id}. Reverting to default sort.`,
-          );
-        }
+        MONGODB_SORT_OPTIONS = { [id]: desc ? -1 : 1 };
       }
 
       // Execute queries
       const totalRowCount = await ctx.db
         .collection<PetDB>("pets")
-        .countDocuments(
-          MONGODB_QUERY_FILTER_CONDITIONS as Record<string, unknown>,
-        );
+        .countDocuments(MONGODB_QUERY_FILTER_CONDITIONS);
 
       const petsData = await ctx.db
         .collection<PetDB>("pets")
-        .find(MONGODB_QUERY_FILTER_CONDITIONS as Record<string, unknown>)
+        .find(MONGODB_QUERY_FILTER_CONDITIONS)
         .sort(MONGODB_SORT_OPTIONS)
         .skip(pageIndex * pageSize)
         .limit(pageSize)
