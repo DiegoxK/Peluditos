@@ -5,23 +5,14 @@ import { ObjectId, type Filter } from "mongodb";
 import { utapi } from "@/server/uploadthing";
 import { TRPCError } from "@trpc/server";
 
-const SortableFieldEnum = z.enum([
-  "name",
-  "specie",
-  "breed",
-  "status",
-  "age",
-  "entryDate",
-  "createdAt",
-  "updatedAt",
-]);
-
-const SortingObjectSchema = z.object({
-  id: SortableFieldEnum,
-  desc: z.boolean(),
-});
-
-const SortingStateSchema = z.array(SortingObjectSchema).optional();
+const SortingStateSchema = z
+  .array(
+    z.object({
+      id: z.string(),
+      desc: z.boolean(),
+    }),
+  )
+  .optional();
 
 const FilterValueSchema = z.union([
   z.string(),
@@ -47,9 +38,20 @@ export const GetAllPetsInputSchema = z.object({
   columnFilters: ColumnFiltersStateSchema,
 });
 
-export type SortablePetField = z.infer<typeof SortableFieldEnum>;
+export const SortablePetFieldsSchema = z.enum([
+  "name",
+  "specie",
+  "breed",
+  "status",
+  "age",
+  "entryDate",
+  "createdAt",
+  "updatedAt",
+]);
 
-type MongoSortOptions = Partial<Record<SortablePetField, 1 | -1>>;
+export type SortablePetFields = z.infer<typeof SortablePetFieldsSchema>;
+
+type MongoSortOptions = Partial<Record<SortablePetFields, 1 | -1>>;
 
 export const petRouter = createTRPCRouter({
   getAllPets: protectedProcedure
@@ -97,8 +99,16 @@ export const petRouter = createTRPCRouter({
 
       if (sorting?.length && sorting[0]) {
         const { id, desc } = sorting[0];
+        const parsedSortId = SortablePetFieldsSchema.safeParse(id);
 
-        MONGODB_SORT_OPTIONS = { [id]: desc ? -1 : 1 };
+        if (parsedSortId.success) {
+          const validSortKey: SortablePetFields = parsedSortId.data;
+          MONGODB_SORT_OPTIONS = { [validSortKey]: desc ? -1 : 1 };
+        } else {
+          console.warn(
+            `Invalid sort key received: "${id}". Allowed keys are: ${Object.values(SortablePetFieldsSchema.Values).join(", ")}. Reverting to default sort.`,
+          );
+        }
       }
 
       // Execute queries
