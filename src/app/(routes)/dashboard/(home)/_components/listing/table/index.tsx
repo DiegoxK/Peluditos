@@ -47,6 +47,8 @@ export function DataTable({ columns }: DataTableProps) {
     setColumnFilters,
     pagination,
     setPagination,
+    isUpdatingTable,
+    isFilterProcessing,
   } = useTableState();
 
   const [serverResponse, { isFetching, status, error }] =
@@ -83,6 +85,18 @@ export function DataTable({ columns }: DataTableProps) {
   return (
     <div className="bg-sidebar border-sidebar-border space-y-4 border p-4">
       <DataTableHeader table={table} rowCount={totalRowCount} />
+
+      {isFilterProcessing && (
+        <div className="text-muted-foreground p-2 text-center text-sm">
+          Escribiendo ...
+        </div>
+      )}
+
+      {isUpdatingTable && (
+        <div className="text-muted-foreground p-2 text-center text-sm">
+          Actualizando suspense...
+        </div>
+      )}
 
       {isFetching && status === "success" && serverResponse && (
         <div className="text-muted-foreground p-2 text-center text-sm">
