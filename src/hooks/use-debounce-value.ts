@@ -1,12 +1,23 @@
 import * as React from "react";
 
-export function useDebouncedValue<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = React.useState(value);
+export function useDebouncedValueWithTransition<T>(
+  value: T,
+  delay: number,
+): [T, boolean] {
+  const [debouncedValue, setDebouncedValueInternal] = React.useState(value);
+  const [isTransitionPending, startTransition] = React.useTransition();
 
   React.useEffect(() => {
-    const timeout = setTimeout(() => setDebouncedValue(value), delay);
-    return () => clearTimeout(timeout);
-  }, [value, delay]);
+    const handler = setTimeout(() => {
+      startTransition(() => {
+        setDebouncedValueInternal(value);
+      });
+    }, delay);
 
-  return debouncedValue;
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay, startTransition]);
+
+  return [debouncedValue, isTransitionPending];
 }
