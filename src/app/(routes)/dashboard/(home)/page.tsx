@@ -11,6 +11,7 @@ import { DialogProvider } from "@/context/dialog-provider";
 
 export default async function PetsPage() {
   void api.pets.getAllPets.prefetch(defaultInitialTableQueryInput);
+  void api.pets.getDashboardSummary.prefetch();
 
   return (
     <div className="p-6">
