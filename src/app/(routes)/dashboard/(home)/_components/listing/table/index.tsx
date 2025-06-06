@@ -30,6 +30,8 @@ import { api } from "@/trpc/react";
 import { useTableState } from "@/context/table-state-provider";
 import DataTableFooter from "./footer";
 
+import { Skeleton } from "@/components/ui/skeleton";
+
 interface DataTableProps {
   columns: ColumnDef<Pet, unknown>[];
 }
@@ -47,14 +49,8 @@ export function DataTable({ columns }: DataTableProps) {
     setPagination,
   } = useTableState();
 
-  const {
-    data: serverResponse,
-    isFetching,
-    error,
-    status,
-  } = api.pets.getAllPets.useQuery(currentQueryInput, {
-    placeholderData: (prev) => prev,
-  });
+  const [serverResponse, { isFetching, status, error }] =
+    api.pets.getAllPets.useSuspenseQuery(currentQueryInput);
 
   const tableData = useMemo(
     () => serverResponse?.data ?? [],
@@ -88,11 +84,6 @@ export function DataTable({ columns }: DataTableProps) {
     <div className="bg-sidebar border-sidebar-border space-y-4 border p-4">
       <DataTableHeader table={table} rowCount={totalRowCount} />
 
-      {status === "pending" && (
-        <div className="flex h-24 items-center justify-center">
-          Cargando mascotas...
-        </div>
-      )}
       {isFetching && status === "success" && serverResponse && (
         <div className="text-muted-foreground p-2 text-center text-sm">
           Actualizando...
@@ -196,6 +187,43 @@ export function DataTable({ columns }: DataTableProps) {
         </Table>
       </div>
       <DataTableFooter table={table} totalRowCount={totalRowCount} />
+    </div>
+  );
+}
+
+export function DataTableSkeleton() {
+  return (
+    <div className="bg-sidebar border-sidebar-border space-y-4 border p-4">
+      <div className="mb-4 flex items-center justify-between">
+        <Skeleton className="h-6 w-1/3" />
+        <Skeleton className="h-6 w-24" />
+      </div>
+      <div className="rounded-md border">
+        <Table className="bg-background">
+          <TableHeader>
+            <TableRow>
+              <TableHead>
+                <Skeleton className="h-6 w-full" />
+              </TableHead>
+              <TableHead className="pr-10 text-right font-semibold">
+                Acciones
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {Array.from({ length: 10 }).map((_, index) => (
+              <TableRow key={index}>
+                <TableCell>
+                  <Skeleton className="h-6 w-full" />
+                </TableCell>
+                <TableCell className="text-right">
+                  <Skeleton className="h-6 w-24" />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }
