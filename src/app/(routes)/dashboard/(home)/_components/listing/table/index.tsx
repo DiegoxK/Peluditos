@@ -85,7 +85,7 @@ export function DataTable({ columns }: DataTableProps) {
   });
 
   return (
-    <>
+    <div className="bg-sidebar border-sidebar-border space-y-4 border p-4">
       <DataTableHeader table={table} rowCount={totalRowCount} />
 
       {status === "pending" && (
@@ -196,6 +196,6 @@ export function DataTable({ columns }: DataTableProps) {
         </Table>
       </div>
       <DataTableFooter table={table} totalRowCount={totalRowCount} />
-    </>
+    </div>
   );
 }
