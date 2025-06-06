@@ -13,6 +13,7 @@ import { exportToExcel } from "@/lib/utils";
 import { MultiSelectFilter } from "./_components/multi-select-filter";
 import { SortMenu } from "./_components/sort-menu";
 import { petSortGroups } from "./sort-groups";
+import { Input } from "@/components/ui/input";
 
 interface DataTableHeaderProps {
   table: Table<Pet>;
@@ -86,7 +87,7 @@ export default function DataTableHeader({
       </div>
 
       <div className="flex w-full items-center gap-2">
-        <input
+        <Input
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
           placeholder="Buscar por nombre, raza o especie..."

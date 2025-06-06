@@ -1,6 +1,7 @@
 import { columns } from "./table/columns";
-import { DataTable, DataTableSkeleton } from "./table";
+import { DataTable } from "./table";
 import { StatsCards, StatsCardsSkeleton } from "./_components/stats-cards";
+import { DataTableSkeleton } from "./table/_components/loading-skeleton";
 import { Suspense } from "react";
 
 export default function PetListing() {
