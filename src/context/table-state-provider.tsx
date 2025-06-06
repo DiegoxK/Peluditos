@@ -19,7 +19,7 @@ import type {
   ColumnFilter as TanStackColumnFilter,
 } from "@tanstack/react-table";
 
-import { useDebouncedValue } from "@/hooks/use-debounce-value";
+import { useDebouncedValueWithTransition } from "@/hooks/use-debounce-value";
 
 import {
   DEFAULT_PAGE_INDEX,
@@ -69,6 +69,7 @@ interface TableStateContextType {
   resetFiltersAndSorting: () => void; // Resets filters and sorting, keeps pagination
   resetTableToDefaults: () => void; // Resets everything including pagination to initial
   isUpdatingTable: boolean;
+  isFilterProcessing: boolean;
 }
 
 // --- Context Creation ---
@@ -98,7 +99,7 @@ export const TableStateProvider = ({ children }: TableStateProviderProps) => {
     defaultInitialTableQueryInput.sorting ?? [],
   );
   const [columnFilters, _setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [globalFilter, _setGlobalFilter] = useState<string>(
+  const [globalFilter, setGlobalFilter] = useState<string>(
     defaultInitialTableQueryInput.globalFilter ?? "",
   );
   const [pagination, _setPagination] = useState<PaginationState>({
@@ -125,15 +126,6 @@ export const TableStateProvider = ({ children }: TableStateProviderProps) => {
     [_setColumnFilters],
   );
 
-  const setGlobalFilter = useCallback(
-    (updater: SetStateAction<string>) => {
-      startTransition(() => {
-        _setGlobalFilter(updater);
-      });
-    },
-    [_setGlobalFilter],
-  );
-
   const setPagination = useCallback(
     (updater: SetStateAction<PaginationState>) => {
       startTransition(() => {
@@ -143,7 +135,8 @@ export const TableStateProvider = ({ children }: TableStateProviderProps) => {
     [_setPagination],
   );
 
-  const debouncedGlobalFilter = useDebouncedValue(globalFilter, 500);
+  const [debouncedGlobalFilter, isGlobalFilterTransitionPending] =
+    useDebouncedValueWithTransition(globalFilter, 500);
 
   // Memoized derivation of the query input object for tRPC
   const currentQueryInput = useMemo((): TableQueryInput => {
@@ -172,6 +165,9 @@ export const TableStateProvider = ({ children }: TableStateProviderProps) => {
     };
   }, [pagination, sorting, debouncedGlobalFilter, columnFilters]);
 
+  const isTyping = globalFilter !== debouncedGlobalFilter;
+  const isFilterProcessing = isTyping || isGlobalFilterTransitionPending;
+
   // --- Action Callbacks ---
   const resetToFirstPage = useCallback(() => {
     startTransition(() => {
@@ -181,15 +177,15 @@ export const TableStateProvider = ({ children }: TableStateProviderProps) => {
 
   const resetFiltersAndSorting = useCallback(() => {
     startTransition(() => {
-      _setGlobalFilter("");
+      setGlobalFilter("");
       _setColumnFilters([]);
       _setSorting(DEFAULT_SORTING);
     });
-  }, [_setGlobalFilter, _setColumnFilters, _setSorting]);
+  }, [setGlobalFilter, _setColumnFilters, _setSorting]);
 
   const resetTableToDefaults = useCallback(() => {
     startTransition(() => {
-      _setGlobalFilter("");
+      setGlobalFilter("");
       _setColumnFilters([]);
       _setSorting(DEFAULT_SORTING);
       _setPagination({
@@ -197,7 +193,7 @@ export const TableStateProvider = ({ children }: TableStateProviderProps) => {
         pageSize: DEFAULT_PAGE_SIZE,
       });
     });
-  }, [_setGlobalFilter, _setColumnFilters, _setSorting, _setPagination]);
+  }, [setGlobalFilter, _setColumnFilters, _setSorting, _setPagination]);
 
   // --- Context Value ---
   const value: TableStateContextType = {
@@ -214,6 +210,7 @@ export const TableStateProvider = ({ children }: TableStateProviderProps) => {
     resetFiltersAndSorting,
     resetTableToDefaults,
     isUpdatingTable: isPendingTransition,
+    isFilterProcessing,
   };
 
   return (
