@@ -256,6 +256,7 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
           duration: 3000,
         });
       }
+      resetToFirstPage();
       setIsFormSubmitting(false);
       if (!error) closeDialog();
     },
