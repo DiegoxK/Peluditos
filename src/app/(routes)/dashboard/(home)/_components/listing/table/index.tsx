@@ -80,32 +80,25 @@ export function DataTable({ columns }: DataTableProps) {
     debugTable: process.env.NODE_ENV === "development",
   });
 
+  const feedbackState = isFilterProcessing
+    ? "Buscando..."
+    : isUpdatingTable
+      ? "Filtrando..."
+      : isFetching &&
+        status === "success" &&
+        serverResponse &&
+        "Actualizando...";
+
+  const isError = status === "error" && error && "Error al cargar mascotas";
+
   return (
     <div className="bg-sidebar border-sidebar-border space-y-4 border p-4">
-      <DataTableHeader table={table} rowCount={totalRowCount} />
-
-      {isFilterProcessing && (
-        <div className="text-muted-foreground p-2 text-center text-sm">
-          Escribiendo ...
-        </div>
-      )}
-
-      {isUpdatingTable && (
-        <div className="text-muted-foreground p-2 text-center text-sm">
-          Actualizando suspense...
-        </div>
-      )}
-
-      {isFetching && status === "success" && serverResponse && (
-        <div className="text-muted-foreground p-2 text-center text-sm">
-          Actualizando...
-        </div>
-      )}
-      {status === "error" && error && (
-        <div className="h-24 text-center text-red-500">
-          Error al cargar mascotas: {error.message}
-        </div>
-      )}
+      <DataTableHeader
+        table={table}
+        rowCount={totalRowCount}
+        feedbackState={feedbackState}
+        isError={isError}
+      />
 
       <div className="rounded-md border">
         <Table className="bg-background">

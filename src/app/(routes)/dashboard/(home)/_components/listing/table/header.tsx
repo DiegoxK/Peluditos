@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 import type { Pet } from "@/server/db/schema";
 import type { Table } from "@tanstack/react-table";
-import { Download, ListRestart, Plus } from "lucide-react";
+import { CircleX, Download, ListRestart, Loader2, Plus } from "lucide-react";
 
 import CreatePetForm from "./_components/create-pet-form";
 import { useDialog } from "@/context/dialog-provider";
@@ -18,11 +18,15 @@ import { Input } from "@/components/ui/input";
 interface DataTableHeaderProps {
   table: Table<Pet>;
   rowCount: number;
+  feedbackState: string | false;
+  isError: string | false;
 }
 
 export default function DataTableHeader({
   table,
   rowCount,
+  feedbackState,
+  isError,
 }: DataTableHeaderProps) {
   const { openDialog } = useDialog();
 
@@ -71,6 +75,18 @@ export default function DataTableHeader({
             {rowCount} mascota(s) encontrada(s)
           </span>
         </div>
+        {feedbackState && (
+          <div className="text-primary mr-8 flex gap-2">
+            <Loader2 className="animate-spin" />
+            <span>{feedbackState}</span>
+          </div>
+        )}
+        {isError && (
+          <div className="text-destructive mr-8 flex gap-2">
+            <CircleX />
+            <span>{isError}</span>
+          </div>
+        )}
         <Button
           onClick={() =>
             openDialog({
