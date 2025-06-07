@@ -63,31 +63,34 @@ export function SortMenu<TData>({
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="h-[300px] w-[230px]">
+      <DropdownMenuContent align="start" className="w-[230px]">
         <DropdownMenuLabel>Ordenar por</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {sortGroups.map((group, groupIndex) => (
-          <React.Fragment key={group.label ?? groupIndex}>
-            {group.label && (
-              <DropdownMenuLabel className="text-muted-foreground px-2 py-1.5 text-xs font-semibold">
-                {group.label}
-              </DropdownMenuLabel>
-            )}
-            {group.options.map((option) => (
-              <DropdownMenuItem
-                key={option.label}
-                onClick={() => table.setSorting(option.value)}
-                className="flex items-center justify-between"
-              >
-                <span>{option.label}</span>
-                {isSortActive(option.value) && (
-                  <Check className="text-primary ml-2 h-4 w-4" />
-                )}
-              </DropdownMenuItem>
-            ))}
-            {groupIndex < sortGroups.length - 1 && <DropdownMenuSeparator />}
-          </React.Fragment>
-        ))}
+        <div className="h-[250px] overflow-x-hidden overflow-y-scroll">
+          {sortGroups.map((group, groupIndex) => (
+            <React.Fragment key={group.label ?? groupIndex}>
+              {group.label && (
+                <DropdownMenuLabel className="text-muted-foreground px-2 py-1.5 text-xs font-semibold">
+                  {group.label}
+                </DropdownMenuLabel>
+              )}
+              {group.options.map((option) => (
+                <DropdownMenuItem
+                  disabled={isSortActive(option.value)}
+                  key={option.label}
+                  onClick={() => table.setSorting(option.value)}
+                  className="flex items-center justify-between"
+                >
+                  <span>{option.label}</span>
+                  {isSortActive(option.value) && (
+                    <Check className="text-primary ml-2 h-4 w-4" />
+                  )}
+                </DropdownMenuItem>
+              ))}
+              {groupIndex < sortGroups.length - 1 && <DropdownMenuSeparator />}
+            </React.Fragment>
+          ))}
+        </div>
         {currentSorting.length > 0 && (
           <>
             <DropdownMenuSeparator />
