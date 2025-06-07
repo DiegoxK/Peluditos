@@ -13,7 +13,7 @@ interface PetDetailsProps {
 }
 
 export default function PetDetails({ pet }: PetDetailsProps) {
-  const { openDialog, closeDialog } = useDialog();
+  const { openDialog } = useDialog();
 
   return (
     <div>
