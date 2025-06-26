@@ -2,12 +2,14 @@ import { api, HydrateClient } from "@/trpc/server";
 
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import PetListing from "./_components/listing";
 
 import { TableStateProvider } from "@/context/table-state-provider";
 
 import { defaultInitialTableQueryInput } from "@/config/pet-defaults";
 import { DialogProvider } from "@/context/dialog-provider";
+
+import PetListing from "./_components/listing";
+import PetStats from "./_components/stats";
 
 export default async function PetsPage() {
   void api.pets.getAllPets.prefetch(defaultInitialTableQueryInput);
@@ -39,7 +41,7 @@ export default async function PetsPage() {
                 <PetListing />
               </TabsContent>
               <TabsContent value="estadisticas" className="space-y-4">
-                {/* <PetStats pets={data} /> */}
+                <PetStats />
               </TabsContent>
             </DialogProvider>
           </TableStateProvider>
