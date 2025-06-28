@@ -36,6 +36,7 @@ export const PetDbSchema = z.object({
   vaccinated: z.boolean(),
   sterilized: z.boolean(),
 });
+
 export const PetSchema = PetDbSchema.extend({
   _id: z.string(),
 });

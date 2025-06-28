@@ -38,10 +38,10 @@ export default async function PetsPage() {
           <TableStateProvider>
             <DialogProvider>
               <TabsContent value="listado" className="space-y-4">
-                <PetListing />
+                <PetStats />
               </TabsContent>
               <TabsContent value="estadisticas" className="space-y-4">
-                <PetStats />
+                <PetListing />
               </TabsContent>
             </DialogProvider>
           </TableStateProvider>

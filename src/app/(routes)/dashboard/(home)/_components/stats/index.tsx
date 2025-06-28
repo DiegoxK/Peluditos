@@ -1,5 +1,9 @@
-import type { Pet } from "@/server/db/schema";
+import { ChartPieSimple } from "./_components/pie";
 
-export default function PetStats({ pets }: { pets: Pet[] }) {
-  return <div>PetStats</div>;
+export default function PetStats() {
+  return (
+    <div className="flex">
+      <ChartPieSimple />
+    </div>
+  );
 }
