@@ -34,7 +34,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function ChartPieSimple() {
+export function SpeciesPie() {
   return (
     <Card>
       <CardTitle className="text-primary flex items-center gap-2">

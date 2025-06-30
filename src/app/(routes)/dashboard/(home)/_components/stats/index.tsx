@@ -1,9 +1,9 @@
-import { ChartPieSimple } from "./_components/pie";
+import { SpeciesPie } from "./_components/species-pie";
 
 export default function PetStats() {
   return (
     <div className="flex">
-      <ChartPieSimple />
+      <SpeciesPie />
     </div>
   );
 }
