@@ -18,8 +18,37 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { Separator } from "@/components/ui/separator";
+import { useState } from "react";
+
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 export const description = "A simple area chart";
+
+const years = [
+  {
+    value: "2025",
+    label: "2025",
+  },
+  {
+    value: "2024",
+    label: "2024",
+  },
+];
 
 const chartData = [
   { month: "Enero", pets: 0 },
@@ -44,12 +73,60 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function NewPetsAreaChart() {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("2025");
+
   return (
     <Card>
-      <CardTitle className="text-primary flex items-center gap-2">
-        <ChartColumn strokeWidth={2.2} />
-        <span className="font-semibold">Nuevas mascotas</span>
-      </CardTitle>
+      <div className="flex justify-between">
+        <CardTitle className="text-primary flex items-center gap-2">
+          <ChartColumn strokeWidth={2.2} />
+          <span className="font-semibold">Nuevas mascotas</span>
+        </CardTitle>
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
+              className="mr-4 w-[200px] justify-between"
+            >
+              {value
+                ? years.find((year) => year.value === value)?.label
+                : "Seleccionar año..."}
+              <ChevronsUpDown className="opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[200px] p-0">
+            <Command>
+              <CommandInput placeholder="Buscar por año..." className="h-9" />
+              <CommandList>
+                <CommandEmpty>No se encontro año.</CommandEmpty>
+                <CommandGroup>
+                  {years.map((year) => (
+                    <CommandItem
+                      key={year.value}
+                      value={year.value}
+                      onSelect={(currentValue: string) => {
+                        setValue(currentValue === value ? "" : currentValue);
+                        setOpen(false);
+                      }}
+                    >
+                      {year.label}
+                      <Check
+                        className={cn(
+                          "ml-auto",
+                          value === year.value ? "opacity-100" : "opacity-0",
+                        )}
+                      />
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+      </div>
       <div className="mx-4">
         <Separator className="bg-border" />
       </div>
