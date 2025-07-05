@@ -98,10 +98,10 @@ export function AdoptionRadial() {
       </CardContent>
       <div className="absolute bottom-21 left-1/2 ml-2 flex -translate-x-1/2 gap-6 text-sm">
         <span className="whitespace-nowrap before:mr-1 before:mb-[1px] before:inline-block before:h-2 before:w-2 before:rounded-md before:bg-[#95bfaf] before:content-['']">
-          20 Total
+          {chartData[0]?.total} Total
         </span>
         <span className="before:bg-chart-2 whitespace-nowrap before:mr-1 before:mb-[1px] before:inline-block before:h-2 before:w-2 before:rounded-md before:content-['']">
-          5 Adoptadas
+          {chartData[0]?.adopted} Adoptadas
         </span>
       </div>
       <div className="mx-4">
