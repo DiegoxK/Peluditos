@@ -1,6 +1,6 @@
 "use client";
 
-import { Dog } from "lucide-react";
+import { Panda } from "lucide-react";
 import {
   Label,
   PolarGrid,
@@ -33,7 +33,7 @@ export function VaccineRadial() {
   return (
     <Card className="relative">
       <CardTitle className="text-primary flex items-center gap-2">
-        <Dog strokeWidth={2.2} />
+        <Panda strokeWidth={2.2} />
         <span className="font-semibold">Vacunas</span>
       </CardTitle>
 
