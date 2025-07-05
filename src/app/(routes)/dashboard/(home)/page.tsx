@@ -16,7 +16,7 @@ export default async function PetsPage() {
   void api.pets.getDashboardSummary.prefetch();
 
   return (
-    <div className="p-6">
+    <div className="container mx-auto p-6">
       <h1 className="text-primary text-3xl font-bold tracking-tight">
         Gestión de Mascotas
       </h1>
