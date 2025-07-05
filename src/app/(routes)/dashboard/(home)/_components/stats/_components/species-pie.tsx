@@ -15,6 +15,8 @@ import {
 import {
   type ChartConfig,
   ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
@@ -43,7 +45,7 @@ export function SpeciesPie() {
       </CardTitle>
 
       <div className="mx-4">
-        <Separator className="bg-input" />
+        <Separator className="bg-border" />
       </div>
       <CardContent>
         <ChartContainer
@@ -56,7 +58,7 @@ export function SpeciesPie() {
               content={<ChartTooltipContent hideLabel />}
             />
             <Pie
-              innerRadius={60}
+              innerRadius={55}
               data={chartData}
               dataKey="amount"
               nameKey="specie"
@@ -92,9 +94,16 @@ export function SpeciesPie() {
                 }}
               />
             </Pie>
+            <ChartLegend
+              content={<ChartLegendContent nameKey="specie" />}
+              className="-translate-y-2 flex-wrap gap-2 text-sm *:basis-1/4 *:justify-center"
+            />
           </PieChart>
         </ChartContainer>
       </CardContent>
+      <div className="mx-4">
+        <Separator className="bg-border" />
+      </div>
       <CardFooter className="flex-col gap-2 text-sm">
         <CardDescription>Distribucion por especie</CardDescription>
       </CardFooter>
