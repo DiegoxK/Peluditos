@@ -1,7 +1,7 @@
 "use client";
 
 import { Cat, TrendingUp } from "lucide-react";
-import { Pie, PieChart } from "recharts";
+import { Label, Pie, PieChart } from "recharts";
 
 import {
   Card,
@@ -48,19 +48,55 @@ export function SpeciesPie() {
       <CardContent>
         <ChartContainer
           config={chartConfig}
-          className="aspect-square size-64 max-h-64"
+          className="[&_.recharts-pie-label-text]:fill-foreground aspect-square size-64 max-h-64"
         >
           <PieChart>
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Pie data={chartData} dataKey="amount" nameKey="specie" />
+            <Pie
+              innerRadius={60}
+              data={chartData}
+              dataKey="amount"
+              nameKey="specie"
+              label
+            >
+              <Label
+                content={({ viewBox }) => {
+                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                    return (
+                      <text
+                        x={viewBox.cx}
+                        y={viewBox.cy}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                      >
+                        <tspan
+                          x={viewBox.cx}
+                          y={(viewBox.cy ?? 0) - 5}
+                          className="fill-primary text-3xl font-bold"
+                        >
+                          20
+                        </tspan>
+                        <tspan
+                          x={viewBox.cx}
+                          y={(viewBox.cy ?? 0) + 12}
+                          className="fill-muted-foreground"
+                        >
+                          Mascotas
+                        </tspan>
+                      </text>
+                    );
+                  }
+                }}
+              />
+            </Pie>
           </PieChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
-        <CardDescription>January - June 2024</CardDescription>
+        <CardDescription>Distribucion por especie</CardDescription>
       </CardFooter>
     </Card>
   );
