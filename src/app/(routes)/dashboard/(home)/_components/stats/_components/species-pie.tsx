@@ -1,6 +1,6 @@
 "use client";
 
-import { Cat, TrendingUp } from "lucide-react";
+import { Cat } from "lucide-react";
 import { Label, Pie, PieChart } from "recharts";
 
 import {
@@ -8,7 +8,6 @@ import {
   CardContent,
   CardDescription,
   CardFooter,
-  CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 
@@ -50,7 +49,7 @@ export function SpeciesPie() {
       <CardContent>
         <ChartContainer
           config={chartConfig}
-          className="[&_.recharts-pie-label-text]:fill-foreground aspect-square size-64 max-h-64"
+          className="[&_.recharts-pie-label-text]:fill-foreground mx-auto aspect-square size-68 max-h-68"
         >
           <PieChart>
             <ChartTooltip
