@@ -1,7 +1,7 @@
 "use client";
 
 import { ChartColumn } from "lucide-react";
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
   Card,
@@ -92,7 +92,7 @@ export function NewPetsAreaChart({ registry }: NewPetsAreaChartProps) {
                       key={year.value}
                       value={year.value}
                       onSelect={(currentValue: string) => {
-                        setValue(currentValue === value ? "" : currentValue);
+                        setValue(currentValue);
                         setOpen(false);
                       }}
                     >
@@ -120,8 +120,7 @@ export function NewPetsAreaChart({ registry }: NewPetsAreaChartProps) {
             accessibilityLayer
             data={chartData}
             margin={{
-              left: 12,
-              right: 12,
+              left: -24,
             }}
           >
             <CartesianGrid vertical={false} />
@@ -132,13 +131,20 @@ export function NewPetsAreaChart({ registry }: NewPetsAreaChartProps) {
               tickMargin={8}
               tickFormatter={(value: string) => value.slice(0, 3)}
             />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tickCount={3}
+              className=""
+            />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator="line" />}
             />
             <Area
               dataKey="pets"
-              type="natural"
+              type="linear"
               fill="var(--color-pets)"
               fillOpacity={0.4}
               stroke="var(--color-pets)"
