@@ -21,7 +21,10 @@ import { Separator } from "@/components/ui/separator";
 
 export const description = "A radial chart with text";
 
-const chartData = [{ total: 20, vaccinated: 20, fill: "var(--chart-2)" }];
+interface VaccineRadialProps {
+  total: number;
+  vaccinated: number;
+}
 
 const chartConfig = {
   vaccinated: {
@@ -29,7 +32,9 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function VaccineRadial() {
+export function VaccineRadial({ total, vaccinated }: VaccineRadialProps) {
+  const chartData = [{ total, vaccinated, fill: "var(--chart-2)" }];
+
   return (
     <Card className="relative">
       <CardTitle className="text-primary flex items-center gap-2">
