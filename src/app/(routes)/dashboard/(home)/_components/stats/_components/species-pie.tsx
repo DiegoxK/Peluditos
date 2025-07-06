@@ -85,7 +85,7 @@ export function SpeciesPie({ species }: SpeciesPieProps) {
                           y={(viewBox.cy ?? 0) - 5}
                           className="fill-primary text-3xl font-bold"
                         >
-                          20
+                          {species.dogs + species.cats}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
