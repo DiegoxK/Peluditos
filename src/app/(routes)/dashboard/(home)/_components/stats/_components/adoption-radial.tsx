@@ -21,7 +21,10 @@ import { Separator } from "@/components/ui/separator";
 
 export const description = "A radial chart with text";
 
-const chartData = [{ total: 20, adopted: 5, fill: "var(--chart-2)" }];
+interface AdoptionRadialProps {
+  total: number;
+  adopted: number;
+}
 
 const chartConfig = {
   adopted: {
@@ -29,7 +32,9 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function AdoptionRadial() {
+export function AdoptionRadial({ total, adopted }: AdoptionRadialProps) {
+  const chartData = [{ total, adopted, fill: "var(--chart-2)" }];
+
   return (
     <Card className="relative">
       <CardTitle className="text-primary flex items-center gap-2">
