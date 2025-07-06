@@ -144,7 +144,7 @@ export function NewPetsAreaChart({ registry }: NewPetsAreaChartProps) {
             />
             <Area
               dataKey="pets"
-              type="linear"
+              type="bump"
               fill="var(--color-pets)"
               fillOpacity={0.4}
               stroke="var(--color-pets)"
