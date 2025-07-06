@@ -1,6 +1,6 @@
 "use client";
 
-import { ChartColumn, TrendingUp } from "lucide-react";
+import { ChartColumn } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 import {
@@ -8,7 +8,6 @@ import {
   CardContent,
   CardDescription,
   CardFooter,
-  CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import {
@@ -39,31 +38,9 @@ import {
 
 export const description = "A simple area chart";
 
-const years = [
-  {
-    value: "2025",
-    label: "2025",
-  },
-  {
-    value: "2024",
-    label: "2024",
-  },
-];
-
-const chartData = [
-  { month: "Enero", pets: 0 },
-  { month: "Febrero", pets: 0 },
-  { month: "Marzo", pets: 237 },
-  { month: "Abril", pets: 73 },
-  { month: "Mayo", pets: 0 },
-  { month: "Junio", pets: 214 },
-  { month: "Julio", pets: 300 },
-  { month: "Agosto", pets: 250 },
-  { month: "Septiembre", pets: 400 },
-  { month: "Octubre", pets: 350 },
-  { month: "Noviembre", pets: 450 },
-  { month: "Diciembre", pets: 500 },
-];
+interface NewPetsAreaChartProps {
+  registry: Record<string, { month: string; pets: number }[]>;
+}
 
 const chartConfig = {
   pets: {
@@ -72,9 +49,16 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function NewPetsAreaChart() {
+export function NewPetsAreaChart({ registry }: NewPetsAreaChartProps) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("2025");
+
+  const years = Object.keys(registry).map((year) => ({
+    value: year,
+    label: year,
+  }));
+
+  const chartData = registry[value] ?? [];
 
   return (
     <Card>
