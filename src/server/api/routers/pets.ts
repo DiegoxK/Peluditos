@@ -235,4 +235,115 @@ export const petRouter = createTRPCRouter({
       }
       return JSON.parse(JSON.stringify(deletedPetDocument)) as Pet | null;
     }),
+
+  getStats: protectedProcedure.query(async ({ ctx }) => {
+    const totalPetsQuery = ctx.db.collection<PetDB>("pets").countDocuments({});
+    const adoptedQuery = ctx.db
+      .collection<PetDB>("pets")
+      .countDocuments({ status: "adoptado" });
+    const vaccinatedQuery = ctx.db
+      .collection<PetDB>("pets")
+      .countDocuments({ vaccinated: true });
+    const catsQuery = ctx.db
+      .collection<PetDB>("pets")
+      .countDocuments({ specie: "gato" });
+    const dogsQuery = ctx.db
+      .collection<PetDB>("pets")
+      .countDocuments({ specie: "perro" });
+
+    const [totalPets, adopted, vaccinated, cats, dogs] = await Promise.all([
+      totalPetsQuery,
+      adoptedQuery,
+      vaccinatedQuery,
+      catsQuery,
+      dogsQuery,
+    ]);
+
+    type RegistryDataFromDB = Array<{
+      year: number;
+      month: number;
+      pets: number;
+    }>;
+    type Registry = Record<string, { month: string; pets: number }[]>;
+
+    const registryDataFromDB = (await ctx.db
+      .collection<PetDB>("pets")
+      .aggregate([
+        {
+          $addFields: {
+            entryDateObject: {
+              $toDate: "$entryDate",
+            },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$entryDateObject" },
+              month: { $month: "$entryDateObject" },
+            },
+            pets: { $sum: 1 },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            year: "$_id.year",
+            month: "$_id.month",
+            pets: "$pets",
+          },
+        },
+      ])
+      .toArray()) as RegistryDataFromDB;
+
+    const months = [
+      "Enero",
+      "Febrero",
+      "Marzo",
+      "Abril",
+      "Mayo",
+      "Junio",
+      "Julio",
+      "Agosto",
+      "Septiembre",
+      "Octubre",
+      "Noviembre",
+      "Diciembre",
+    ];
+
+    const registry = registryDataFromDB.reduce(
+      (registryInProgress, dbEntry) => {
+        registryInProgress[dbEntry.year] ??= months.map((month) => {
+          return {
+            month,
+            pets: 0,
+          };
+        });
+
+        const monthIndex = dbEntry.month - 1;
+        const yearArray = registryInProgress[dbEntry.year];
+        const monthObject = yearArray ? yearArray[monthIndex] : undefined;
+
+        if (monthObject) {
+          monthObject.pets = dbEntry.pets;
+        }
+
+        return registryInProgress;
+      },
+      {} as Registry,
+    );
+
+    console.log(registry);
+
+    const petStats = {
+      total: totalPets,
+      adopted,
+      vaccinated,
+      cats,
+      dogs,
+      registry,
+    };
+
+    return petStats;
+  }),
 });
