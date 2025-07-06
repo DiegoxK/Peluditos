@@ -21,7 +21,7 @@ interface DataTableActionsInterface {
 }
 
 export default function DataTableActions({ pet }: DataTableActionsInterface) {
-  const { openDialog, closeDialog } = useDialog();
+  const { openDialog } = useDialog();
 
   return (
     <DropdownMenu>
