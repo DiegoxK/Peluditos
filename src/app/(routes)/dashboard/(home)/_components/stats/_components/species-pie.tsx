@@ -21,21 +21,28 @@ import {
 } from "@/components/ui/chart";
 import { Separator } from "@/components/ui/separator";
 
-const chartData = [
-  { specie: "perro", amount: 5, fill: "var(--chart-1)" },
-  { specie: "gato", amount: 15, fill: "var(--chart-2)" },
-];
-
 const chartConfig = {
-  perro: {
+  dog: {
     label: "Perro",
   },
-  gato: {
+  cat: {
     label: "Gato",
   },
 } satisfies ChartConfig;
 
-export function SpeciesPie() {
+interface SpeciesPieProps {
+  species: {
+    cats: number;
+    dogs: number;
+  };
+}
+
+export function SpeciesPie({ species }: SpeciesPieProps) {
+  const chartData = [
+    { specie: "dog", amount: species.dogs, fill: "var(--chart-1)" },
+    { specie: "cat", amount: species.cats, fill: "var(--chart-2)" },
+  ];
+
   return (
     <Card>
       <CardTitle className="text-primary flex items-center gap-2">
