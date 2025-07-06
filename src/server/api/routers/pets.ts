@@ -293,6 +293,12 @@ export const petRouter = createTRPCRouter({
             pets: "$pets",
           },
         },
+        {
+          $sort: {
+            year: 1,
+            month: 1,
+          },
+        },
       ])
       .toArray()) as RegistryDataFromDB;
 
