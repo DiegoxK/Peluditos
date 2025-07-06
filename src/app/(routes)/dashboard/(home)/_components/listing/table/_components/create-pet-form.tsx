@@ -196,6 +196,8 @@ export default function CreatePetForm({ pet }: CreatePetFormProps) {
     onSettled: (_data, error, _variables) => {
       void utils.pets.getAllPets.invalidate();
       void utils.pets.getDashboardSummary.invalidate();
+      void utils.pets.getStats.invalidate();
+
       setPreventDialogClose(false);
 
       if (!error) {

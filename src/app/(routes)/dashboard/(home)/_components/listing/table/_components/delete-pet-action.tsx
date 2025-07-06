@@ -54,6 +54,7 @@ export default function DeletePetAction({ pet }: DeletePetProps) {
       onSettled: (_data, error, _variables) => {
         void utils.pets.getAllPets.invalidate();
         void utils.pets.getDashboardSummary.invalidate();
+        void utils.pets.getStats.invalidate();
 
         if (!error) {
           toast.success("Mascota eliminada exitosamente!", {
