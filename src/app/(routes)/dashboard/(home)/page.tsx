@@ -14,6 +14,7 @@ import PetStats from "./_components/stats";
 export default async function PetsPage() {
   void api.pets.getAllPets.prefetch(defaultInitialTableQueryInput);
   void api.pets.getDashboardSummary.prefetch();
+  void api.pets.getStats.prefetch();
 
   return (
     <div className="container mx-auto p-6">
@@ -41,7 +42,7 @@ export default async function PetsPage() {
                 <PetStats />
               </TabsContent>
               <TabsContent value="estadisticas" className="space-y-4">
-                <PetListing />
+                {/* <PetListing /> */}
               </TabsContent>
             </DialogProvider>
           </TableStateProvider>
