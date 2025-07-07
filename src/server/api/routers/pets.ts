@@ -143,6 +143,7 @@ export const petRouter = createTRPCRouter({
 
     return { total, available, adopted };
   }),
+
   createPet: protectedProcedure
     .input(PetSchema.omit({ _id: true, createdAt: true, updatedAt: true }))
     .mutation(async ({ ctx, input }) => {
