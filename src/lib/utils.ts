@@ -27,6 +27,13 @@ export const formatDate = (dateStr: string) => {
   }
 };
 
+export function formatPrice(price: number) {
+  return new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+  }).format(price);
+}
+
 /**
  * Exports an array of objects to an Excel file.
  * @param data - Array of objects to export
