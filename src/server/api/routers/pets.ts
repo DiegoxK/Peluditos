@@ -339,8 +339,6 @@ export const petRouter = createTRPCRouter({
       {} as Registry,
     );
 
-    console.log(registry);
-
     const petStats = {
       total: totalPets,
       adopted,
