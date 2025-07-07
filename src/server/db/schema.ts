@@ -1,6 +1,8 @@
 import { ObjectId } from "mongodb";
 import { z } from "zod";
 
+// ======================= User =======================
+
 export const UserSchema = z.object({
   _id: z.instanceof(ObjectId).optional(),
   name: z.string(),
@@ -17,6 +19,8 @@ export interface UserSession {
   image: string;
   name: string;
 }
+
+// ======================= Pet =======================
 
 export const PetDbSchema = z.object({
   _id: z.instanceof(ObjectId).optional(),
@@ -43,3 +47,31 @@ export const PetSchema = PetDbSchema.extend({
 
 export type Pet = z.infer<typeof PetSchema>;
 export type PetDB = z.infer<typeof PetDbSchema>;
+
+// ======================= Product =======================
+export const ProductDbSchema = z.object({
+  _id: z.instanceof(ObjectId).optional(),
+  name: z.string(),
+  category: z.string(),
+  subcategory: z.string(),
+  price: z.number(),
+  previousPrice: z.number(),
+  stock: z.number(),
+  minStock: z.number(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  description: z.string(),
+  features: z.array(z.string()),
+  image: z.string(),
+  imageKey: z.string(),
+  sales: z.number(),
+  views: z.number(),
+  featured: z.boolean(),
+});
+
+export const ProductSchema = ProductDbSchema.extend({
+  _id: z.string(),
+});
+
+export type Product = z.infer<typeof ProductSchema>;
+export type ProductDB = z.infer<typeof ProductDbSchema>;
