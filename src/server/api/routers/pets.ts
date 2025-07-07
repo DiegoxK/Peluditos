@@ -133,16 +133,16 @@ export const petRouter = createTRPCRouter({
     }),
 
   getDashboardSummary: protectedProcedure.query(async ({ ctx }) => {
-    const total = await ctx.db.collection<PetDB>("pets").countDocuments({});
-    const available = await ctx.db
-      .collection<PetDB>("pets")
-      .countDocuments({ status: "disponible" });
-    const adopted = await ctx.db
-      .collection<PetDB>("pets")
-      .countDocuments({ status: "adoptado" });
+    const petsCollection = ctx.db.collection<PetDB>("pets");
+
+    const [total, available, adopted] = await Promise.all([
+      petsCollection.countDocuments({}),
+      petsCollection.countDocuments({ status: "disponible" }),
+      petsCollection.countDocuments({ status: "adoptado" }),
+    ]);
+
     return { total, available, adopted };
   }),
-
   createPet: protectedProcedure
     .input(PetSchema.omit({ _id: true, createdAt: true, updatedAt: true }))
     .mutation(async ({ ctx, input }) => {
