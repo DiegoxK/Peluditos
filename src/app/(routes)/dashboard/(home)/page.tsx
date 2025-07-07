@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { TableStateProvider } from "@/context/table-state-provider";
 
-import { defaultInitialTableQueryInput } from "@/config/pet-defaults";
+import { defaultInitialTableQueryInput } from "@/config/filter-defaults";
 import { DialogProvider } from "@/context/dialog-provider";
 
 import PetListing from "./_components/listing";
