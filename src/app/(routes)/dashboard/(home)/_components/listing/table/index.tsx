@@ -90,11 +90,11 @@ export function DataTable({ columns }: DataTableProps) {
   const feedbackState = isFilterProcessing
     ? "Buscando..."
     : isUpdatingTable
-      ? "Filtrando..."
+      ? "Actualizando..."
       : isFetching &&
         status === "success" &&
         serverResponse &&
-        "Actualizando...";
+        "Refrescando...";
 
   const isError = status === "error" && error && "Error al cargar mascotas";
 
