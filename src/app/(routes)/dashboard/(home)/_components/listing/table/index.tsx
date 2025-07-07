@@ -15,6 +15,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 import type { Pet } from "@/server/db/schema";
 import DataTableActions from "./actions";
 import { useMemo } from "react";
@@ -138,39 +145,55 @@ export function DataTable({ columns }: DataTableProps) {
                     ))}
                     <TableCell className="text-right">
                       <div className="mt-1 mr-1 flex items-center justify-end gap-1">
-                        <Button
-                          onClick={() =>
-                            openDialog({
-                              title: `Detalles de ${row.original.name}`,
-                              description: "Información completa de la mascota",
-                              content: () => <PetDetails pet={row.original} />,
-                            })
-                          }
-                          variant="ghost"
-                          size="icon"
-                          aria-label={`Ver detalles de ${row.original.name}`}
-                        >
-                          <Search className="size-4" />
-                        </Button>
-                        <Button
-                          onClick={() =>
-                            openDialog({
-                              title: `Editar a ${row.original.name}`,
-                              description:
-                                "Complete los detalles de la mascota y guarde los cambios.",
+                        <Tooltip delayDuration={1000}>
+                          <TooltipTrigger asChild>
+                            <Button
+                              onClick={() =>
+                                openDialog({
+                                  title: `Detalles de ${row.original.name}`,
+                                  description:
+                                    "Información completa de la mascota",
+                                  content: () => (
+                                    <PetDetails pet={row.original} />
+                                  ),
+                                })
+                              }
+                              variant="ghost"
+                              size="icon"
+                              aria-label={`Ver detalles de ${row.original.name}`}
+                            >
+                              <Search className="size-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Ver</p>
+                          </TooltipContent>
+                        </Tooltip>
+                        <Tooltip delayDuration={1000}>
+                          <TooltipTrigger asChild>
+                            <Button
+                              onClick={() =>
+                                openDialog({
+                                  title: `Editar a ${row.original.name}`,
+                                  description:
+                                    "Complete los detalles de la mascota y guarde los cambios.",
 
-                              content: () => (
-                                <CreatePetForm pet={row.original} />
-                              ),
-                            })
-                          }
-                          variant="ghost"
-                          size="icon"
-                          aria-label={`Editar ${row.original.name}`}
-                        >
-                          <Pencil className="size-4" />
-                        </Button>
-
+                                  content: () => (
+                                    <CreatePetForm pet={row.original} />
+                                  ),
+                                })
+                              }
+                              variant="ghost"
+                              size="icon"
+                              aria-label={`Editar ${row.original.name}`}
+                            >
+                              <Pencil className="size-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Editar</p>
+                          </TooltipContent>
+                        </Tooltip>
                         <DataTableActions pet={row.original} />
                       </div>
                     </TableCell>
