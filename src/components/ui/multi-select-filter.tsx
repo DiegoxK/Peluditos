@@ -13,10 +13,15 @@ import {
 import { type Column } from "@tanstack/react-table";
 import { Filter, XCircle } from "lucide-react";
 
+type Option = {
+  label: string;
+  value: string;
+};
+
 interface MultiSelectFilterProps<TData, TValue> {
   column: Column<TData, TValue>;
   title: string;
-  options: readonly string[];
+  options: readonly (string | Option)[];
 }
 
 export function MultiSelectFilter<TData, TValue>({
@@ -80,7 +85,7 @@ export function MultiSelectFilter<TData, TValue>({
   return (
     <DropdownMenu open={isOpen} onOpenChange={onOpenChange}>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="relative">
+        <Button variant="outline" size="sm" className="relative h-9">
           <Filter className="mr-2 h-4 w-4" />
           {title}
           {currentAppliedCount > 0 && (
@@ -107,45 +112,44 @@ export function MultiSelectFilter<TData, TValue>({
         <DropdownMenuSeparator />
         <div className="max-h-[200px] overflow-y-auto pr-1">
           {options.map((option) => {
-            const isSelected = selectedValues.includes(option);
+            const isObject = typeof option === "object";
+            const value = isObject ? option.value : option;
+            const label = isObject ? option.label : option;
+
+            const isSelected = selectedValues.includes(value);
+
             return (
               <DropdownMenuCheckboxItem
-                key={option}
+                key={value}
                 checked={isSelected}
                 className="capitalize"
                 onCheckedChange={(checked) => {
-                  handleCheckboxChange(option, !!checked);
+                  handleCheckboxChange(value, !!checked);
                 }}
                 onSelect={(e) => e.preventDefault()}
               >
-                {option}
+                {label}
               </DropdownMenuCheckboxItem>
             );
           })}
         </div>
         <DropdownMenuSeparator />
-
-        {/* Footer for actions */}
         <div className="flex items-center justify-end gap-2 p-2">
           {currentAppliedCount > 0 && (
             <Button
               variant="ghost"
               size="sm"
               onClick={handleClearAndApply}
-              className="text-destructive hover:bg-destructive text-xs hover:text-white"
+              className="text-destructive hover:bg-destructive h-8 text-xs hover:text-white"
             >
               Remover Filtros
             </Button>
           )}
-          {/* <Button
-            variant="outline"
+          <Button
             size="sm"
-            onClick={() => onOpenChange(false)}
-            className="text-xs"
+            onClick={handleApplyFilters}
+            className="h-8 text-xs"
           >
-            Cancelar
-          </Button> */}
-          <Button size="sm" onClick={handleApplyFilters} className="text-xs">
             Aplicar
           </Button>
         </div>
