@@ -10,7 +10,7 @@ import CreatePetForm from "./_components/create-pet-form";
 import { useDialog } from "@/context/dialog-provider";
 import { useTableState } from "@/context/table-state-provider";
 import { exportToExcel } from "@/lib/utils";
-import { MultiSelectFilter } from "./_components/multi-select-filter";
+import { MultiSelectFilter } from "@/components/ui/multi-select-filter";
 import { SortMenu } from "@/components/ui/sort-menu";
 import { petSortGroups } from "./sort-groups";
 import { Input } from "@/components/ui/input";
