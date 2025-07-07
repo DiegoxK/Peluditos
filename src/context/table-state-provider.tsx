@@ -26,7 +26,7 @@ import {
   DEFAULT_PAGE_SIZE,
   DEFAULT_SORTING,
   defaultInitialTableQueryInput,
-} from "@/config/pet-defaults";
+} from "@/config/filter-defaults";
 
 // --- Type Definitions ---
 type ServerColumnFilterValue =
