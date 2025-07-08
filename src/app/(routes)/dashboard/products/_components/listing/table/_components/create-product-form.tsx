@@ -24,23 +24,27 @@ import {
   ImageCropChangeAction,
   ImageCropContentArea,
   ImageCropCropper,
-  ImageCropDescription,
   ImageCropFooter,
   ImageCropHeader,
   ImageCropPreview,
   ImageCropRoot,
   ImageCropTitle,
   ImageCropTrigger,
+  ImageCropDescription,
 } from "@/components/ui/image-crop-area";
-import { Package as PackageIcon, Trash2, X } from "lucide-react";
+import { Package as PackageIcon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { uploadFiles } from "@/lib/uploadthing";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
-import { useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDialog } from "@/context/dialog-provider";
 import { useTableState } from "@/context/table-state-provider";
 import { FeatureInput } from "@/components/ui/feature-input";
+import {
+  CrudCombobox,
+  type ComboboxOption,
+} from "@/components/ui/crud-combobox";
 
 const ProductImageSchema = z.union([
   z
@@ -104,6 +108,11 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
   const isEditMode = Boolean(product);
   const utils = api.useUtils();
 
+  const { data: categories, isPending } = api.categories.getAll.useQuery();
+  const [subCategoryOptions, setSubCategoryOptions] = useState<
+    ComboboxOption[]
+  >([]);
+
   const form = useForm<ProductFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -118,6 +127,22 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
       featured: product?.featured ?? false,
     },
   });
+
+  const selectedCategoryId = form.watch("category");
+
+  useEffect(() => {
+    const selectedCategory = categories?.find(
+      (cat) => cat.id === selectedCategoryId,
+    );
+
+    if (selectedCategory) {
+      setSubCategoryOptions(selectedCategory.subCategories);
+    } else {
+      setSubCategoryOptions([]);
+    }
+
+    form.setValue("subcategory", "");
+  }, [selectedCategoryId, categories, form]);
 
   const { mutate: createProduct } = api.products.createProduct.useMutation({
     onMutate: async (newProductApiInput) => {
@@ -293,7 +318,7 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="max-h-[65vh] space-y-6 overflow-y-scroll py-4 ps-1 pr-3">
+        <div className="max-h-[65vh] space-y-4 overflow-y-scroll py-2 ps-1 pr-2">
           <FormField
             control={form.control}
             name="name"
@@ -301,25 +326,41 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
               <FormItem>
                 <FormLabel>Nombre del Producto</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Ej: Collar de cuero para perros"
-                    {...field}
-                  />
+                  <Input placeholder="Collar de cuero para perros" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <div className="flex gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="category"
               render={({ field }) => (
-                <FormItem className="flex-1">
-                  <FormLabel>Categoría</FormLabel>
+                <FormItem className="overflow-hidden">
+                  <FormLabel>Categoria principal</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ej: Accesorios" {...field} />
+                    <CrudCombobox
+                      disabled={isPending}
+                      options={categories ?? []}
+                      placeholder={
+                        isPending ? "Cargando..." : "Selecciona categoría..."
+                      }
+                      searchPlaceholder=" Buscar o crear..."
+                      addPlaceholder="Agregar nueva categoría"
+                      {...field}
+                      onAdd={() => {
+                        console.log("adding");
+                      }}
+                      onEdit={() => {
+                        console.log("editing");
+                      }}
+                      onDelete={() => {
+                        console.log("deleting");
+                      }}
+                    />
                   </FormControl>
+
                   <FormMessage />
                 </FormItem>
               )}
@@ -328,10 +369,26 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
               control={form.control}
               name="subcategory"
               render={({ field }) => (
-                <FormItem className="flex-1">
-                  <FormLabel>Subcategoría</FormLabel>
+                <FormItem className="overflow-hidden">
+                  <FormLabel>Category</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ej: Collares" {...field} />
+                    <CrudCombobox
+                      options={subCategoryOptions}
+                      disabled={!selectedCategoryId}
+                      placeholder="Subcategoría..."
+                      searchPlaceholder="Buscar o crear..."
+                      addPlaceholder="Agregar nueva subcategoría"
+                      {...field}
+                      onAdd={() => {
+                        console.log("adding");
+                      }}
+                      onEdit={() => {
+                        console.log("editing");
+                      }}
+                      onDelete={() => {
+                        console.log("deleting");
+                      }}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -385,22 +442,32 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
                     }}
                   >
                     <div className="space-y-4">
-                      <ImageCropTrigger className="w-auto" />
+                      <ImageCropTrigger className="w-full" />
                       <ImageCropContentArea className="bg-card mx-auto w-full rounded-lg border p-4 shadow-sm sm:max-w-lg">
                         <ImageCropHeader>
-                          <ImageCropTitle>Ajustar Imagen</ImageCropTitle>
+                          <div className="flex-grow p-1">
+                            <ImageCropTitle>Adjustar imagen</ImageCropTitle>
+                            <ImageCropDescription>
+                              Arrastra para recortar.
+                            </ImageCropDescription>
+                          </div>
                           <ImageCropCloseAction size="icon" variant="ghost" />
                         </ImageCropHeader>
                         <Separator className="my-4" />
                         <ImageCropCropper />
+                        <p className="text-muted-foreground mt-4 text-sm">
+                          La vista previa se actualiza debajo del editor.
+                        </p>
                         <Separator className="my-4" />
                         <ImageCropFooter>
-                          <ImageCropChangeAction>Cambiar</ImageCropChangeAction>
+                          <ImageCropChangeAction>
+                            Cambiar imagen
+                          </ImageCropChangeAction>
                           <ImageCropApplyAction>Aplicar</ImageCropApplyAction>
                         </ImageCropFooter>
                       </ImageCropContentArea>
                       <ImageCropPreview
-                        className="my-8 h-32 w-32 place-self-center rounded-lg border"
+                        className="my-8 h-54 w-54 place-self-center rounded-lg border"
                         placeholder={
                           <div className="flex flex-col items-center justify-center gap-1">
                             <PackageIcon strokeWidth={1.2} size={48} />
