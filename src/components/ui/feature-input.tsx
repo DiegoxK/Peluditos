@@ -54,14 +54,14 @@ export function FeatureInput({
 
       <div className="flex flex-wrap gap-2">
         {value.map((feature, index) => (
-          <Badge key={index} variant="secondary">
+          <Badge key={index}>
             {feature}
             <button
               type="button"
-              className="ring-offset-background focus:ring-ring ml-2 rounded-full outline-none focus:ring-2 focus:ring-offset-2"
+              className="ring-offset-background focus:ring-ring ml-2 rounded-md outline-none focus:ring-2 focus:ring-offset-2"
               onClick={() => handleRemoveFeature(feature)}
             >
-              <X className="text-muted-foreground hover:text-foreground h-3 w-3" />
+              <X className="h-3 w-3 cursor-pointer text-white" />
             </button>
           </Badge>
         ))}
