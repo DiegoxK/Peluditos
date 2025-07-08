@@ -49,6 +49,7 @@ export type Pet = z.infer<typeof PetSchema>;
 export type PetDB = z.infer<typeof PetDbSchema>;
 
 // ======================= Product =======================
+
 export const ProductDbSchema = z.object({
   _id: z.instanceof(ObjectId).optional(),
   name: z.string(),
@@ -74,3 +75,23 @@ export const ProductSchema = ProductDbSchema.extend({
 
 export type Product = z.infer<typeof ProductSchema>;
 export type ProductDB = z.infer<typeof ProductDbSchema>;
+
+// ======================= Categories =======================
+
+export const CategorySchema = z.object({
+  _id: z.instanceof(ObjectId).optional(),
+  name: z.string(),
+  subCategories: z.array(
+    z.object({
+      _id: z.instanceof(ObjectId).optional(),
+      name: z.string(),
+    }),
+  ),
+});
+
+export const CategoryDbSchema = CategorySchema.extend({
+  _id: z.string(),
+});
+
+export type Category = z.infer<typeof CategorySchema>;
+export type CategoryDB = z.infer<typeof CategoryDbSchema>;
