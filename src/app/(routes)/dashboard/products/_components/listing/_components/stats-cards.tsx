@@ -1,7 +1,15 @@
 "use client";
 
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { Cat, Dog, Squirrel } from "lucide-react";
+import {
+  Box,
+  Cat,
+  Dog,
+  Package,
+  Package2,
+  PackageOpen,
+  Squirrel,
+} from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { api } from "@/trpc/react";
 
@@ -10,13 +18,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 export function StatsCards() {
   const [summaryStats] = api.products.getDashboardSummary.useSuspenseQuery();
 
-  // TODO: update icons
-
   return (
     <div className="grid gap-4 md:grid-cols-3">
       <Card>
         <CardTitle className="text-primary flex items-center gap-2">
-          <Cat strokeWidth={2.2} />
+          <Package strokeWidth={2.2} />
           <span className="font-semibold">Total de Productos</span>
         </CardTitle>
         <div className="mx-4">
@@ -31,7 +37,7 @@ export function StatsCards() {
 
       <Card>
         <CardTitle className="text-primary flex items-center gap-2">
-          <Squirrel strokeWidth={2.2} />
+          <Package2 strokeWidth={2.2} />
           <span className="font-semibold">Productos disponibles</span>
         </CardTitle>
         <div className="mx-4">
@@ -46,7 +52,7 @@ export function StatsCards() {
 
       <Card>
         <CardTitle className="text-primary flex items-center gap-2">
-          <Dog strokeWidth={2.2} />
+          <PackageOpen strokeWidth={2.2} />
           <span className="font-semibold">Agotados</span>
         </CardTitle>
         <div className="mx-4">
