@@ -35,13 +35,51 @@ export const categoryRouter = createTRPCRouter({
     }),
 
   getAll: protectedProcedure.query(async ({ ctx }) => {
+    type ComboboxOption = {
+      id: string;
+      label: string;
+    };
+
+    type CategoryWithOptions = ComboboxOption & {
+      subCategories: ComboboxOption[];
+    };
+
     const categoriesData = await ctx.db
       .collection<CategoryDB>("categories")
-      .find({})
-      .sort({ name: 1 })
+      .aggregate<CategoryWithOptions>([
+        {
+          $project: {
+            _id: 0,
+            id: { $toString: "$_id" },
+            label: "$name",
+            subCategories: "$subCategories",
+          },
+        },
+
+        {
+          $addFields: {
+            subCategories: {
+              $map: {
+                input: "$subCategories",
+                as: "sub",
+                in: {
+                  id: { $toString: "$$sub._id" },
+                  label: "$$sub.name",
+                },
+              },
+            },
+          },
+        },
+
+        {
+          $sort: {
+            label: 1,
+          },
+        },
+      ])
       .toArray();
 
-    return JSON.parse(JSON.stringify(categoriesData)) as Category[];
+    return categoriesData;
   }),
 
   updateCategory: protectedProcedure
