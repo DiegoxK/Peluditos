@@ -78,19 +78,25 @@ export type ProductDB = z.infer<typeof ProductDbSchema>;
 
 // ======================= Categories =======================
 
-export const CategorySchema = z.object({
+export const CategoryDbSchema = z.object({
   _id: z.instanceof(ObjectId).optional(),
   name: z.string(),
   subCategories: z.array(
     z.object({
-      _id: z.instanceof(ObjectId).optional(),
+      _id: z.instanceof(ObjectId),
       name: z.string(),
     }),
   ),
 });
 
-export const CategoryDbSchema = CategorySchema.extend({
+export const CategorySchema = CategoryDbSchema.extend({
   _id: z.string(),
+  subCategories: z.array(
+    z.object({
+      _id: z.string(),
+      name: z.string(),
+    }),
+  ),
 });
 
 export type Category = z.infer<typeof CategorySchema>;
