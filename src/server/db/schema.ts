@@ -57,7 +57,6 @@ export const ProductDbSchema = z.object({
   price: z.number(),
   previousPrice: z.number(),
   stock: z.number(),
-  minStock: z.number(),
   createdAt: z.string(),
   updatedAt: z.string(),
   description: z.string(),

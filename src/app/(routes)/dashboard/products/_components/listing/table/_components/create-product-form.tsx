@@ -112,7 +112,6 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
       subcategory: product?.subcategory ?? "",
       price: product?.price ?? 0,
       stock: product?.stock ?? 0,
-      minStock: product?.minStock ?? 5,
       description: product?.description ?? "",
       features: product?.features ?? [],
       image: product?.image ?? "",
@@ -359,19 +358,6 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
               render={({ field }) => (
                 <FormItem className="flex-1">
                   <FormLabel>Stock disponible</FormLabel>
-                  <FormControl>
-                    <Input type="number" min={0} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="minStock"
-              render={({ field }) => (
-                <FormItem className="flex-1">
-                  <FormLabel>Stock Mínimo</FormLabel>
                   <FormControl>
                     <Input type="number" min={0} {...field} />
                   </FormControl>
