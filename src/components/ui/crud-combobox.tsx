@@ -19,10 +19,10 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -33,7 +33,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 
@@ -243,6 +242,11 @@ export function CrudCombobox({
           <DialogHeader>
             <DialogTitle>Edit Option</DialogTitle>
           </DialogHeader>
+          <DialogDescription className="sr-only">
+            Edit the label for &quot;{editingOption?.label}&quot;.
+            <br />
+            Press Enter to save changes.
+          </DialogDescription>
           <Input
             value={editingOption?.label ?? ""}
             onChange={(e) =>
