@@ -4,6 +4,47 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { ObjectId } from "mongodb";
 import { TRPCError } from "@trpc/server";
 
+interface ComboboxOption {
+  id: string;
+  label: string;
+}
+
+type CategoryWithOptions = ComboboxOption & {
+  subCategories: ComboboxOption[];
+};
+
+const aggregationPipeline = [
+  {
+    $project: {
+      _id: 0,
+      id: { $toString: "$_id" },
+      label: "$name",
+      subCategories: "$subCategories",
+    },
+  },
+
+  {
+    $addFields: {
+      subCategories: {
+        $map: {
+          input: "$subCategories",
+          as: "sub",
+          in: {
+            id: { $toString: "$$sub._id" },
+            label: "$$sub.name",
+          },
+        },
+      },
+    },
+  },
+
+  {
+    $sort: {
+      label: 1,
+    },
+  },
+];
+
 export const categoryRouter = createTRPCRouter({
   // ======================= Categories =======================
   createCategory: protectedProcedure
@@ -35,48 +76,9 @@ export const categoryRouter = createTRPCRouter({
     }),
 
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    type ComboboxOption = {
-      id: string;
-      label: string;
-    };
-
-    type CategoryWithOptions = ComboboxOption & {
-      subCategories: ComboboxOption[];
-    };
-
     const categoriesData = await ctx.db
       .collection<CategoryDB>("categories")
-      .aggregate<CategoryWithOptions>([
-        {
-          $project: {
-            _id: 0,
-            id: { $toString: "$_id" },
-            label: "$name",
-            subCategories: "$subCategories",
-          },
-        },
-
-        {
-          $addFields: {
-            subCategories: {
-              $map: {
-                input: "$subCategories",
-                as: "sub",
-                in: {
-                  id: { $toString: "$$sub._id" },
-                  label: "$$sub.name",
-                },
-              },
-            },
-          },
-        },
-
-        {
-          $sort: {
-            label: 1,
-          },
-        },
-      ])
+      .aggregate<CategoryWithOptions>(aggregationPipeline)
       .toArray();
 
     return categoriesData;
