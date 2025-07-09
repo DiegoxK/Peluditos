@@ -343,9 +343,7 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
                     <CrudCombobox
                       disabled={isPending}
                       options={categories ?? []}
-                      placeholder={
-                        isPending ? "Cargando..." : "Selecciona categoría..."
-                      }
+                      placeholder={isPending ? "Cargando..." : "Categoría"}
                       searchPlaceholder=" Buscar o crear..."
                       addPlaceholder="Agregar nueva categoría"
                       {...field}
@@ -375,7 +373,7 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
                     <CrudCombobox
                       options={subCategoryOptions}
                       disabled={!selectedCategoryId}
-                      placeholder="Subcategoría..."
+                      placeholder="Subcategoría"
                       searchPlaceholder="Buscar o crear..."
                       addPlaceholder="Agregar nueva subcategoría"
                       {...field}

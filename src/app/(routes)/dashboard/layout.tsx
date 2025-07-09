@@ -3,7 +3,6 @@ import { AppSidebar } from "@/app/(routes)/dashboard/_components/app-sidebar";
 import { Toaster } from "@/components/ui/sonner";
 
 import Header from "./_components/header";
-import { DialogProvider } from "../../../context/dialog-provider";
 import { auth } from "@/server/auth";
 import { redirect } from "next/navigation";
 

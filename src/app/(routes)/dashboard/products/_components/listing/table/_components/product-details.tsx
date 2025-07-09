@@ -68,9 +68,6 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
               <span className="text-sm font-medium">Stock Actual:</span>
               <span className="text-sm">{product.stock} unidades</span>
 
-              <span className="text-sm font-medium">Stock Mínimo:</span>
-              <span className="text-sm">{product.minStock} unidades</span>
-
               <span className="text-sm font-medium">Creado:</span>
               <span className="text-sm">{formatDate(product.createdAt)}</span>
             </div>
