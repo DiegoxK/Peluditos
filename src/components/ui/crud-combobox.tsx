@@ -66,9 +66,9 @@ export function CrudCombobox({
   onEdit,
   onDelete,
   className,
-  placeholder = "Select an option...",
-  searchPlaceholder = "Search or add...",
-  addPlaceholder = "Press Enter to add",
+  placeholder = "Selecciona una opción",
+  searchPlaceholder = "Buscar...",
+  addPlaceholder = "Pressiona Enter para agregar",
   disabled = false,
   canAdd = true,
   canEdit = true,
@@ -160,7 +160,7 @@ export function CrudCombobox({
               }}
             />
             <CommandList>
-              <CommandEmpty>No categorias</CommandEmpty>
+              <CommandEmpty>Vacio.</CommandEmpty>
 
               {showAddOption && (
                 <CommandItem
@@ -209,7 +209,7 @@ export function CrudCombobox({
                           onClick={() => setEditingOption(option)}
                         >
                           <Edit className="h-3.5 w-3.5" />
-                          <span className="sr-only">Edit {option.label}</span>
+                          <span className="sr-only">Editar {option.label}</span>
                         </Button>
                       )}
 
@@ -221,7 +221,9 @@ export function CrudCombobox({
                           onClick={() => setDeletingOptionId(option.id)}
                         >
                           <Trash2 className="h-3.5 w-3.5" />
-                          <span className="sr-only">Delete {option.label}</span>
+                          <span className="sr-only">
+                            Eliminar {option.label}
+                          </span>
                         </Button>
                       )}
                     </div>
@@ -243,9 +245,8 @@ export function CrudCombobox({
             <DialogTitle>Edit Option</DialogTitle>
           </DialogHeader>
           <DialogDescription className="sr-only">
-            Edit the label for &quot;{editingOption?.label}&quot;.
-            <br />
-            Press Enter to save changes.
+            Edita la etiqueta para &quot;{editingOption?.label}&quot;. Presiona
+            Enter para guardar los cambios.
           </DialogDescription>
           <Input
             value={editingOption?.label ?? ""}
@@ -259,7 +260,7 @@ export function CrudCombobox({
             <Button variant="outline" onClick={() => setEditingOption(null)}>
               Cancel
             </Button>
-            <Button onClick={handleEdit}>Save</Button>
+            <Button onClick={handleEdit}>Guardar Cambios</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -271,15 +272,17 @@ export function CrudCombobox({
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>
+              Estas seguro que quieres eliminar la opción?
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete the &quot;{deletingOption?.label}
-              &quot; option. This action cannot be undone.
+              Esta acción eliminará permanentemente la opción &quot;
+              {deletingOption?.label}&quot;. Esta acción no se puede deshacer.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setDeletingOptionId(null)}>
-              Cancel
+              Cancelar
             </AlertDialogCancel>
             <AlertDialogAction asChild>
               <Button
@@ -287,7 +290,7 @@ export function CrudCombobox({
                 variant="destructive"
                 className="bg-destructive hover:bg-red-500"
               >
-                Delete
+                Eliminar
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>
