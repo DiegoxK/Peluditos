@@ -108,7 +108,10 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
   const isEditMode = Boolean(product);
   const utils = api.useUtils();
 
-  const { data: categories, isPending } = api.categories.getAll.useQuery();
+  const { data: categories, isPending } = api.categories.getAll.useQuery(
+    undefined,
+    { refetchOnWindowFocus: false, refetchOnReconnect: false },
+  );
   const [subCategoryOptions, setSubCategoryOptions] = useState<
     ComboboxOption[]
   >([]);
@@ -143,6 +146,39 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
 
     form.setValue("subcategory", "");
   }, [selectedCategoryId, categories, form]);
+
+  const { mutate: createCategory } = api.categories.createCategory.useMutation({
+    onMutate: async (newCategory) => {
+      await utils.categories.getAll.cancel();
+      const previousCategories = utils.categories.getAll.getData();
+      utils.categories.getAll.setData(undefined, (oldCategories) => {
+        if (!oldCategories) return undefined;
+
+        const newCategoryOption: ComboboxOption = {
+          id: newCategory.name,
+          label: newCategory.name,
+        };
+
+        const updatedCategories = [
+          ...oldCategories,
+          { ...newCategoryOption, subCategories: [] },
+        ];
+
+        return updatedCategories.sort((a, b) => a.label.localeCompare(b.label));
+      });
+
+      form.setValue("category", newCategory.name);
+
+      return { previousCategories };
+    },
+    onSuccess: (_data, variables) => {
+      console.log("Category created successfully:", variables.name);
+    },
+    onError: (error) => {
+      console.error("Error creating category:", error);
+      toast.error(`Error creando categoría: ${error.message}`);
+    },
+  });
 
   const { mutate: createProduct } = api.products.createProduct.useMutation({
     onMutate: async (newProductApiInput) => {
@@ -337,7 +373,7 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
               control={form.control}
               name="category"
               render={({ field }) => (
-                <FormItem className="overflow-hidden">
+                <FormItem>
                   <FormLabel>Categoria principal</FormLabel>
                   <FormControl>
                     <CrudCombobox
@@ -347,8 +383,8 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
                       searchPlaceholder=" Buscar o crear..."
                       addPlaceholder="Agregar nueva categoría"
                       {...field}
-                      onAdd={() => {
-                        console.log("adding");
+                      onAdd={(label) => {
+                        createCategory({ name: label });
                       }}
                       onEdit={() => {
                         console.log("editing");
