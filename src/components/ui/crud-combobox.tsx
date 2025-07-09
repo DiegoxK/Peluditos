@@ -119,7 +119,7 @@ export function CrudCombobox({
     !options.some((o) => o.label.toLowerCase() === searchValue.toLowerCase());
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal={true}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -148,7 +148,7 @@ export function CrudCombobox({
             }}
           />
           <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandEmpty>No categorias</CommandEmpty>
 
             {showAddOption && (
               <CommandItem
