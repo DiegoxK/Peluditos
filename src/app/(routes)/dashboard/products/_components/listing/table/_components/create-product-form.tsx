@@ -132,15 +132,14 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
       refetchOnReconnect: false,
     });
 
-  const { data: subCategories, isPending: isSubCategoriesPending } =
-    api.subCategories.getByCategoryId.useQuery(
-      { categoryId: selectedCategoryId },
-      {
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
-        enabled: Boolean(selectedCategoryId),
-      },
-    );
+  const { data: subCategories } = api.subCategories.getByCategoryId.useQuery(
+    { categoryId: selectedCategoryId },
+    {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      enabled: Boolean(selectedCategoryId),
+    },
+  );
 
   const { mutate: createCategory } = api.categories.create.useMutation({
     onMutate: async (newCategory) => {
