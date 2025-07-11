@@ -27,7 +27,12 @@ const aggregationPipeline = [
     $addFields: {
       subCategories: {
         $map: {
-          input: "$subCategories",
+          input: {
+            $sortArray: {
+              input: "$subCategories",
+              sortBy: { name: 1 },
+            },
+          },
           as: "sub",
           in: {
             id: { $toString: "$$sub._id" },
@@ -49,7 +54,10 @@ export const categoryRouter = createTRPCRouter({
   // ======================= Categories =======================
   createCategory: protectedProcedure
     .input(
-      z.object({ name: z.string().min(1, "El nombre no puede estar vacío") }),
+      z.object({
+        id: z.string().min(1, "El ID no puede estar vacío"),
+        name: z.string().min(1, "El nombre no puede estar vacío"),
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const existingCategory = await ctx.db
@@ -63,7 +71,8 @@ export const categoryRouter = createTRPCRouter({
         });
       }
 
-      const newCategory: Omit<CategoryDB, "_id"> = {
+      const newCategory: CategoryDB = {
+        _id: new ObjectId(input.id),
         name: input.name,
         subCategories: [],
       };
@@ -131,7 +140,9 @@ export const categoryRouter = createTRPCRouter({
   addSubCategory: protectedProcedure
     .input(
       z.object({
-        categoryId: z.string(),
+        categoryId: z
+          .string()
+          .min(1, "El ID de la categoría no puede estar vacío"),
         name: z.string().min(1, "El nombre no puede estar vacío"),
       }),
     )
