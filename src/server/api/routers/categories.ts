@@ -1,58 +1,15 @@
 import { z } from "zod";
-import { type Category, type CategoryDB } from "@/server/db/schema";
+import {
+  type CategoryDB,
+  type ProductDB,
+  type SubCategoryDB,
+} from "@/server/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { ObjectId } from "mongodb";
 import { TRPCError } from "@trpc/server";
 
-interface ComboboxOption {
-  id: string;
-  label: string;
-}
-
-type CategoryWithOptions = ComboboxOption & {
-  subCategories: ComboboxOption[];
-};
-
-const aggregationPipeline = [
-  {
-    $project: {
-      _id: 0,
-      id: { $toString: "$_id" },
-      label: "$name",
-      subCategories: "$subCategories",
-    },
-  },
-
-  {
-    $addFields: {
-      subCategories: {
-        $map: {
-          input: {
-            $sortArray: {
-              input: "$subCategories",
-              sortBy: { name: 1 },
-            },
-          },
-          as: "sub",
-          in: {
-            id: { $toString: "$$sub._id" },
-            label: "$$sub.name",
-          },
-        },
-      },
-    },
-  },
-
-  {
-    $sort: {
-      label: 1,
-    },
-  },
-];
-
 export const categoryRouter = createTRPCRouter({
-  // ======================= Categories =======================
-  createCategory: protectedProcedure
+  create: protectedProcedure
     .input(
       z.object({
         id: z.string().min(1, "El ID no puede estar vacío"),
@@ -74,7 +31,6 @@ export const categoryRouter = createTRPCRouter({
       const newCategory: CategoryDB = {
         _id: new ObjectId(input.id),
         name: input.name,
-        subCategories: [],
       };
 
       const result = await ctx.db
@@ -87,22 +43,26 @@ export const categoryRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     const categoriesData = await ctx.db
       .collection<CategoryDB>("categories")
-      .aggregate<CategoryWithOptions>(aggregationPipeline)
+      .find()
+      .sort({ name: 1 })
       .toArray();
 
-    return categoriesData;
+    return categoriesData.map((cat) => ({
+      id: cat._id.toHexString(),
+      label: cat.name,
+    }));
   }),
 
-  updateCategory: protectedProcedure
+  update: protectedProcedure
     .input(
       z.object({
-        _id: z.string(),
+        id: z.string(),
         name: z.string().min(1, "El nombre no puede estar vacío"),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { _id, name } = input;
-      const categoryId = new ObjectId(_id);
+      const { id, name } = input;
+      const categoryId = new ObjectId(id);
 
       const result = await ctx.db
         .collection<CategoryDB>("categories")
@@ -118,10 +78,29 @@ export const categoryRouter = createTRPCRouter({
       return result;
     }),
 
-  deleteCategory: protectedProcedure
-    .input(z.object({ _id: z.string() }))
+  delete: protectedProcedure
+    .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const categoryId = new ObjectId(input._id);
+      const categoryId = new ObjectId(input.id);
+
+      // Before deleting, check if any products are using this category.
+      const productUsingCategory = await ctx.db
+        .collection<ProductDB>("products")
+        .findOne({ categoryId: categoryId });
+
+      if (productUsingCategory) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message:
+            "No se puede eliminar la categoría porque está siendo utilizada por uno o más productos.",
+        });
+      }
+
+      // If the category is deleted, all its subcategories will be deleted.
+      await ctx.db
+        .collection<SubCategoryDB>("subcategories")
+        .deleteMany({ categoryId: categoryId });
+
       const result = await ctx.db
         .collection<CategoryDB>("categories")
         .deleteOne({ _id: categoryId });
@@ -130,106 +109,6 @@ export const categoryRouter = createTRPCRouter({
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Categoría no encontrada.",
-        });
-      }
-
-      return result;
-    }),
-
-  // ======================= SubCategories =======================
-  addSubCategory: protectedProcedure
-    .input(
-      z.object({
-        categoryId: z
-          .string()
-          .min(1, "El ID de la categoría no puede estar vacío"),
-        name: z.string().min(1, "El nombre no puede estar vacío"),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { categoryId, name } = input;
-      const parentCategoryId = new ObjectId(categoryId);
-
-      const newSubCategory = {
-        _id: new ObjectId(),
-        name: name,
-      };
-
-      const result = await ctx.db
-        .collection<CategoryDB>("categories")
-        .updateOne(
-          { _id: parentCategoryId },
-          { $push: { subCategories: newSubCategory } },
-        );
-
-      if (result.matchedCount === 0) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Categoría padre no encontrada.",
-        });
-      }
-
-      return { ...result, insertedId: newSubCategory._id.toHexString() };
-    }),
-
-  updateSubCategory: protectedProcedure
-    .input(
-      z.object({
-        categoryId: z.string(),
-        subCategoryId: z.string(),
-        name: z.string().min(1, "El nombre no puede estar vacío"),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { categoryId, subCategoryId, name } = input;
-      const parentCategoryId = new ObjectId(categoryId);
-      const subCatId = new ObjectId(subCategoryId);
-
-      const result = await ctx.db
-        .collection<CategoryDB>("categories")
-        .updateOne(
-          { _id: parentCategoryId, "subCategories._id": subCatId },
-          { $set: { "subCategories.$.name": name } },
-        );
-
-      if (result.matchedCount === 0) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Subcategoría o categoría padre no encontrada.",
-        });
-      }
-      return result;
-    }),
-
-  deleteSubCategory: protectedProcedure
-    .input(
-      z.object({
-        categoryId: z.string(),
-        subCategoryId: z.string(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { categoryId, subCategoryId } = input;
-      const parentCategoryId = new ObjectId(categoryId);
-      const subCatId = new ObjectId(subCategoryId);
-
-      const result = await ctx.db
-        .collection<CategoryDB>("categories")
-        .updateOne(
-          { _id: parentCategoryId },
-          { $pull: { subCategories: { _id: subCatId } } },
-        );
-
-      if (result.matchedCount === 0) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Categoría padre no encontrada.",
-        });
-      }
-      if (result.modifiedCount === 0) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Subcategoría no encontrada para eliminar.",
         });
       }
 

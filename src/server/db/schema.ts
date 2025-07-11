@@ -53,8 +53,8 @@ export type PetDB = z.infer<typeof PetDbSchema>;
 export const ProductDbSchema = z.object({
   _id: z.instanceof(ObjectId).optional(),
   name: z.string(),
-  category: z.string(),
-  subcategory: z.string(),
+  categoryId: z.instanceof(ObjectId),
+  subcategoryId: z.instanceof(ObjectId),
   price: z.number(),
   previousPrice: z.number(),
   stock: z.number(),
@@ -71,6 +71,8 @@ export const ProductDbSchema = z.object({
 
 export const ProductSchema = ProductDbSchema.extend({
   _id: z.string(),
+  categoryId: z.string(),
+  subcategoryId: z.string(),
 });
 
 export type Product = z.infer<typeof ProductSchema>;
@@ -81,23 +83,27 @@ export type ProductDB = z.infer<typeof ProductDbSchema>;
 export const CategoryDbSchema = z.object({
   _id: z.instanceof(ObjectId).optional(),
   name: z.string(),
-  subCategories: z.array(
-    z.object({
-      _id: z.instanceof(ObjectId),
-      name: z.string(),
-    }),
-  ),
 });
 
 export const CategorySchema = CategoryDbSchema.extend({
   _id: z.string(),
-  subCategories: z.array(
-    z.object({
-      _id: z.string(),
-      name: z.string(),
-    }),
-  ),
 });
 
 export type Category = z.infer<typeof CategorySchema>;
 export type CategoryDB = z.infer<typeof CategoryDbSchema>;
+
+// ======================= Subcategories =======================
+
+export const SubCategoryDbSchema = z.object({
+  _id: z.instanceof(ObjectId).optional(),
+  categoryId: z.instanceof(ObjectId),
+  name: z.string(),
+});
+
+export const SubCategorySchema = SubCategoryDbSchema.extend({
+  _id: z.string(),
+  categoryId: z.string(),
+});
+
+export type SubCategory = z.infer<typeof SubCategorySchema>;
+export type SubCategoryDB = z.infer<typeof SubCategoryDbSchema>;
