@@ -96,11 +96,12 @@ export const categoryRouter = createTRPCRouter({
         });
       }
 
-      // If the category is deleted, all its subcategories will be deleted.
+      // If the category is deleted, all its subcategories must also be deleted.
       await ctx.db
         .collection<SubCategoryDB>("subcategories")
         .deleteMany({ categoryId: categoryId });
 
+      // Now, delete the category itself
       const result = await ctx.db
         .collection<CategoryDB>("categories")
         .deleteOne({ _id: categoryId });
