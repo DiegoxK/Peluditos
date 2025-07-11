@@ -406,7 +406,7 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
               </FormItem>
             )}
           />
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid gap-4 md:grid-cols-2">
             <FormField
               control={form.control}
               name="categoryId"
@@ -476,12 +476,12 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
               )}
             />
           </div>
-          <div className="flex gap-4">
+          <div className="grid gap-4 md:grid-cols-2">
             <FormField
               control={form.control}
               name="price"
               render={({ field }) => (
-                <FormItem className="flex-1">
+                <FormItem>
                   <FormLabel>Precio</FormLabel>
                   <FormControl>
                     <Input type="number" step="10" min={0} {...field} />
@@ -494,7 +494,7 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
               control={form.control}
               name="stock"
               render={({ field }) => (
-                <FormItem className="flex-1">
+                <FormItem>
                   <FormLabel>Stock disponible</FormLabel>
                   <FormControl>
                     <Input type="number" min={0} {...field} />
