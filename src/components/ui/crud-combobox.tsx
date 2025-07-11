@@ -1,5 +1,12 @@
 import * as React from "react";
-import { Check, ChevronsUpDown, Edit, PlusCircle, Trash2 } from "lucide-react";
+import {
+  ArrowUp,
+  Check,
+  ChevronsUpDown,
+  Edit,
+  PlusCircle,
+  Trash2,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
@@ -141,13 +148,16 @@ export function CrudCombobox({
             className={cn("w-full justify-between overflow-hidden", className)}
             disabled={disabled}
           >
-            <span className="min-w-0 flex-1 truncate text-left">
+            <div className="flex-1 truncate text-left">
               {selectedOption ? selectedOption.label : placeholder}
-            </span>
+            </div>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+        <PopoverContent
+          align="start"
+          className="w-[var(--radix-popover-trigger-width)] p-0"
+        >
           <Command shouldFilter={false}>
             <CommandInput
               value={searchValue}
@@ -161,7 +171,12 @@ export function CrudCombobox({
               }}
             />
             <CommandList>
-              <CommandEmpty>Vacio.</CommandEmpty>
+              <CommandEmpty className="text-muted-foreground flex justify-center p-2 pt-4 text-center">
+                <ArrowUp className="size-7" />
+                <span className="text-sm">
+                  Escribe para agregar una opción.
+                </span>
+              </CommandEmpty>
 
               {showAddOption && (
                 <CommandItem
@@ -184,14 +199,19 @@ export function CrudCombobox({
                     }}
                     className="group flex items-center justify-between"
                   >
-                    <div className="flex items-center">
+                    <div className="flex items-center overflow-hidden">
                       <Check
                         className={cn(
                           "mr-2 h-4 w-4",
                           value === option.id ? "opacity-100" : "opacity-0",
                         )}
                       />
-                      {option.label}
+                      <div
+                        title={option.label}
+                        className="flex-1 truncate text-left"
+                      >
+                        {option.label}
+                      </div>
                     </div>
 
                     <div
