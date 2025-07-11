@@ -38,14 +38,11 @@ import { Separator } from "@/components/ui/separator";
 import { uploadFiles } from "@/lib/uploadthing";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDialog } from "@/context/dialog-provider";
 import { useTableState } from "@/context/table-state-provider";
 import { FeatureInput } from "@/components/ui/feature-input";
-import {
-  CrudCombobox,
-  type ComboboxOption,
-} from "@/components/ui/crud-combobox";
+import { CrudCombobox } from "@/components/ui/crud-combobox";
 
 const ProductImageSchema = z.union([
   z
@@ -126,20 +123,13 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
 
   const selectedCategoryId = form.watch("categoryId");
 
+  // ================== Categories Calls ======================
+
   const { data: categories, isPending: isCategoriesPending } =
     api.categories.getAll.useQuery(undefined, {
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
     });
-
-  const { data: subCategories } = api.subCategories.getByCategoryId.useQuery(
-    { categoryId: selectedCategoryId },
-    {
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      enabled: Boolean(selectedCategoryId),
-    },
-  );
 
   const { mutate: createCategory } = api.categories.create.useMutation({
     onMutate: async (newCategory) => {
@@ -166,11 +156,87 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
     onSuccess: (_data, variables) => {
       console.log("Category created successfully:", variables.name);
     },
-    onError: (error) => {
+    onError: (error, _variables, context) => {
       console.error("Error creating category:", error);
       toast.error(`Error creando categoría: ${error.message}`);
+
+      utils.categories.getAll.setData(
+        undefined,
+        context?.previousCategories ?? [],
+      );
     },
   });
+
+  const { mutate: updateCategory } = api.categories.update.useMutation({
+    onMutate: async (updatedCategory) => {
+      await utils.categories.getAll.cancel();
+      const previousCategories = utils.categories.getAll.getData();
+
+      utils.categories.getAll.setData(undefined, (oldCategories) => {
+        if (!oldCategories) return undefined;
+
+        const updatedCategories = oldCategories.map((cat) =>
+          cat.id === updatedCategory.id
+            ? { ...cat, label: updatedCategory.name }
+            : cat,
+        );
+
+        return updatedCategories.sort((a, b) => a.label.localeCompare(b.label));
+      });
+
+      return { previousCategories };
+    },
+    onSuccess: (_data, variables) => {
+      console.log("Category updated successfully:", variables.name);
+    },
+    onError: (error, _variables, context) => {
+      console.error("Error updating category:", error);
+      toast.error(`Error actualizando categoría: ${error.message}`);
+
+      utils.categories.getAll.setData(
+        undefined,
+        context?.previousCategories ?? [],
+      );
+    },
+  });
+
+  const { mutate: deleteCategory } = api.categories.delete.useMutation({
+    onMutate: async (deletedCategory) => {
+      await utils.categories.getAll.cancel();
+      const previousCategories = utils.categories.getAll.getData();
+
+      utils.categories.getAll.setData(undefined, (oldCategories) => {
+        if (!oldCategories) return undefined;
+
+        return oldCategories.filter((cat) => cat.id !== deletedCategory.id);
+      });
+
+      return { previousCategories };
+    },
+    onSuccess: (_data, variables) => {
+      console.log("Category deleted successfully:", variables.id);
+    },
+    onError: (error, _variables, context) => {
+      console.error("Error deleting category:", error);
+      toast.error(`Error eliminando categoría: ${error.message}`);
+
+      utils.categories.getAll.setData(
+        undefined,
+        context?.previousCategories ?? [],
+      );
+    },
+  });
+
+  // ================== Subcategories Calls ======================
+
+  const { data: subCategories } = api.subCategories.getByCategoryId.useQuery(
+    { categoryId: selectedCategoryId },
+    {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      enabled: Boolean(selectedCategoryId),
+    },
+  );
 
   const { mutate: createSubCategory } = api.subCategories.create.useMutation({
     onMutate: async (newSubCategory) => {
@@ -190,6 +256,7 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
 
           const newSubCategoryOption = {
             id: newSubCategory.id,
+            categoryId: newSubCategory.categoryId,
             label: newSubCategory.name,
           };
 
@@ -216,6 +283,84 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
       toast.error(`Error creando categoría: ${error.message}`);
     },
   });
+
+  const { mutate: updateSubCategory } = api.subCategories.update.useMutation({
+    onMutate: async (updatedSubCategory) => {
+      await utils.subCategories.getByCategoryId.cancel({
+        categoryId: selectedCategoryId,
+      });
+      const previousSubCategories = utils.subCategories.getByCategoryId.getData(
+        { categoryId: selectedCategoryId },
+      );
+      utils.subCategories.getByCategoryId.setData(
+        { categoryId: selectedCategoryId },
+        (oldSubCategories) => {
+          if (!oldSubCategories) return undefined;
+
+          const updatedCategories = oldSubCategories.map((sub) =>
+            sub.id === updatedSubCategory.id
+              ? { ...sub, label: updatedSubCategory.name }
+              : sub,
+          );
+
+          return updatedCategories.sort((a, b) =>
+            a.label.localeCompare(b.label),
+          );
+        },
+      );
+
+      form.setValue("subcategoryId", updatedSubCategory.id);
+
+      return { previousSubCategories };
+    },
+    onSuccess: (_data, variables) => {
+      console.log("Subcategory updated successfully:", variables.name);
+    },
+    onError: (error, _variables, context) => {
+      console.error("Error updating subcategory:", error);
+      toast.error(`Error actualizando subcategoría: ${error.message}`);
+
+      utils.subCategories.getByCategoryId.setData(
+        { categoryId: selectedCategoryId },
+        context?.previousSubCategories ?? [],
+      );
+    },
+  });
+  const { mutate: deleteSubCategory } = api.subCategories.delete.useMutation({
+    onMutate: async (deletedSubCategory) => {
+      await utils.subCategories.getByCategoryId.cancel({
+        categoryId: selectedCategoryId,
+      });
+      const previousSubCategories = utils.subCategories.getByCategoryId.getData(
+        { categoryId: selectedCategoryId },
+      );
+      utils.subCategories.getByCategoryId.setData(
+        { categoryId: selectedCategoryId },
+        (oldSubCategories) => {
+          if (!oldSubCategories) return undefined;
+
+          return oldSubCategories.filter(
+            (sub) => sub.id !== deletedSubCategory.id,
+          );
+        },
+      );
+      return { previousSubCategories };
+    },
+    onSuccess: (_data, variables) => {
+      console.log("Subcategory deleted successfully:", variables.id);
+    },
+    onError: (error, _variables, context) => {
+      console.error("Error deleting subcategory:", error);
+      toast.error(`Error eliminando subcategoría: ${error.message}`);
+
+      utils.subCategories.getByCategoryId.setData(
+        { categoryId: selectedCategoryId },
+        context?.previousSubCategories ?? [],
+      );
+    },
+  });
+
+  // ================== Product Calls ======================
 
   const { mutate: createProduct } = api.products.createProduct.useMutation({
     onMutate: async (newProductApiInput) => {
@@ -322,6 +467,8 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
     },
   });
 
+  // ================= Form Submission ======================
+
   async function onSubmit(values: ProductFormData) {
     setIsFormSubmitting(true);
     if (isEditMode) {
@@ -427,11 +574,14 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
                           name: label,
                         });
                       }}
-                      onEdit={() => {
-                        console.log("editing");
+                      onEdit={(option) => {
+                        updateCategory({
+                          id: option.id,
+                          name: option.label,
+                        });
                       }}
-                      onDelete={() => {
-                        console.log("deleting");
+                      onDelete={(id) => {
+                        deleteCategory({ id });
                       }}
                       {...field}
                     />
@@ -461,11 +611,16 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
                           name: label,
                         });
                       }}
-                      onEdit={() => {
-                        console.log("editing");
+                      onEdit={(option) => {
+                        updateSubCategory({
+                          id: option.id,
+                          name: option.label,
+                        });
                       }}
-                      onDelete={() => {
-                        console.log("deleting");
+                      onDelete={(id) => {
+                        deleteSubCategory({
+                          id,
+                        });
                       }}
                       {...field}
                     />
