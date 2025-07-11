@@ -87,6 +87,7 @@ export function CrudCombobox({
     if (searchValue.trim()) {
       onAdd(searchValue.trim());
       setSearchValue("");
+      setOpen(false);
     }
   };
 
