@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ObjectId } from "bson";
 import {
   Form,
   FormControl,
@@ -59,10 +60,10 @@ const formSchema = z.object({
   name: z
     .string({ required_error: "El nombre es obligatorio." })
     .min(1, { message: "El nombre no puede estar vacío." }),
-  category: z
+  categoryId: z
     .string({ required_error: "La categoría es obligatoria." })
     .min(1, { message: "La categoría no puede estar vacía." }),
-  subcategory: z
+  subcategoryId: z
     .string({ required_error: "La subcategoría es obligatoria." })
     .min(1, { message: "La subcategoría no puede estar vacía." }),
   price: z.coerce
@@ -108,20 +109,12 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
   const isEditMode = Boolean(product);
   const utils = api.useUtils();
 
-  const { data: categories, isPending } = api.categories.getAll.useQuery(
-    undefined,
-    { refetchOnWindowFocus: false, refetchOnReconnect: false },
-  );
-  const [subCategoryOptions, setSubCategoryOptions] = useState<
-    ComboboxOption[]
-  >([]);
-
   const form = useForm<ProductFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: product?.name ?? "",
-      category: product?.category ?? "",
-      subcategory: product?.subcategory ?? "",
+      categoryId: product?.categoryId ?? "",
+      subcategoryId: product?.subcategoryId ?? "",
       price: product?.price ?? 0,
       stock: product?.stock ?? 0,
       description: product?.description ?? "",
@@ -131,45 +124,90 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
     },
   });
 
-  const selectedCategoryId = form.watch("category");
+  const selectedCategoryId = form.watch("categoryId");
 
-  useEffect(() => {
-    const selectedCategory = categories?.find(
-      (cat) => cat.id === selectedCategoryId,
+  const { data: categories, isPending: isCategoriesPending } =
+    api.categories.getAll.useQuery(undefined, {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+    });
+
+  const { data: subCategories, isPending: isSubCategoriesPending } =
+    api.subCategories.getByCategoryId.useQuery(
+      { categoryId: selectedCategoryId },
+      {
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        enabled: Boolean(selectedCategoryId),
+      },
     );
 
-    if (selectedCategory) {
-      setSubCategoryOptions(selectedCategory.subCategories);
-    } else {
-      setSubCategoryOptions([]);
-    }
-
-    form.setValue("subcategory", "");
-  }, [selectedCategoryId, categories, form]);
-
-  const { mutate: createCategory } = api.categories.createCategory.useMutation({
+  const { mutate: createCategory } = api.categories.create.useMutation({
     onMutate: async (newCategory) => {
       await utils.categories.getAll.cancel();
       const previousCategories = utils.categories.getAll.getData();
+
       utils.categories.getAll.setData(undefined, (oldCategories) => {
         if (!oldCategories) return undefined;
 
-        const newCategoryOption: ComboboxOption = {
-          id: newCategory.name,
+        const newCategoryOption = {
+          id: newCategory.id,
           label: newCategory.name,
         };
 
-        const updatedCategories = [
-          ...oldCategories,
-          { ...newCategoryOption, subCategories: [] },
-        ];
+        const updatedCategories = [...oldCategories, newCategoryOption];
 
         return updatedCategories.sort((a, b) => a.label.localeCompare(b.label));
       });
 
-      form.setValue("category", newCategory.name);
+      form.setValue("categoryId", newCategory.id);
 
       return { previousCategories };
+    },
+    onSuccess: (_data, variables) => {
+      console.log("Category created successfully:", variables.name);
+    },
+    onError: (error) => {
+      console.error("Error creating category:", error);
+      toast.error(`Error creando categoría: ${error.message}`);
+    },
+  });
+
+  const { mutate: createSubCategory } = api.subCategories.create.useMutation({
+    onMutate: async (newSubCategory) => {
+      await utils.subCategories.getByCategoryId.cancel({
+        categoryId: newSubCategory.categoryId,
+      });
+      const previousSubCategories = utils.subCategories.getByCategoryId.getData(
+        {
+          categoryId: newSubCategory.categoryId,
+        },
+      );
+
+      utils.subCategories.getByCategoryId.setData(
+        { categoryId: newSubCategory.categoryId },
+        (oldSubCategories) => {
+          if (!oldSubCategories) return undefined;
+
+          const newSubCategoryOption = {
+            id: newSubCategory.id,
+            label: newSubCategory.name,
+          };
+
+          const updatedSubCategories = [
+            ...oldSubCategories,
+            newSubCategoryOption,
+          ];
+
+          return updatedSubCategories.sort((a, b) =>
+            a.label.localeCompare(b.label),
+          );
+        },
+      );
+
+      form.setValue("subcategoryId", newSubCategory.id);
+
+      return { previousSubCategories };
     },
     onSuccess: (_data, variables) => {
       console.log("Category created successfully:", variables.name);
@@ -371,20 +409,24 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="category"
+              name="categoryId"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Categoria principal</FormLabel>
                   <FormControl>
                     <CrudCombobox
-                      disabled={isPending}
+                      disabled={isCategoriesPending}
                       options={categories ?? []}
-                      placeholder={isPending ? "Cargando..." : "Categoría"}
+                      placeholder={
+                        isCategoriesPending ? "Cargando..." : "Categoría"
+                      }
                       searchPlaceholder=" Buscar o crear..."
                       addPlaceholder="Agregar nueva categoría"
-                      {...field}
                       onAdd={(label) => {
-                        createCategory({ name: label });
+                        createCategory({
+                          id: new ObjectId().toHexString(),
+                          name: label,
+                        });
                       }}
                       onEdit={() => {
                         console.log("editing");
@@ -392,6 +434,7 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
                       onDelete={() => {
                         console.log("deleting");
                       }}
+                      {...field}
                     />
                   </FormControl>
 
@@ -401,20 +444,23 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
             />
             <FormField
               control={form.control}
-              name="subcategory"
+              name="subcategoryId"
               render={({ field }) => (
                 <FormItem className="overflow-hidden">
-                  <FormLabel>Category</FormLabel>
+                  <FormLabel>Subcategoría</FormLabel>
                   <FormControl>
                     <CrudCombobox
-                      options={subCategoryOptions}
+                      options={subCategories ?? []}
                       disabled={!selectedCategoryId}
                       placeholder="Subcategoría"
                       searchPlaceholder="Buscar o crear..."
                       addPlaceholder="Agregar nueva subcategoría"
-                      {...field}
-                      onAdd={() => {
-                        console.log("adding");
+                      onAdd={(label) => {
+                        createSubCategory({
+                          id: new ObjectId().toHexString(),
+                          categoryId: selectedCategoryId,
+                          name: label,
+                        });
                       }}
                       onEdit={() => {
                         console.log("editing");
@@ -422,6 +468,7 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
                       onDelete={() => {
                         console.log("deleting");
                       }}
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
