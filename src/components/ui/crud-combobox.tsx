@@ -92,14 +92,15 @@ export function CrudCombobox({
 
   const handleAdd = () => {
     if (searchValue.trim()) {
+      setOpen(false);
       onAdd(searchValue.trim());
       setSearchValue("");
-      setOpen(false);
     }
   };
 
   const handleEdit = () => {
     if (editingOption?.label.trim()) {
+      setOpen(false);
       onEdit(editingOption);
       setEditingOption(null);
     }
@@ -107,6 +108,7 @@ export function CrudCombobox({
 
   const handleDelete = () => {
     if (deletingOptionId) {
+      setOpen(false);
       onDelete(deletingOptionId);
       setDeletingOptionId(null);
     }
