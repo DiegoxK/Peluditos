@@ -229,14 +229,15 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
 
   // ================== Subcategories Calls ======================
 
-  const { data: subCategories } = api.subCategories.getByCategoryId.useQuery(
-    { categoryId: selectedCategoryId },
-    {
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      enabled: Boolean(selectedCategoryId),
-    },
-  );
+  const { data: subCategories, isPending: isSubCategoriesPending } =
+    api.subCategories.getByCategoryId.useQuery(
+      { categoryId: selectedCategoryId },
+      {
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        enabled: Boolean(selectedCategoryId),
+      },
+    );
 
   const { mutate: createSubCategory } = api.subCategories.create.useMutation({
     onMutate: async (newSubCategory) => {
@@ -600,7 +601,7 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
                   <FormControl>
                     <CrudCombobox
                       options={subCategories ?? []}
-                      disabled={!selectedCategoryId}
+                      disabled={!selectedCategoryId || isSubCategoriesPending}
                       placeholder="Subcategoría"
                       searchPlaceholder="Buscar o crear..."
                       addPlaceholder="Agregar nueva subcategoría"
