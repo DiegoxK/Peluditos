@@ -103,8 +103,8 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: product?.name ?? "",
-      categoryId: product?.categoryId ?? "",
-      subcategoryId: product?.subcategoryId ?? "",
+      categoryId: product?.category.id ?? "",
+      subcategoryId: product?.subcategory.id ?? "",
       price: product?.price ?? 0,
       stock: product?.stock ?? 0,
       description: product?.description ?? "",
@@ -376,6 +376,20 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             previousPrice: newProductApiInput.price,
+            category: {
+              id: newProductApiInput.categoryId,
+              name:
+                categories?.find(
+                  (cat) => cat.id === newProductApiInput.categoryId,
+                )?.label ?? "Categoría desconocida",
+            },
+            subcategory: {
+              id: newProductApiInput.subcategoryId,
+              name:
+                subCategories?.find(
+                  (sub) => sub.id === newProductApiInput.subcategoryId,
+                )?.label ?? "Subcategoría desconocida",
+            },
             sales: 0,
             views: 0,
           };
@@ -424,20 +438,46 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
         currentQueryInput,
         (oldResponse) => {
           if (!oldResponse) return undefined;
+
+          const optimisticProductEntry = oldResponse.data.find((product) =>
+            product._id === updatedProductPayload._id
+              ? {
+                  ...product,
+                  ...updatedProductPayload,
+                  category: {
+                    id: updatedProductPayload.categoryId,
+                    name:
+                      categories?.find(
+                        (cat) => cat.id === updatedProductPayload.categoryId,
+                      )?.label ?? "Categoría desconocida",
+                  },
+                  subcategory: {
+                    id: updatedProductPayload.subcategoryId,
+                    name:
+                      subCategories?.find(
+                        (sub) => sub.id === updatedProductPayload.subcategoryId,
+                      )?.label ?? "Subcategoría desconocida",
+                  },
+                }
+              : product,
+          );
+
+          if (!optimisticProductEntry) {
+            console.error("Product not found for optimistic update");
+            return oldResponse;
+          }
+
           return {
             ...oldResponse,
-            data: oldResponse.data.map((p) =>
-              p._id === updatedProductPayload._id
-                ? {
-                    ...p,
-                    ...updatedProductPayload,
-                    updatedAt: new Date().toISOString(),
-                  }
-                : p,
+            data: oldResponse.data.map((product) =>
+              product._id === updatedProductPayload._id
+                ? optimisticProductEntry
+                : product,
             ),
           };
         },
       );
+
       return { previousProductsResponse, queryInputUsed: currentQueryInput };
     },
     onError: (error, _updatedPet, context) => {
@@ -455,7 +495,11 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
       void utils.products.getDashboardSummary.invalidate();
 
       if (!error) {
-        toast.success("Producto actualizado exitosamente!");
+        toast.success("Producto actualizado exitosamente!", {
+          id: "product-form",
+        });
+        resetToFirstPage();
+        closeDialog();
       }
       resetToFirstPage();
       setIsFormSubmitting(false);
