@@ -1,5 +1,6 @@
 import { z } from "zod";
 import {
+  ProductDbSchema,
   ProductSchema,
   type Product,
   type ProductDB,
@@ -73,8 +74,8 @@ export const productRouter = createTRPCRouter({
         const gFilterRegex = new RegExp(globalFilter.trim(), "i");
         MONGODB_QUERY_FILTER_CONDITIONS.$or = [
           { name: { $regex: gFilterRegex } },
-          { category: { $regex: gFilterRegex } },
-          { subcategory: { $regex: gFilterRegex } },
+          { "category.name": { $regex: gFilterRegex } },
+          { "subcategory.name": { $regex: gFilterRegex } },
         ];
       }
 
@@ -113,10 +114,74 @@ export const productRouter = createTRPCRouter({
           MONGODB_SORT_OPTIONS = { [validSortKey]: desc ? -1 : 1 };
         } else {
           console.warn(
-            `Invalid sort key received: "${id}". Allowed keys are: ${Object.values(SortableProductFieldsSchema.Values).join(", ")}. Reverting to default sort.`,
+            `Invalid sort key received: "${id}". Allowed keys are: ${Object.values(
+              SortableProductFieldsSchema.Values,
+            ).join(", ")}. Reverting to default sort.`,
           );
         }
       }
+
+      const aggregationPipeline = [
+        {
+          $lookup: {
+            from: "categories",
+            localField: "categoryId",
+            foreignField: "_id",
+            as: "category",
+          },
+        },
+        {
+          $unwind: "$category",
+        },
+        {
+          $lookup: {
+            from: "subcategories",
+            localField: "subcategoryId",
+            foreignField: "_id",
+            as: "subcategory",
+          },
+        },
+        {
+          $unwind: "$subcategory",
+        },
+        {
+          $match: MONGODB_QUERY_FILTER_CONDITIONS,
+        },
+        {
+          $sort: MONGODB_SORT_OPTIONS,
+        },
+        {
+          $skip: pageIndex * pageSize,
+        },
+        {
+          $limit: pageSize,
+        },
+        {
+          $project: {
+            name: 1,
+            price: 1,
+            previousPrice: 1,
+            stock: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            description: 1,
+            features: 1,
+            image: 1,
+            imageKey: 1,
+            sales: 1,
+            views: 1,
+            featured: 1,
+            category: {
+              id: "$category._id",
+              name: "$category.name",
+            },
+            subcategory: {
+              id: "$subcategory._id",
+              name: "$subcategory.name",
+            },
+          },
+        },
+      ];
 
       // Execute queries
       const totalRowCount = await ctx.db
@@ -125,10 +190,7 @@ export const productRouter = createTRPCRouter({
 
       const productsData = await ctx.db
         .collection<ProductDB>("products")
-        .find(MONGODB_QUERY_FILTER_CONDITIONS)
-        .sort(MONGODB_SORT_OPTIONS)
-        .skip(pageIndex * pageSize)
-        .limit(pageSize)
+        .aggregate(aggregationPipeline)
         .toArray();
 
       const products = JSON.parse(JSON.stringify(productsData)) as Product[];
@@ -153,18 +215,23 @@ export const productRouter = createTRPCRouter({
 
   createProduct: protectedProcedure
     .input(
-      ProductSchema.omit({
+      ProductDbSchema.omit({
         _id: true,
         createdAt: true,
         updatedAt: true,
         previousPrice: true,
         sales: true,
         views: true,
+      }).extend({
+        categoryId: z.string(),
+        subcategoryId: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const newProductData = {
         ...input,
+        categoryId: new ObjectId(input.categoryId),
+        subcategoryId: new ObjectId(input.subcategoryId),
         previousPrice: input.price,
         sales: 0,
         views: 0,
@@ -183,7 +250,13 @@ export const productRouter = createTRPCRouter({
     }),
 
   updateProduct: protectedProcedure
-    .input(ProductSchema.omit({ createdAt: true, updatedAt: true }))
+    .input(
+      ProductDbSchema.omit({ createdAt: true, updatedAt: true }).extend({
+        _id: z.string(),
+        categoryId: z.string(),
+        subcategoryId: z.string(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const { _id, ...updateData } = input;
       const objectId = new ObjectId(_id);
@@ -192,6 +265,8 @@ export const productRouter = createTRPCRouter({
         updatedAt: string;
       } = {
         ...updateData,
+        categoryId: new ObjectId(updateData.categoryId),
+        subcategoryId: new ObjectId(updateData.subcategoryId),
         updatedAt: new Date().toISOString(),
       };
 
