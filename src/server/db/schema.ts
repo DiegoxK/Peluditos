@@ -71,9 +71,15 @@ export const ProductDbSchema = z.object({
 
 export const ProductSchema = ProductDbSchema.extend({
   _id: z.string(),
-  categoryId: z.string(),
-  subcategoryId: z.string(),
-});
+  category: z.object({
+    id: z.string(),
+    name: z.string(),
+  }),
+  subcategory: z.object({
+    id: z.string(),
+    name: z.string(),
+  }),
+}).omit({ categoryId: true, subcategoryId: true });
 
 export type Product = z.infer<typeof ProductSchema>;
 export type ProductDB = z.infer<typeof ProductDbSchema>;
