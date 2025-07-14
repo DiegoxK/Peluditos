@@ -34,7 +34,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
           <div className="space-y-1.5">
             <h3 className="text-2xl font-bold">{product.name}</h3>
             <p className="text-muted-foreground">
-              {product.category} / {product.subcategory}
+              {product.category.name} / {product.subcategory.name}
             </p>
             <Badge variant={product.featured ? "default" : "outline"}>
               {product.featured ? "Destacado" : "Normal"}
