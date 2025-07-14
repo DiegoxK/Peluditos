@@ -76,13 +76,6 @@ const formSchema = z.object({
     })
     .int({ message: "El stock debe ser un número entero." })
     .nonnegative({ message: "El stock no puede ser negativo." }),
-  minStock: z.coerce
-    .number({
-      invalid_type_error: "El stock mínimo debe ser un número.",
-      required_error: "El stock mínimo es obligatorio.",
-    })
-    .int({ message: "El stock mínimo debe ser un número entero." })
-    .nonnegative({ message: "El stock mínimo no puede ser negativo." }),
   description: z
     .string({ required_error: "La descripción es obligatoria." })
     .min(10, { message: "La descripción debe tener al menos 10 caracteres." }),
@@ -120,6 +113,8 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
       featured: product?.featured ?? false,
     },
   });
+
+  console.log(form.getValues());
 
   const selectedCategoryId = form.watch("categoryId");
 
