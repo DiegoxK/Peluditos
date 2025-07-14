@@ -49,7 +49,7 @@ export const columns: ColumnDef<Product>[] = [
     header: "Categoría",
     cell: ({ row }) => {
       const { category } = row.original;
-      return <span className="capitalize">{category}</span>;
+      return <span className="capitalize">{category.name}</span>;
     },
     enableColumnFilter: true,
     enableGlobalFilter: true,
