@@ -57,10 +57,10 @@ const formSchema = z.object({
   name: z
     .string({ required_error: "El nombre es obligatorio." })
     .min(1, { message: "El nombre no puede estar vacío." }),
-  categoryId: z
+  category: z
     .string({ required_error: "La categoría es obligatoria." })
     .min(1, { message: "La categoría no puede estar vacía." }),
-  subcategoryId: z
+  subcategory: z
     .string({ required_error: "La subcategoría es obligatoria." })
     .min(1, { message: "La subcategoría no puede estar vacía." }),
   price: z.coerce
@@ -109,8 +109,8 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: product?.name ?? "",
-      categoryId: product?.category.id ?? "",
-      subcategoryId: product?.subcategory.id ?? "",
+      category: product?.category.id ?? "",
+      subcategory: product?.subcategory.id ?? "",
       price: product?.price ?? 0,
       previousPrice: product?.previousPrice ?? 0,
       stock: product?.stock ?? 0,
@@ -123,7 +123,7 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
 
   console.log(form.getValues());
 
-  const selectedCategoryId = form.watch("categoryId");
+  const selectedCategoryId = form.watch("category");
 
   // ================== Categories Calls ======================
 
@@ -151,7 +151,7 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
         return updatedCategories.sort((a, b) => a.label.localeCompare(b.label));
       });
 
-      form.setValue("categoryId", newCategory.id);
+      form.setValue("category", newCategory.id);
 
       return { previousCategories };
     },
@@ -274,7 +274,7 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
         },
       );
 
-      form.setValue("subcategoryId", newSubCategory.id);
+      form.setValue("subcategory", newSubCategory.id);
 
       return { previousSubCategories };
     },
@@ -312,7 +312,7 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
         },
       );
 
-      form.setValue("subcategoryId", updatedSubCategory.id);
+      form.setValue("subcategory", updatedSubCategory.id);
 
       return { previousSubCategories };
     },
@@ -384,17 +384,17 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
             updatedAt: new Date().toISOString(),
             previousPrice: newProductApiInput.price,
             category: {
-              id: newProductApiInput.categoryId,
+              id: newProductApiInput.category,
               name:
                 categories?.find(
-                  (cat) => cat.id === newProductApiInput.categoryId,
+                  (cat) => cat.id === newProductApiInput.category,
                 )?.label ?? "Categoría desconocida",
             },
             subcategory: {
-              id: newProductApiInput.subcategoryId,
+              id: newProductApiInput.subcategory,
               name:
                 subCategories?.find(
-                  (sub) => sub.id === newProductApiInput.subcategoryId,
+                  (sub) => sub.id === newProductApiInput.subcategory,
                 )?.label ?? "Subcategoría desconocida",
             },
             sales: 0,
@@ -452,17 +452,17 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
                   ...product,
                   ...updatedProductPayload,
                   category: {
-                    id: updatedProductPayload.categoryId,
+                    id: updatedProductPayload.category,
                     name:
                       categories?.find(
-                        (cat) => cat.id === updatedProductPayload.categoryId,
+                        (cat) => cat.id === updatedProductPayload.category,
                       )?.label ?? "Categoría desconocida",
                   },
                   subcategory: {
-                    id: updatedProductPayload.subcategoryId,
+                    id: updatedProductPayload.subcategory,
                     name:
                       subCategories?.find(
-                        (sub) => sub.id === updatedProductPayload.subcategoryId,
+                        (sub) => sub.id === updatedProductPayload.subcategory,
                       )?.label ?? "Subcategoría desconocida",
                   },
                 }
@@ -602,7 +602,7 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
           <div className="grid gap-4 md:grid-cols-2">
             <FormField
               control={form.control}
-              name="categoryId"
+              name="category"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Categoria principal</FormLabel>
@@ -640,7 +640,7 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
             />
             <FormField
               control={form.control}
-              name="subcategoryId"
+              name="subcategory"
               render={({ field }) => (
                 <FormItem className="overflow-hidden">
                   <FormLabel>Subcategoría</FormLabel>
@@ -685,7 +685,15 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
                 <FormItem>
                   <FormLabel>Precio</FormLabel>
                   <FormControl>
-                    <Input type="number" step="10" min={0} {...field} />
+                    <Input
+                      type="number"
+                      step="10"
+                      onWheel={(e) => {
+                        e.currentTarget.blur();
+                      }}
+                      min={0}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -698,7 +706,15 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
                 <FormItem>
                   <FormLabel>Precio anterior</FormLabel>
                   <FormControl>
-                    <Input type="number" step="10" min={0} {...field} />
+                    <Input
+                      type="number"
+                      step="10"
+                      onWheel={(e) => {
+                        e.currentTarget.blur();
+                      }}
+                      min={0}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -712,7 +728,14 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
               <FormItem>
                 <FormLabel>Stock disponible</FormLabel>
                 <FormControl>
-                  <Input type="number" min={0} {...field} />
+                  <Input
+                    type="number"
+                    min={0}
+                    onWheel={(e) => {
+                      e.currentTarget.blur();
+                    }}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -804,7 +827,7 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
               name="features"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Features</FormLabel>
+                  <FormLabel>Caracteristicas</FormLabel>
                   <FormControl>
                     <FeatureInput
                       placeholder="Ingrese las caracteristicas del producto..."
