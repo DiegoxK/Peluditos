@@ -85,6 +85,8 @@ export const productRouter = createTRPCRouter({
           if (filter.value !== undefined && filter.value !== null) {
             const filterKey = filter.id as keyof Filter<ProductDB>;
 
+            console.log(filter.value);
+
             if (filter.id === "category") {
               if (Array.isArray(filter.value) && filter.value.length > 0) {
                 MONGODB_QUERY_FILTER_CONDITIONS[filterKey] = {
@@ -100,9 +102,27 @@ export const productRouter = createTRPCRouter({
               }
             }
             // Handle "featured"
-            else if (filter.id === "featured") {
-              if (typeof filter.value === "boolean") {
-                MONGODB_QUERY_FILTER_CONDITIONS[filterKey] = filter.value;
+            if (filter.id === "featured") {
+              const value = filter.value;
+
+              if (Array.isArray(value)) {
+                const boolValues = value
+                  .map((v) =>
+                    v === "true" ? true : v === "false" ? false : null,
+                  )
+                  .filter((v): v is boolean => v !== null);
+
+                if (boolValues.length > 0) {
+                  MONGODB_QUERY_FILTER_CONDITIONS[filterKey] = {
+                    $in: boolValues,
+                  };
+                }
+              } else if (typeof value === "string") {
+                if (value === "true" || value === "false") {
+                  MONGODB_QUERY_FILTER_CONDITIONS[filterKey] = value === "true";
+                }
+              } else if (typeof value === "boolean") {
+                MONGODB_QUERY_FILTER_CONDITIONS[filterKey] = value;
               }
             }
           }
