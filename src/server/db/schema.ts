@@ -53,8 +53,8 @@ export type PetDB = z.infer<typeof PetDbSchema>;
 export const ProductDbSchema = z.object({
   _id: z.instanceof(ObjectId).optional(),
   name: z.string(),
-  categoryId: z.instanceof(ObjectId),
-  subcategoryId: z.instanceof(ObjectId),
+  category: z.instanceof(ObjectId),
+  subcategory: z.instanceof(ObjectId),
   price: z.number(),
   previousPrice: z.number(),
   stock: z.number(),
@@ -79,7 +79,7 @@ export const ProductSchema = ProductDbSchema.extend({
     id: z.string(),
     name: z.string(),
   }),
-}).omit({ categoryId: true, subcategoryId: true });
+});
 
 export type Product = z.infer<typeof ProductSchema>;
 export type ProductDB = z.infer<typeof ProductDbSchema>;
