@@ -20,12 +20,14 @@ type Option = {
 
 interface MultiSelectFilterProps<TData, TValue> {
   column: Column<TData, TValue>;
+  disabled?: boolean;
   title: string;
   options: readonly (string | Option)[];
 }
 
 export function MultiSelectFilter<TData, TValue>({
   column,
+  disabled,
   title,
   options,
 }: MultiSelectFilterProps<TData, TValue>) {
@@ -85,7 +87,12 @@ export function MultiSelectFilter<TData, TValue>({
   return (
     <DropdownMenu open={isOpen} onOpenChange={onOpenChange}>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="relative h-9">
+        <Button
+          disabled={disabled}
+          variant="outline"
+          size="sm"
+          className="relative h-9"
+        >
           <Filter className="mr-2 h-4 w-4" />
           {title}
           {currentAppliedCount > 0 && (
