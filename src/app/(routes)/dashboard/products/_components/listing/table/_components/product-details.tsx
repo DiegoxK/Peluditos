@@ -25,14 +25,14 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
       <div className="grid max-h-[65vh] gap-6 overflow-y-scroll py-4 ps-1 pr-3">
         {/* Header Section */}
         <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
-          <div className="bg-accent relative ml-2 flex size-[128px] w-fit items-center overflow-hidden rounded-md">
+          <div className="bg-accent relative ml-2 flex aspect-square size-[168px] w-fit items-center overflow-hidden rounded-md">
             <Loader2 className="absolute inset-1/2 size-8 -translate-1/2 animate-spin text-white/80" />
             <Image
               src={product.image}
               alt={product.name}
-              width={128}
-              height={128}
-              className="relative rounded-md object-cover"
+              width={168}
+              height={168}
+              className="relative aspect-square size-[168px] rounded-md object-cover"
             />
           </div>
           <div className="space-y-1.5">
