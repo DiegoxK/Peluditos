@@ -85,16 +85,23 @@ export const productRouter = createTRPCRouter({
           if (filter.value !== undefined && filter.value !== null) {
             const filterKey = filter.id as keyof Filter<ProductDB>;
 
-            if (filter.id === "category" || filter.id === "featured") {
+            if (filter.id === "category") {
               if (Array.isArray(filter.value) && filter.value.length > 0) {
                 MONGODB_QUERY_FILTER_CONDITIONS[filterKey] = {
-                  $in: filter.value,
+                  $in: filter.value.map((id) => new ObjectId(id)),
                 };
               } else if (
-                (typeof filter.value === "string" &&
-                  filter.value.trim() !== "") ||
-                typeof filter.value === "boolean"
+                typeof filter.value === "string" &&
+                filter.value.trim() !== ""
               ) {
+                MONGODB_QUERY_FILTER_CONDITIONS[filterKey] = new ObjectId(
+                  filter.value,
+                );
+              }
+            }
+            // Handle "featured"
+            else if (filter.id === "featured") {
+              if (typeof filter.value === "boolean") {
                 MONGODB_QUERY_FILTER_CONDITIONS[filterKey] = filter.value;
               }
             }
@@ -121,11 +128,16 @@ export const productRouter = createTRPCRouter({
         }
       }
 
+      console.log(MONGODB_QUERY_FILTER_CONDITIONS);
+
       const aggregationPipeline = [
+        {
+          $match: MONGODB_QUERY_FILTER_CONDITIONS,
+        },
         {
           $lookup: {
             from: "categories",
-            localField: "categoryId",
+            localField: "category",
             foreignField: "_id",
             as: "category",
           },
@@ -136,7 +148,7 @@ export const productRouter = createTRPCRouter({
         {
           $lookup: {
             from: "subcategories",
-            localField: "subcategoryId",
+            localField: "subcategory",
             foreignField: "_id",
             as: "subcategory",
           },
@@ -144,9 +156,7 @@ export const productRouter = createTRPCRouter({
         {
           $unwind: "$subcategory",
         },
-        {
-          $match: MONGODB_QUERY_FILTER_CONDITIONS,
-        },
+
         {
           $sort: MONGODB_SORT_OPTIONS,
         },
@@ -222,15 +232,15 @@ export const productRouter = createTRPCRouter({
         sales: true,
         views: true,
       }).extend({
-        categoryId: z.string(),
-        subcategoryId: z.string(),
+        category: z.string(),
+        subcategory: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const newProductData = {
         ...input,
-        categoryId: new ObjectId(input.categoryId),
-        subcategoryId: new ObjectId(input.subcategoryId),
+        category: new ObjectId(input.category),
+        subcategory: new ObjectId(input.subcategory),
         previousPrice: input.previousPrice,
         sales: 0,
         views: 0,
@@ -252,8 +262,8 @@ export const productRouter = createTRPCRouter({
     .input(
       ProductDbSchema.omit({ createdAt: true, updatedAt: true }).extend({
         _id: z.string(),
-        categoryId: z.string(),
-        subcategoryId: z.string(),
+        category: z.string(),
+        subcategory: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -264,8 +274,8 @@ export const productRouter = createTRPCRouter({
         updatedAt: string;
       } = {
         ...updateData,
-        categoryId: new ObjectId(updateData.categoryId),
-        subcategoryId: new ObjectId(updateData.subcategoryId),
+        category: new ObjectId(updateData.category),
+        subcategory: new ObjectId(updateData.subcategory),
         updatedAt: new Date().toISOString(),
       };
 
