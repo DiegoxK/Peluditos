@@ -219,7 +219,6 @@ export const productRouter = createTRPCRouter({
         _id: true,
         createdAt: true,
         updatedAt: true,
-        previousPrice: true,
         sales: true,
         views: true,
       }).extend({
@@ -232,7 +231,7 @@ export const productRouter = createTRPCRouter({
         ...input,
         categoryId: new ObjectId(input.categoryId),
         subcategoryId: new ObjectId(input.subcategoryId),
-        previousPrice: input.price,
+        previousPrice: input.previousPrice,
         sales: 0,
         views: 0,
         createdAt: new Date().toISOString(),

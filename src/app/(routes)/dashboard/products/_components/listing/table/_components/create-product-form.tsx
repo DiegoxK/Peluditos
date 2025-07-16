@@ -69,6 +69,12 @@ const formSchema = z.object({
       required_error: "El precio es obligatorio.",
     })
     .positive({ message: "El precio debe ser mayor a cero." }),
+  previousPrice: z.coerce
+    .number({
+      invalid_type_error: "El precio debe ser un número.",
+      required_error: "El precio es obligatorio.",
+    })
+    .positive({ message: "El precio debe ser mayor a cero." }),
   stock: z.coerce
     .number({
       invalid_type_error: "El stock debe ser un número.",
@@ -106,6 +112,7 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
       categoryId: product?.category.id ?? "",
       subcategoryId: product?.subcategory.id ?? "",
       price: product?.price ?? 0,
+      previousPrice: product?.previousPrice ?? 0,
       stock: product?.stock ?? 0,
       description: product?.description ?? "",
       features: product?.features ?? [],
@@ -686,19 +693,31 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
             />
             <FormField
               control={form.control}
-              name="stock"
+              name="previousPrice"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Stock disponible</FormLabel>
+                  <FormLabel>Precio anterior</FormLabel>
                   <FormControl>
-                    <Input type="number" min={0} {...field} />
+                    <Input type="number" step="10" min={0} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
-
+          <FormField
+            control={form.control}
+            name="stock"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Stock disponible</FormLabel>
+                <FormControl>
+                  <Input type="number" min={0} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="image"
