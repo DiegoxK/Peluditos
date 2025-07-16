@@ -144,10 +144,10 @@ export function MultiSelectFilter<TData, TValue>({
         <div className="flex items-center justify-end gap-2 p-2">
           {currentAppliedCount > 0 && (
             <Button
-              variant="ghost"
+              variant="destructive"
               size="sm"
               onClick={handleClearAndApply}
-              className="text-destructive hover:bg-destructive h-8 text-xs hover:text-white"
+              className="h-8 text-xs hover:bg-red-500"
             >
               Remover Filtros
             </Button>
