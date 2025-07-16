@@ -12,6 +12,7 @@ import { MultiSelectFilter } from "@/components/ui/multi-select-filter";
 import { productSortGroups } from "./sort-groups";
 import { Input } from "@/components/ui/input";
 import { SortMenu } from "@/components/ui/sort-menu";
+import { api } from "@/trpc/react";
 
 interface DataTableHeaderProps {
   table: Table<Product>;
@@ -46,9 +47,9 @@ export default function DataTableHeader({
   const categoryColumn = table.getColumn("category");
   const featuredColumn = table.getColumn("featured");
 
-  // TODO: Bring categories from backend
-  const categorias = ["Alimento", "Juguetes", "Accesorios", "Salud", "Higiene"];
-  const estados = [
+  const { data: categories, isPending } = api.categories.getAll.useQuery();
+
+  const states = [
     { label: "Destacado", value: "true" },
     { label: "Normal", value: "false" },
   ];
@@ -117,16 +118,21 @@ export default function DataTableHeader({
         <div className="flex flex-wrap items-center gap-2">
           {categoryColumn && (
             <MultiSelectFilter
+              disabled={isPending}
               column={categoryColumn}
               title="Categoría"
-              options={categorias.map((c) => ({ label: c, value: c }))}
+              options={
+                categories
+                  ? categories.map((c) => ({ label: c.label, value: c.id }))
+                  : []
+              }
             />
           )}
           {featuredColumn && (
             <MultiSelectFilter
               column={featuredColumn}
               title="Estado"
-              options={estados}
+              options={states}
             />
           )}
           <SortMenu table={table} sortGroups={productSortGroups} />
