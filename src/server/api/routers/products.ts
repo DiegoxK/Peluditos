@@ -2,6 +2,7 @@ import { z } from "zod";
 import {
   ProductDbSchema,
   ProductSchema,
+  type CategoryDB,
   type Product,
   type ProductDB,
 } from "@/server/db/schema";
@@ -366,4 +367,168 @@ export const productRouter = createTRPCRouter({
         JSON.stringify(deletedProductDocument),
       ) as Product | null;
     }),
+
+  getStats: protectedProcedure.query(async ({ ctx }) => {
+    const totalProductsQuery = ctx.db
+      .collection<ProductDB>("products")
+      .countDocuments({});
+
+    const totalDiscountsQuery = ctx.db
+      .collection<ProductDB>("products")
+      .countDocuments({ $expr: { $gt: ["$previousPrice", "$price"] } });
+
+    const totalCategoriesQuery = ctx.db
+      .collection<CategoryDB>("categories")
+      .countDocuments({});
+
+    const categoryDataPipeline = [
+      { $group: { _id: "$category", amount: { $sum: 1 } } },
+      { $sort: { amount: -1 } },
+      { $limit: 5 },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "_id",
+          foreignField: "_id",
+          as: "categoryDetails",
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          id: { $toString: "$_id" },
+          name: { $arrayElemAt: ["$categoryDetails.name", 0] },
+          amount: "$amount",
+        },
+      },
+    ];
+
+    type CategoryDataFromDB = Array<{
+      id: string;
+      name: string;
+      amount: number;
+    }>;
+
+    const categoryDataQuery = ctx.db
+      .collection<ProductDB>("products")
+      .aggregate(categoryDataPipeline)
+      .toArray() as Promise<CategoryDataFromDB>;
+
+    const topProductPipeline = [
+      { $sort: { sales: -1 } },
+      { $limit: 1 },
+      { $project: { _id: 0, name: "$name", sales: "$sales", views: "$views" } },
+    ];
+
+    type TopProductFromDB = Array<{
+      name: string;
+      sales: number;
+      views: number;
+    }>;
+
+    const topProductQuery = ctx.db
+      .collection<ProductDB>("products")
+      .aggregate(topProductPipeline)
+      .toArray() as Promise<TopProductFromDB>;
+
+    const registryPipeline = [
+      { $addFields: { entryDateObject: { $toDate: "$createdAt" } } },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$entryDateObject" },
+            month: { $month: "$entryDateObject" },
+          },
+          products: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          year: "$_id.year",
+          month: "$_id.month",
+          products: "$products",
+        },
+      },
+      { $sort: { year: 1, month: 1 } },
+    ];
+
+    type RegistryDataFromDB = Array<{
+      year: number;
+      month: number;
+      products: number;
+    }>;
+
+    const registryQuery = ctx.db
+      .collection<ProductDB>("products")
+      .aggregate(registryPipeline)
+      .toArray() as Promise<RegistryDataFromDB>;
+
+    const [
+      totalProducts,
+      totalDiscounts,
+      totalCategories,
+      categoryData,
+      topProductResult,
+      registryFromDB,
+    ] = await Promise.all([
+      totalProductsQuery,
+      totalDiscountsQuery,
+      totalCategoriesQuery,
+      categoryDataQuery,
+      topProductQuery,
+      registryQuery,
+    ]);
+
+    const topProduct = topProductResult?.[0] ?? {
+      name: "N/A",
+      sales: 0,
+      views: 0,
+    };
+
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+
+    type Registry = Record<string, { month: string; products: number }[]>;
+
+    const registry = registryFromDB.reduce((registryInProgress, dbEntry) => {
+      registryInProgress[dbEntry.year] ??= months.map((month) => ({
+        month,
+        products: 0,
+      }));
+
+      const monthIndex = dbEntry.month - 1;
+      const yearArray = registryInProgress[dbEntry.year];
+      const monthObject = yearArray ? yearArray[monthIndex] : undefined;
+
+      if (monthObject) {
+        monthObject.products = dbEntry.products;
+      }
+
+      return registryInProgress;
+    }, {} as Registry);
+
+    const productStats = {
+      totalProducts,
+      totalDiscounts,
+      totalCategories,
+      categoryData,
+      topProduct,
+      registry,
+    };
+
+    return productStats;
+  }),
 });
