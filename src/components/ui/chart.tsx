@@ -289,7 +289,7 @@ function ChartLegendContent({
           <div
             key={item.value}
             className={cn(
-              "[&>svg]:text-muted-foreground flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3",
+              "[&>svg]:text-muted-foreground flex items-center gap-1.5 overflow-hidden [&>svg]:h-3 [&>svg]:w-3",
             )}
           >
             {itemConfig?.icon && !hideIcon ? (
@@ -302,7 +302,14 @@ function ChartLegendContent({
                 }}
               />
             )}
-            {itemConfig?.label}
+            <span
+              title={
+                typeof itemConfig?.label === "string" ? itemConfig.label : ""
+              }
+              className="truncate"
+            >
+              {itemConfig?.label}
+            </span>
           </div>
         );
       })}
