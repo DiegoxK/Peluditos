@@ -1,6 +1,6 @@
 "use client";
 
-import { Dog, DollarSign } from "lucide-react";
+import { DollarSign } from "lucide-react";
 import {
   Label,
   PolarGrid,
