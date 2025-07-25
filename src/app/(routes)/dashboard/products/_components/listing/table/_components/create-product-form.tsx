@@ -573,7 +573,6 @@ export default function CreateProductForm({ product }: CreateProductFormProps) {
       void updateProduct({
         _id: product._id,
         ...payload,
-        previousPrice: product.previousPrice,
         sales: product.sales,
         views: product.views,
       });
