@@ -50,7 +50,7 @@ export function CategoriesPie({ categories, total }: CategoriesPieProps) {
 
   const chartData = categories.map((category, index) => ({
     id: category.id,
-    name: category.name,
+    category: category.name,
     amount: category.amount,
     fill: chartColors[index],
   }));
@@ -79,7 +79,7 @@ export function CategoriesPie({ categories, total }: CategoriesPieProps) {
               innerRadius={55}
               data={chartData}
               dataKey="amount"
-              nameKey="category"
+              nameKey="id"
               label
             >
               <Label
@@ -113,7 +113,7 @@ export function CategoriesPie({ categories, total }: CategoriesPieProps) {
               />
             </Pie>
             <ChartLegend
-              content={<ChartLegendContent nameKey="category" />}
+              content={<ChartLegendContent nameKey="id" className="truncate" />}
               className="-translate-y-2 flex-wrap gap-2 text-sm *:basis-1/4 *:justify-center"
             />
           </PieChart>
@@ -123,7 +123,7 @@ export function CategoriesPie({ categories, total }: CategoriesPieProps) {
         <Separator className="bg-border" />
       </div>
       <CardFooter className="flex-col gap-2 text-sm">
-        <CardDescription>Distribucion por ecategory</CardDescription>
+        <CardDescription>Distribucion Top 5 categorias</CardDescription>
       </CardFooter>
     </Card>
   );
