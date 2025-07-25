@@ -2,6 +2,7 @@
 
 import { api } from "@/trpc/react";
 import { CategoriesPie } from "./_components/categories-pie";
+import { ConversionRate } from "./_components/conversion-rate";
 
 export default function ProductStats() {
   const productStats = {
@@ -13,6 +14,11 @@ export default function ProductStats() {
       { id: "4", name: "Books", amount: 40 },
       { id: "5", name: "Toys", amount: 30 },
     ],
+    topProduct: {
+      name: "Papaya criolla",
+      sales: 200,
+      views: 300,
+    },
   };
 
   return (
@@ -22,6 +28,7 @@ export default function ProductStats() {
           total={productStats.totalCategories}
           categories={productStats.categoryData}
         />
+        <ConversionRate topProduct={productStats.topProduct} />
       </div>
     </>
   );
