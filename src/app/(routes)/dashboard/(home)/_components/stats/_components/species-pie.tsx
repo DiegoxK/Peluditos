@@ -40,7 +40,7 @@ interface SpeciesPieProps {
 export function SpeciesPie({ species }: SpeciesPieProps) {
   const chartData = [
     { specie: "dog", amount: species.dogs, fill: "var(--chart-1)" },
-    { specie: "cat", amount: species.cats, fill: "var(--chart-2)" },
+    { specie: "cat", amount: species.cats, fill: "var(--chart-3)" },
   ];
 
   return (
