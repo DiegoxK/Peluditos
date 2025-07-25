@@ -123,8 +123,10 @@ export function ConversionRate({
       <div className="mx-4">
         <Separator className="bg-border" />
       </div>
-      <CardFooter className="flex-col gap-2 text-sm">
-        <CardDescription>Ventas de: &quot;{name}&quot;</CardDescription>
+      <CardFooter className="flex-col gap-2 overflow-hidden text-center text-sm">
+        <CardDescription title={name} className="truncate">
+          Ventas de: &quot;{name}&quot;
+        </CardDescription>
       </CardFooter>
     </Card>
   );
