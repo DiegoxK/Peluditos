@@ -42,7 +42,7 @@ export default async function ProductsPage() {
                 <ProductListing />
               </TabsContent>
               <TabsContent value="estadisticas" className="space-y-4">
-                {/* <ProductStats /> */}
+                <ProductStats />
               </TabsContent>
             </DialogProvider>
           </TableStateProvider>
