@@ -8,13 +8,13 @@ import { TableStateProvider } from "@/context/table-state-provider";
 import { defaultInitialTableQueryInput } from "@/config/filter-defaults";
 import { DialogProvider } from "@/context/dialog-provider";
 
-import PetListing from "./_components/listing";
-import PetStats from "./_components/stats";
+import OrderListing from "./_components/listing";
+// import OrderStats from "./_components/stats";
 
 export default async function TransactionsPage() {
-  void api.pets.getAllPets.prefetch(defaultInitialTableQueryInput);
-  void api.pets.getDashboardSummary.prefetch();
-  void api.pets.getStats.prefetch();
+  void api.orders.getAllOrders.prefetch(defaultInitialTableQueryInput);
+  // void api.orders.getDashboardSummary.prefetch();
+  // void api.orders.getStats.prefetch();
 
   return (
     <div className="container mx-auto p-6">
@@ -39,10 +39,10 @@ export default async function TransactionsPage() {
           <TableStateProvider>
             <DialogProvider>
               <TabsContent value="listado" className="space-y-4">
-                <PetListing />
+                <OrderListing />
               </TabsContent>
               <TabsContent value="estadisticas" className="space-y-4">
-                <PetStats />
+                {/* <OrderStats /> */}
               </TabsContent>
             </DialogProvider>
           </TableStateProvider>
