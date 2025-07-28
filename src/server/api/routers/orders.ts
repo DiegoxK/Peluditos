@@ -158,32 +158,6 @@ export const orderRouter = createTRPCRouter({
         insertedId: result.insertedId.toHexString(),
       };
     }),
-
-  updateOrderStatus: protectedProcedure
-    .input(
-      z.object({
-        _id: z.string(),
-        status: OrderSchema.shape.orderStatus,
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { _id, status } = input;
-      const objectId = new ObjectId(_id);
-
-      const result = await ctx.db.collection<OrderDB>("orders").updateOne(
-        { _id: objectId },
-        {
-          $set: { orderStatus: status, updatedAt: new Date().toISOString() },
-        },
-      );
-
-      if (result.matchedCount === 0) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Order not found." });
-      }
-
-      return { success: true, modifiedCount: result.modifiedCount };
-    }),
-
   updateOrderNotes: protectedProcedure
     .input(
       z.object({
@@ -201,6 +175,35 @@ export const orderRouter = createTRPCRouter({
           { _id: objectId },
           { $set: { notes: notes, updatedAt: new Date().toISOString() } },
         );
+
+      if (result.matchedCount === 0) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Order not found." });
+      }
+
+      return { success: true, modifiedCount: result.modifiedCount };
+    }),
+
+  markOrderAsShipped: protectedProcedure
+    .input(
+      z.object({
+        _id: z.string(),
+        shipping: OrderSchema.shape.shipping,
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { _id, shipping } = input;
+      const objectId = new ObjectId(_id);
+
+      const result = await ctx.db.collection<OrderDB>("orders").updateOne(
+        { _id: objectId },
+        {
+          $set: {
+            orderStatus: "shipped",
+            shipping: shipping,
+            updatedAt: new Date().toISOString(),
+          },
+        },
+      );
 
       if (result.matchedCount === 0) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Order not found." });
