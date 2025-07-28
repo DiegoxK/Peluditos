@@ -113,3 +113,52 @@ export const SubCategorySchema = SubCategoryDbSchema.extend({
 
 export type SubCategory = z.infer<typeof SubCategorySchema>;
 export type SubCategoryDB = z.infer<typeof SubCategoryDbSchema>;
+
+// ======================= Orders =========================
+
+export const OrderProductSchema = z.object({
+  name: z.string(),
+  quantity: z.number().min(1),
+  price: z.number(),
+});
+
+export const ShippingAddressSchema = z.object({
+  city: z.string(),
+  department: z.string(),
+  neighborhood: z.string(),
+  details: z.string(),
+});
+
+export const CustomerInfoSchema = z.object({
+  name: z.string(),
+  phone: z.string(),
+  email: z.string().email(),
+  address: ShippingAddressSchema,
+});
+
+export const ShippingInfoSchema = z.object({
+  company: z.string(),
+  code: z.string(),
+  estimatedDate: z.string(),
+});
+
+export const OrderDbSchema = z.object({
+  _id: z.instanceof(ObjectId).optional(),
+  orderId: z.string(),
+  customer: CustomerInfoSchema,
+  products: z.array(OrderProductSchema),
+  total: z.number(),
+  paymentMethod: z.string(),
+  paymentStatus: z.enum(["approved", "pending", "rejected"]),
+  orderStatus: z.enum(["shipped", "processing", "delivered", "cancelled"]),
+  shipping: ShippingInfoSchema,
+  notes: z.string().optional(),
+  createdAt: z.string(),
+});
+
+export const OrderSchema = OrderDbSchema.extend({
+  _id: z.string(),
+});
+
+export type Order = z.infer<typeof OrderSchema>;
+export type OrderDB = z.infer<typeof OrderDbSchema>;
