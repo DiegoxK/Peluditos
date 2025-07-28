@@ -3,6 +3,7 @@ import { petRouter } from "./routers/pets";
 import { productRouter } from "./routers/products";
 import { categoryRouter } from "./routers/categories";
 import { subCategoryRouter } from "./routers/subcategories";
+import { orderRouter } from "./routers/orders";
 
 /**
  * This is the primary router for your server.
@@ -13,6 +14,7 @@ export const appRouter = createTRPCRouter({
   pets: petRouter,
   products: productRouter,
   categories: categoryRouter,
+  orders: orderRouter,
   subCategories: subCategoryRouter,
 });
 
