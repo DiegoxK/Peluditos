@@ -198,7 +198,7 @@ export const orderRouter = createTRPCRouter({
         { _id: objectId },
         {
           $set: {
-            orderStatus: "shipped",
+            orderStatus: "enviado",
             shipping: shipping,
             updatedAt: new Date().toISOString(),
           },
