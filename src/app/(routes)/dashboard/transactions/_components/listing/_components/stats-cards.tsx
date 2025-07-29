@@ -8,7 +8,7 @@ import { api } from "@/trpc/react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function StatsCards() {
-  const [summaryStats] = api.pets.getDashboardSummary.useSuspenseQuery();
+  const [summaryStats] = api.orders.getDashboardSummary.useSuspenseQuery();
 
   return (
     <div className="grid gap-4 md:grid-cols-3">
@@ -22,7 +22,7 @@ export function StatsCards() {
         </div>
         <CardContent className="px-4">
           <div className="text-primary text-2xl font-bold">
-            {summaryStats.total}
+            {summaryStats.totalOrders}
           </div>
         </CardContent>
       </Card>
@@ -37,7 +37,7 @@ export function StatsCards() {
         </div>
         <CardContent className="px-4">
           <div className="text-primary text-2xl font-bold">
-            {summaryStats.available}
+            {summaryStats.shipped}
           </div>
         </CardContent>
       </Card>
@@ -52,7 +52,7 @@ export function StatsCards() {
         </div>
         <CardContent className="px-4">
           <div className="text-primary text-2xl font-bold">
-            {summaryStats.adopted}
+            {summaryStats.totalRevenue}
           </div>
         </CardContent>
       </Card>

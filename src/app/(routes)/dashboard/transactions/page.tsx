@@ -13,8 +13,8 @@ import OrderStats from "./_components/stats";
 
 export default async function TransactionsPage() {
   void api.orders.getAllOrders.prefetch(defaultInitialTableQueryInput);
-  // void api.orders.getDashboardSummary.prefetch();
-  // void api.orders.getStats.prefetch();
+  void api.orders.getDashboardSummary.prefetch();
+  void api.orders.getStats.prefetch();
 
   return (
     <div className="container mx-auto p-6">
