@@ -137,6 +137,53 @@ export const orderRouter = createTRPCRouter({
       };
     }),
 
+  getDashboardSummary: protectedProcedure.query(async ({ ctx }) => {
+    const totalOrdersQuery = ctx.db
+      .collection<OrderDB>("orders")
+      .countDocuments({});
+
+    const shippedQuery = ctx.db.collection<OrderDB>("orders").countDocuments({
+      orderStatus: { $in: ["enviado", "entregado"] },
+    });
+
+    const revenuePipeline = [
+      {
+        $match: {
+          orderStatus: { $ne: "cancelado" },
+          paymentStatus: "aprobado",
+        },
+      },
+
+      {
+        $group: {
+          _id: null,
+          totalRevenue: { $sum: "$total" },
+        },
+      },
+    ];
+
+    type RevenueResult = { totalRevenue: number };
+
+    const totalRevenueQuery = ctx.db
+      .collection<OrderDB>("orders")
+      .aggregate(revenuePipeline)
+      .toArray() as Promise<RevenueResult[]>;
+
+    const [totalOrders, shipped, revenueResult] = await Promise.all([
+      totalOrdersQuery,
+      shippedQuery,
+      totalRevenueQuery,
+    ]);
+
+    const totalRevenue = revenueResult?.[0]?.totalRevenue ?? 0;
+
+    return {
+      totalOrders,
+      shipped,
+      totalRevenue,
+    };
+  }),
+
   createOrder: protectedProcedure
     .input(OrderSchema.omit({ _id: true, orderId: true, createdAt: true }))
     .mutation(async ({ ctx, input }) => {
