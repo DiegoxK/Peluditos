@@ -51,7 +51,9 @@ const chartConfig = {
 
 export function NewPetsAreaChart({ registry }: NewPetsAreaChartProps) {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("2025");
+  const [value, setValue] = useState(
+    Object.keys(registry)[Object.keys(registry).length - 1] ?? "2025",
+  );
 
   const years = Object.keys(registry).map((year) => ({
     value: year,
