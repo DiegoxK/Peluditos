@@ -3,6 +3,7 @@
 import { api } from "@/trpc/react";
 import { StatusPie } from "./_components/status-pie";
 import { ShippedRadial } from "./_components/shipped-radial";
+import { CancelationRate } from "./_components/cancelation-rate";
 
 export default function TransactionStats() {
   const transactionStats = {
@@ -29,6 +30,14 @@ export default function TransactionStats() {
         <ShippedRadial
           total={transactionStats.shipped.total}
           delivered={transactionStats.shipped.delivered}
+        />
+        <CancelationRate
+          total={transactionStats.totalOrders}
+          canceled={
+            transactionStats.statuses.find(
+              (status) => status.label === "cancelado",
+            )?.amount ?? 0
+          }
         />
       </div>
     </>
