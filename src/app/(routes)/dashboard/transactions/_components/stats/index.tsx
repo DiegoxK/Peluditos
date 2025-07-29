@@ -2,6 +2,7 @@
 
 import { api } from "@/trpc/react";
 import { StatusPie } from "./_components/status-pie";
+import { ShippedRadial } from "./_components/shipped-radial";
 
 export default function TransactionStats() {
   const transactionStats = {
@@ -12,6 +13,10 @@ export default function TransactionStats() {
       { label: "entregado", amount: 100 },
       { label: "cancelado", amount: 2 },
     ],
+    shipped: {
+      total: 100,
+      delivered: 80,
+    },
   };
 
   return (
@@ -20,6 +25,10 @@ export default function TransactionStats() {
         <StatusPie
           statuses={transactionStats.statuses}
           total={transactionStats.totalOrders}
+        />
+        <ShippedRadial
+          total={transactionStats.shipped.total}
+          delivered={transactionStats.shipped.delivered}
         />
       </div>
     </>
