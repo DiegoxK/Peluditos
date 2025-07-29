@@ -211,4 +211,134 @@ export const orderRouter = createTRPCRouter({
 
       return { success: true, modifiedCount: result.modifiedCount };
     }),
+  getStats: protectedProcedure.query(async ({ ctx }) => {
+    const totalOrdersQuery = ctx.db
+      .collection<OrderDB>("orders")
+      .countDocuments({});
+
+    const statusesPipeline = [
+      { $group: { _id: "$orderStatus", amount: { $sum: 1 } } },
+    ];
+    const statusesQuery = ctx.db
+      .collection<OrderDB>("orders")
+      .aggregate(statusesPipeline)
+      .toArray();
+
+    const shippedTotalQuery = ctx.db
+      .collection<OrderDB>("orders")
+      .countDocuments({
+        orderStatus: { $in: ["enviado", "entregado"] },
+      });
+
+    const deliveredQuery = ctx.db.collection<OrderDB>("orders").countDocuments({
+      orderStatus: "entregado",
+    });
+
+    const revenuePipeline = [
+      {
+        $match: {
+          orderStatus: { $ne: "cancelado" },
+          paymentStatus: "aprobado",
+        },
+      },
+      { $addFields: { dateObject: { $toDate: "$createdAt" } } },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$dateObject" },
+            month: { $month: "$dateObject" },
+          },
+          revenue: { $sum: "$total" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          year: "$_id.year",
+          month: "$_id.month",
+          revenue: "$revenue",
+        },
+      },
+      { $sort: { year: 1, month: 1 } },
+    ];
+
+    type RevenueDataFromDB = Array<{
+      year: number;
+      month: number;
+      revenue: number;
+    }>;
+
+    const revenueQuery = ctx.db
+      .collection<OrderDB>("orders")
+      .aggregate(revenuePipeline)
+      .toArray() as Promise<RevenueDataFromDB>;
+
+    const [
+      totalOrders,
+      statusesFromDB,
+      shippedTotal,
+      delivered,
+      revenueFromDB,
+    ] = await Promise.all([
+      totalOrdersQuery,
+      statusesQuery,
+      shippedTotalQuery,
+      deliveredQuery,
+      revenueQuery,
+    ]);
+
+    const statuses = statusesFromDB.map((status) => ({
+      label: status._id as string,
+      amount: status.amount as number,
+    }));
+
+    const shipped = {
+      total: shippedTotal,
+      delivered: delivered,
+    };
+
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+
+    type RevenueRegistry = Record<string, { month: string; revenue: number }[]>;
+
+    const revenue = revenueFromDB.reduce((revenueInProgress, dbEntry) => {
+      const year = dbEntry.year;
+      revenueInProgress[year] ??= months.map((month) => ({
+        month,
+        revenue: 0,
+      }));
+
+      const monthIndex = dbEntry.month - 1;
+      const yearArray = revenueInProgress[dbEntry.year];
+      const monthObject = yearArray ? yearArray[monthIndex] : undefined;
+
+      if (monthObject) {
+        monthObject.revenue = dbEntry.revenue;
+      }
+
+      return revenueInProgress;
+    }, {} as RevenueRegistry);
+
+    const transactionStats = {
+      totalOrders,
+      statuses,
+      shipped,
+      revenue,
+    };
+
+    return transactionStats;
+  }),
 });
