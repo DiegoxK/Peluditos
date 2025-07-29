@@ -9,7 +9,7 @@ import { defaultInitialTableQueryInput } from "@/config/filter-defaults";
 import { DialogProvider } from "@/context/dialog-provider";
 
 import OrderListing from "./_components/listing";
-// import OrderStats from "./_components/stats";
+import OrderStats from "./_components/stats";
 
 export default async function TransactionsPage() {
   void api.orders.getAllOrders.prefetch(defaultInitialTableQueryInput);
@@ -42,7 +42,7 @@ export default async function TransactionsPage() {
                 <OrderListing />
               </TabsContent>
               <TabsContent value="estadisticas" className="space-y-4">
-                {/* <OrderStats /> */}
+                <OrderStats />
               </TabsContent>
             </DialogProvider>
           </TableStateProvider>
