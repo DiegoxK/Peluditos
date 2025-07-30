@@ -11,7 +11,7 @@ import {
   sendVerificationRequest,
   generateVerificationToken,
 } from "@/config/email-config";
-import type { User } from "../db/schema";
+import type { UserSession, User } from "../db/schema";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -21,7 +21,7 @@ import type { User } from "../db/schema";
  */
 declare module "next-auth" {
   interface Session extends DefaultSession {
-    user: User;
+    user: UserSession;
   }
 }
 
