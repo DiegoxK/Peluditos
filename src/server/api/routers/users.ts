@@ -1,18 +1,24 @@
 import { z } from "zod";
-
-import { UserSchema, type User, type UserDB } from "@/server/db/schema";
+import { type User, type UserDB } from "@/server/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { ObjectId, type Filter } from "mongodb";
 import { TRPCError } from "@trpc/server";
 import { env } from "@/env";
 
 const SortingStateSchema = z
-  .array(z.object({ id: z.string(), desc: z.boolean() }))
+  .array(
+    z.object({
+      id: z.string(),
+      desc: z.boolean(),
+    }),
+  )
   .optional();
 
 const FilterValueSchema = z.union([
   z.string(),
   z.array(z.string()),
+  z.number(),
+  z.boolean(),
   z.null(),
   z.undefined(),
 ]);
@@ -36,16 +42,30 @@ export const SortableUserFieldsSchema = z.enum(["name", "email", "role"]);
 type SortableUserFields = z.infer<typeof SortableUserFieldsSchema>;
 type MongoSortOptions = Partial<Record<SortableUserFields, 1 | -1>>;
 
+const roleMap = {
+  toClient: {
+    [env.ADMIN_ROLE]: "ADMIN",
+    [env.EDITOR_ROLE]: "EDITOR",
+    [env.READONLY]: "READONLY",
+  } as const,
+  toDb: {
+    ADMIN: env.ADMIN_ROLE,
+    EDITOR: env.EDITOR_ROLE,
+    READONLY: env.READONLY,
+  } as const,
+};
+
+// ======================= Router =======================
+
 export const userRouter = createTRPCRouter({
   getAllUsers: protectedProcedure
     .input(GetAllUsersInputSchema)
     .query(async ({ ctx, input }) => {
       const { pageIndex, pageSize, sorting, globalFilter, columnFilters } =
         input;
-
       const MONGODB_QUERY_FILTER_CONDITIONS: Filter<UserDB> = {};
 
-      if (globalFilter && globalFilter.trim() !== "") {
+      if (globalFilter?.trim()) {
         const gFilterRegex = new RegExp(globalFilter.trim(), "i");
         MONGODB_QUERY_FILTER_CONDITIONS.$or = [
           { name: { $regex: gFilterRegex } },
@@ -56,12 +76,18 @@ export const userRouter = createTRPCRouter({
       if (columnFilters?.length) {
         columnFilters.forEach((filter) => {
           if (
-            filter.value &&
+            filter.id === "role" &&
             Array.isArray(filter.value) &&
             filter.value.length > 0
           ) {
-            if (filter.id === "role") {
-              MONGODB_QUERY_FILTER_CONDITIONS.role = { $in: filter.value };
+            const dbRoles = filter.value
+              .map(
+                (clientRole) =>
+                  roleMap.toDb[clientRole as keyof typeof roleMap.toDb],
+              )
+              .filter(Boolean);
+            if (dbRoles.length > 0) {
+              MONGODB_QUERY_FILTER_CONDITIONS.role = { $in: dbRoles };
             }
           }
         });
@@ -79,8 +105,7 @@ export const userRouter = createTRPCRouter({
       const totalRowCount = await ctx.db
         .collection<UserDB>("users")
         .countDocuments(MONGODB_QUERY_FILTER_CONDITIONS);
-
-      const usersData = await ctx.db
+      const usersFromDb = await ctx.db
         .collection<UserDB>("users")
         .find(MONGODB_QUERY_FILTER_CONDITIONS)
         .sort(MONGODB_SORT_OPTIONS)
@@ -88,20 +113,62 @@ export const userRouter = createTRPCRouter({
         .limit(pageSize)
         .toArray();
 
-      const usersForClient = JSON.parse(JSON.stringify(usersData)) as User[];
+      const usersForClient: User[] = usersFromDb.map((dbUser) => ({
+        _id: dbUser._id.toHexString(),
+        name: dbUser.name,
+        email: dbUser.email,
+        image: dbUser.image,
+        role: roleMap.toClient[dbUser.role] ?? "READONLY",
+      }));
 
-      return {
-        data: usersForClient,
-        totalRowCount,
-      };
+      return { data: usersForClient, totalRowCount };
+    }),
+
+  updateUserRole: protectedProcedure
+    .input(
+      z.object({
+        _id: z.string(),
+        role: z.enum(["ADMIN", "EDITOR", "READONLY"]),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.session.user.role !== env.ADMIN_ROLE) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "No tienes permiso para esta acción.",
+        });
+      }
+      if (ctx.session.user.id === input._id) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "No puedes cambiar tu propio rol.",
+        });
+      }
+
+      const roleForDb = roleMap.toDb[input.role];
+
+      const result = await ctx.db
+        .collection<UserDB>("users")
+        .updateOne(
+          { _id: new ObjectId(input._id) },
+          { $set: { role: roleForDb } },
+        );
+
+      if (result.matchedCount === 0) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Usuario no encontrado.",
+        });
+      }
+      return { success: true };
     }),
 
   createUser: protectedProcedure
     .input(
       z.object({
-        name: z.string().min(3, "El nombre debe tener al menos 3 caracteres."),
-        email: z.string().email("El correo electrónico no es válido."),
-        role: UserSchema.shape.role,
+        name: z.string().min(3, "El nombre es obligatorio."),
+        email: z.string().email("El correo no es válido."),
+        role: z.enum(["ADMIN", "EDITOR", "READONLY"]),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -111,65 +178,28 @@ export const userRouter = createTRPCRouter({
           message: "No tienes permiso para crear usuarios.",
         });
       }
-
       const existingUser = await ctx.db
         .collection<UserDB>("users")
         .findOne({ email: input.email });
       if (existingUser) {
         throw new TRPCError({
           code: "CONFLICT",
-          message: "Un usuario con este correo electrónico ya existe.",
+          message: "Este correo ya está en uso.",
         });
       }
 
+      const roleForDb = roleMap.toDb[input.role];
+
       const newUserDocument: Omit<UserDB, "_id"> = {
-        ...input,
+        name: input.name,
+        email: input.email,
+        role: roleForDb,
       };
 
       const result = await ctx.db
         .collection<UserDB>("users")
         .insertOne(newUserDocument as UserDB);
-
-      return {
-        success: true,
-        insertedId: result.insertedId.toHexString(),
-      };
-    }),
-
-  updateUserRole: protectedProcedure
-    .input(
-      z.object({
-        _id: z.string(),
-        role: UserSchema.shape.role,
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      if (ctx.session.user.role !== env.ADMIN_ROLE) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "No tienes permiso para realizar esta acción.",
-        });
-      }
-      if (ctx.session.user._id === input._id) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "No puedes cambiar tu propio rol.",
-        });
-      }
-
-      const objectId = new ObjectId(input._id);
-      const result = await ctx.db
-        .collection<UserDB>("users")
-        .updateOne({ _id: objectId }, { $set: { role: input.role } });
-
-      if (result.matchedCount === 0) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Usuario no encontrado.",
-        });
-      }
-
-      return { success: true };
+      return { success: true, insertedId: result.insertedId.toHexString() };
     }),
 
   deleteUser: protectedProcedure
@@ -181,25 +211,22 @@ export const userRouter = createTRPCRouter({
           message: "No tienes permiso para realizar esta acción.",
         });
       }
-      if (ctx.session.user._id === input._id) {
+      if (ctx.session.user.id === input._id) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "No puedes eliminar tu propia cuenta.",
         });
       }
 
-      const objectId = new ObjectId(input._id);
       const result = await ctx.db
         .collection<UserDB>("users")
-        .deleteOne({ _id: objectId });
-
+        .deleteOne({ _id: new ObjectId(input._id) });
       if (result.deletedCount === 0) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Usuario no encontrado.",
         });
       }
-
       return { success: true };
     }),
 });
