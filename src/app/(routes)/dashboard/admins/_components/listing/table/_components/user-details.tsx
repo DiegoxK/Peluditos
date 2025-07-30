@@ -9,6 +9,7 @@ import Image from "next/image";
 import CreateUserForm from "./create-user-form";
 import { Separator } from "@/components/ui/separator";
 import { Loader2, User2 } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 interface UserDetailsProps {
   user: User;
@@ -16,11 +17,13 @@ interface UserDetailsProps {
 
 export default function UserDetails({ user }: UserDetailsProps) {
   const { openDialog } = useDialog();
+  const { data: session } = useSession();
+
+  const isCurrentUser = session?.user?.id === user._id;
 
   return (
     <div>
       <div className="grid max-h-[65vh] gap-6 overflow-y-scroll py-4 ps-1 pr-3">
-        {/* Header Section */}
         <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:text-left">
           <div className="bg-secondary relative flex size-32 w-fit items-center justify-center overflow-hidden rounded-full">
             {user.image ? (
@@ -35,7 +38,6 @@ export default function UserDetails({ user }: UserDetailsProps) {
                 />
               </>
             ) : (
-              // Fallback icon if no image is provided by the auth provider
               <User2 className="text-muted-foreground size-16" />
             )}
           </div>
@@ -73,6 +75,7 @@ export default function UserDetails({ user }: UserDetailsProps) {
 
       <DialogFooter className="mt-4">
         <Button
+          disabled={isCurrentUser}
           onClick={() =>
             openDialog({
               title: `Editar a ${user.name}`,

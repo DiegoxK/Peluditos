@@ -28,8 +28,6 @@ export default function UserDataTableActions({
 
   const isCurrentUser = session?.user?.id === user._id;
 
-  console.log(session?.user?.id, user._id);
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
