@@ -69,7 +69,7 @@ export function NavUser({ user }: { user: UserSession }) {
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <BadgeCheck className="focus:text-white" />
-                Account
+                Cuenta
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
@@ -79,7 +79,7 @@ export function NavUser({ user }: { user: UserSession }) {
               }}
             >
               <LogOut className="focus:text-white" />
-              Log out
+              Cerrar sesión
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
