@@ -4,6 +4,7 @@ import { productRouter } from "./routers/products";
 import { categoryRouter } from "./routers/categories";
 import { subCategoryRouter } from "./routers/subcategories";
 import { orderRouter } from "./routers/orders";
+import { userRouter } from "./routers/users";
 
 /**
  * This is the primary router for your server.
@@ -11,6 +12,7 @@ import { orderRouter } from "./routers/orders";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
+  users: userRouter,
   pets: petRouter,
   products: productRouter,
   categories: categoryRouter,
