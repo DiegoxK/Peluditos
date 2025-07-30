@@ -13,13 +13,21 @@ export const UserDbSchema = z.object({
   emailVerified: z.date().optional(),
 });
 
+export const UserSession = UserDbSchema.extend({
+  id: z.string(),
+}).omit({
+  _id: true,
+});
+
 export const UserSchema = UserDbSchema.extend({
   _id: z.string(),
+  role: z.enum(["ADMIN", "EDITOR", "READONLY"]),
 }).omit({
   emailVerified: true,
 });
 
 export type User = z.infer<typeof UserSchema>;
+export type UserSession = z.infer<typeof UserSession>;
 export type UserDB = z.infer<typeof UserDbSchema>;
 
 // ======================= Pet =======================
