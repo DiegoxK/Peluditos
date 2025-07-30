@@ -1,3 +1,4 @@
+import { env } from "@/env";
 import { ObjectId } from "mongodb";
 import { z } from "zod";
 
@@ -7,6 +8,7 @@ export const UserSchema = z.object({
   _id: z.instanceof(ObjectId).optional(),
   name: z.string(),
   email: z.string().email(),
+  role: z.enum([env.ADMIN_ROLE, env.EDITOR_ROLE, env.READONLY]),
   image: z.string().optional(),
   emailVerified: z.date().optional(),
 });
