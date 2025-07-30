@@ -14,7 +14,7 @@ import ProductStats from "./_components/stats";
 export default async function ProductsPage() {
   void api.products.getAllProducts.prefetch(defaultInitialTableQueryInput);
   void api.products.getDashboardSummary.prefetch();
-  // void api.products.getStats.prefetch();
+  void api.products.getStats.prefetch();
 
   return (
     <div className="container mx-auto p-6">
