@@ -4,7 +4,7 @@ import { z } from "zod";
 
 // ======================= User =======================
 
-export const UserSchema = z.object({
+export const UserDbSchema = z.object({
   _id: z.instanceof(ObjectId).optional(),
   name: z.string(),
   email: z.string().email(),
@@ -13,15 +13,14 @@ export const UserSchema = z.object({
   emailVerified: z.date().optional(),
 });
 
-export type User = z.infer<typeof UserSchema>;
+export const UserSchema = UserDbSchema.extend({
+  _id: z.string(),
+}).omit({
+  emailVerified: true,
+});
 
-export interface UserSession {
-  id: string;
-  email: string;
-  role: string;
-  image: string;
-  name: string;
-}
+export type User = z.infer<typeof UserSchema>;
+export type UserDB = z.infer<typeof UserDbSchema>;
 
 // ======================= Pet =======================
 
