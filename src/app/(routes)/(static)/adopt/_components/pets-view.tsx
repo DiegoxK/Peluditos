@@ -66,7 +66,6 @@ export default function PetsView() {
             </div>
           )}
         </div>
-
         {totalPages > 1 && (
           <Pagination>
             <PaginationContent>
@@ -84,7 +83,6 @@ export default function PetsView() {
                   }
                 />
               </PaginationItem>
-              {/* Simplified pagination links for brevity */}
               <PaginationItem className="hidden md:flex">
                 <span className="p-2 text-sm">
                   Página {pageIndex + 1} de {totalPages}
