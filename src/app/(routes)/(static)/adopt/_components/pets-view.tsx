@@ -12,6 +12,9 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+
+import Image from "next/image";
 
 export default function PetsView() {
   const [pageIndex, setPageIndex] = useState(0);
@@ -22,7 +25,7 @@ export default function PetsView() {
     pageSize,
   });
 
-  const pets = data.items; // assuming API returns { items, total }
+  const pets = data.items;
   const totalPets = data.total;
   const totalPages = Math.ceil(totalPets / pageSize);
 
@@ -35,19 +38,27 @@ export default function PetsView() {
   return (
     <>
       <Sidebar />
-      <main className="p-4">
-        <h2 className="mb-4 text-2xl font-semibold">Mascotas disponibles</h2>
+      <main className="w-full p-8">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {pets.map((pet) => (
-            <div key={pet._id} className="rounded-lg border p-4">
-              <h3 className="text-xl font-bold">{pet.name}</h3>
-              <p>{pet.description}</p>
-              <p className="text-sm text-gray-500">Edad: {pet.age} años</p>
+            <div
+              key={pet._id}
+              className="hover:border-primary cursor-pointer rounded-md border bg-white/70 transition-all hover:-translate-y-1"
+            >
+              <AspectRatio ratio={1 / 1}>
+                <Image fill src={pet.image} alt={`image of ${pet.name}`} />
+              </AspectRatio>
+              <div className="p-4">
+                <h3 className="text-xl font-bold">{pet.name}</h3>
+                <p title={pet.description} className="truncate overflow-hidden">
+                  {pet.description}
+                </p>
+                <p className="text-sm text-gray-500">Edad: {pet.age} años</p>
+              </div>
             </div>
           ))}
         </div>
 
-        {/* Pagination Component */}
         <Pagination>
           <PaginationContent>
             <PaginationItem>
