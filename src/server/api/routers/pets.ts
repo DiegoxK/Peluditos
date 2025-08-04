@@ -1,6 +1,10 @@
 import { z } from "zod";
 import { PetSchema, type Pet, type PetDB } from "@/server/db/schema";
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "@/server/api/trpc";
 import { ObjectId, type Filter } from "mongodb";
 import { utapi } from "@/server/uploadthing";
 import { TRPCError } from "@trpc/server";
@@ -351,4 +355,28 @@ export const petRouter = createTRPCRouter({
 
     return petStats;
   }),
+
+  // ======================= Public ========================
+  getPublicPets: publicProcedure
+    .input(
+      z.object({
+        pageIndex: z.number().min(0).default(0),
+        pageSize: z.number().min(1).max(100).default(10),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { pageIndex, pageSize } = input;
+
+      const petsData = await ctx.db
+        .collection<PetDB>("pets")
+        .find({})
+        .sort({ updatedAt: -1 })
+        .skip(pageIndex * pageSize)
+        .limit(pageSize)
+        .toArray();
+
+      const pets = JSON.parse(JSON.stringify(petsData)) as Pet[];
+
+      return pets;
+    }),
 });
