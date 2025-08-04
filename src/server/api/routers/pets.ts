@@ -9,6 +9,19 @@ import { ObjectId, type Filter } from "mongodb";
 import { utapi } from "@/server/uploadthing";
 import { TRPCError } from "@trpc/server";
 
+const ageRangeMap = {
+  cachorro: { min: 0, max: 1 },
+  joven: { min: 2, max: 4 },
+  adulto: { min: 5, max: 8 },
+  senior: { min: 9, max: 100 },
+};
+
+const sizeMap = {
+  pequeno: { min: 0, max: 10 },
+  mediano: { min: 11, max: 25 },
+  grande: { min: 26, max: 100 },
+};
+
 const SortingStateSchema = z
   .array(
     z.object({
@@ -362,21 +375,68 @@ export const petRouter = createTRPCRouter({
       z.object({
         pageIndex: z.number().min(0).default(0),
         pageSize: z.number().min(1).max(100).default(10),
+        species: z.enum(["perro", "gato"]).optional(),
+        ageRanges: z
+          .array(z.enum(["cachorro", "joven", "adulto", "senior"]))
+          .optional(),
+        sizes: z.array(z.enum(["pequeno", "mediano", "grande"])).optional(),
+        gender: z.enum(["macho", "hembra"]).optional(),
+        sortBy: z.enum(["newest", "ageAsc", "ageDesc"]).default("newest"),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { pageIndex, pageSize } = input;
+      const { pageIndex, pageSize, species, ageRanges, sizes, gender, sortBy } =
+        input;
+
+      const MONGODB_QUERY_FILTER_CONDITIONS: Filter<PetDB> = {
+        status: "disponible",
+      };
+
+      if (species) {
+        MONGODB_QUERY_FILTER_CONDITIONS.specie = species;
+      }
+
+      if (gender) {
+        MONGODB_QUERY_FILTER_CONDITIONS.gender = gender;
+      }
+
+      if (ageRanges && ageRanges.length > 0) {
+        MONGODB_QUERY_FILTER_CONDITIONS.$or = ageRanges.map((rangeKey) => {
+          const range = ageRangeMap[rangeKey];
+          return { age: { $gte: range.min, $lte: range.max } };
+        });
+      }
+
+      if (sizes && sizes.length > 0) {
+        MONGODB_QUERY_FILTER_CONDITIONS.$or ??= [];
+        const sizeConditions = sizes.map((sizeKey) => {
+          const range = sizeMap[sizeKey];
+          return { weight: { $gte: range.min, $lte: range.max } };
+        });
+        MONGODB_QUERY_FILTER_CONDITIONS.$or = [
+          ...MONGODB_QUERY_FILTER_CONDITIONS.$or,
+          ...sizeConditions,
+        ];
+      }
+
+      let MONGODB_SORT_OPTIONS: Partial<Record<keyof PetDB, 1 | -1>> = {
+        entryDate: -1,
+      };
+      if (sortBy === "ageAsc") {
+        MONGODB_SORT_OPTIONS = { age: 1 };
+      } else if (sortBy === "ageDesc") {
+        MONGODB_SORT_OPTIONS = { age: -1 };
+      }
 
       const collection = ctx.db.collection<PetDB>("pets");
-
       const [petsData, total] = await Promise.all([
         collection
-          .find({})
-          .sort({ updatedAt: -1 })
+          .find(MONGODB_QUERY_FILTER_CONDITIONS)
+          .sort(MONGODB_SORT_OPTIONS)
           .skip(pageIndex * pageSize)
           .limit(pageSize)
           .toArray(),
-        collection.countDocuments(),
+        collection.countDocuments(MONGODB_QUERY_FILTER_CONDITIONS),
       ]);
 
       const pets = JSON.parse(JSON.stringify(petsData)) as Pet[];
