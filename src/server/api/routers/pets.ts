@@ -367,16 +367,23 @@ export const petRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const { pageIndex, pageSize } = input;
 
-      const petsData = await ctx.db
-        .collection<PetDB>("pets")
-        .find({})
-        .sort({ updatedAt: -1 })
-        .skip(pageIndex * pageSize)
-        .limit(pageSize)
-        .toArray();
+      const collection = ctx.db.collection<PetDB>("pets");
+
+      const [petsData, total] = await Promise.all([
+        collection
+          .find({})
+          .sort({ updatedAt: -1 })
+          .skip(pageIndex * pageSize)
+          .limit(pageSize)
+          .toArray(),
+        collection.countDocuments(),
+      ]);
 
       const pets = JSON.parse(JSON.stringify(petsData)) as Pet[];
 
-      return pets;
+      return {
+        items: pets,
+        total,
+      };
     }),
 });

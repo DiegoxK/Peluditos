@@ -1,13 +1,36 @@
 "use client";
 
+import { useState } from "react";
 import { api } from "@/trpc/react";
 import Sidebar from "./sidebar";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export default function PetsView() {
-  const [pets] = api.pets.getPublicPets.useSuspenseQuery({
-    pageIndex: 0,
-    pageSize: 10,
+  const [pageIndex, setPageIndex] = useState(0);
+  const pageSize = 10;
+
+  const [data] = api.pets.getPublicPets.useSuspenseQuery({
+    pageIndex,
+    pageSize,
   });
+
+  const pets = data.items; // assuming API returns { items, total }
+  const totalPets = data.total;
+  const totalPages = Math.ceil(totalPets / pageSize);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 0 && newPage < totalPages) {
+      setPageIndex(newPage);
+    }
+  };
 
   return (
     <>
@@ -23,6 +46,48 @@ export default function PetsView() {
             </div>
           ))}
         </div>
+
+        {/* Pagination Component */}
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handlePageChange(pageIndex - 1);
+                }}
+              />
+            </PaginationItem>
+
+            {Array.from({ length: totalPages }).map((_, i) => (
+              <PaginationItem key={i}>
+                <PaginationLink
+                  href="#"
+                  isActive={i === pageIndex}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handlePageChange(i);
+                  }}
+                >
+                  {i + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+
+            {totalPages > 5 && <PaginationEllipsis />}
+
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handlePageChange(pageIndex + 1);
+                }}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </main>
     </>
   );
