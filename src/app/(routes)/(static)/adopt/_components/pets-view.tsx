@@ -18,7 +18,7 @@ import Image from "next/image";
 
 export default function PetsView() {
   const [pageIndex, setPageIndex] = useState(0);
-  const pageSize = 10;
+  const pageSize = 9;
 
   const [data] = api.pets.getPublicPets.useSuspenseQuery({
     pageIndex,
@@ -38,7 +38,7 @@ export default function PetsView() {
   return (
     <>
       <Sidebar />
-      <main className="w-full p-8">
+      <main className="m-4 w-full space-y-4 p-4">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {pets.map((pet) => (
             <div

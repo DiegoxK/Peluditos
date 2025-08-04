@@ -2,7 +2,7 @@ import { api, HydrateClient } from "@/trpc/server";
 import PetsView from "./_components/pets-view";
 
 export default function AdoptionPage() {
-  void api.pets.getPublicPets.prefetch({ pageIndex: 0, pageSize: 10 });
+  void api.pets.getPublicPets.prefetch({ pageIndex: 0, pageSize: 9 });
 
   return (
     <>
