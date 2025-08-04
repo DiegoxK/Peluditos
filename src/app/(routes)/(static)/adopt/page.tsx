@@ -6,10 +6,10 @@ export default function AdoptionPage() {
 
   return (
     <>
-      <h1 className="bg-primary mt-2 w-full py-8 text-center text-3xl font-medium text-white">
+      <h1 className="bg-primary w-full py-8 text-center text-3xl font-medium text-white">
         Adopción de mascotas
       </h1>
-      <div className="container mx-auto flex">
+      <div className="container mx-auto">
         <HydrateClient>
           <PetsView />
         </HydrateClient>

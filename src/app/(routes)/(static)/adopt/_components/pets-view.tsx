@@ -36,14 +36,14 @@ export default function PetsView() {
   };
 
   return (
-    <>
+    <div className="flex gap-4 p-4">
       <Sidebar />
-      <main className="m-4 w-full space-y-4 p-4">
+      <main className="w-full space-y-8 rounded-md border bg-white/70 p-8 shadow-sm">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {pets.map((pet) => (
             <div
               key={pet._id}
-              className="hover:border-primary cursor-pointer rounded-md border bg-white/70 transition-all hover:-translate-y-1"
+              className="hover:border-primary cursor-pointer rounded-md border bg-white/70 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
             >
               <AspectRatio ratio={1 / 1}>
                 <Image fill src={pet.image} alt={`image of ${pet.name}`} />
@@ -100,6 +100,6 @@ export default function PetsView() {
           </PaginationContent>
         </Pagination>
       </main>
-    </>
+    </div>
   );
 }
