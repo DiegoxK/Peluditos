@@ -9,7 +9,7 @@ import adoptions from "@/assets/images/services/adopciones.webp";
 
 export default function Services() {
   return (
-    <section className="container mx-auto space-y-10 py-10">
+    <section className="container mx-auto space-y-10 px-32 py-10">
       {/* Donations card */}
 
       <div className="border-secondary bg-card/50 text-card-foreground flex gap-5 rounded-md border-2 p-5">
