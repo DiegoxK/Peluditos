@@ -1,8 +1,20 @@
 import { api, HydrateClient } from "@/trpc/server";
+import {
+  DEFAULT_FILTERS,
+  DEFAULT_PAGE_INDEX,
+  DEFAULT_PAGE_SIZE,
+} from "@/config/pet-defaults";
+
 import PetsView from "./_components/pets-view";
 
-export default function AdoptionPage() {
-  void api.pets.getPublicPets.prefetch({ pageIndex: 0, pageSize: 9 });
+export const dynamic = "force-dynamic";
+
+export default async function AdoptionPage() {
+  await api.pets.getPublicPets.prefetch({
+    pageIndex: DEFAULT_PAGE_INDEX,
+    pageSize: DEFAULT_PAGE_SIZE,
+    ...DEFAULT_FILTERS,
+  });
 
   return (
     <>

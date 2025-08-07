@@ -12,8 +12,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import type { Filters } from "@/config/pet-defaults";
 import { useState } from "react";
-import type { Filters } from "./pets-view";
 
 const ageRanges = [
   { id: "cachorro", label: "Cachorro (0-1 año)" },

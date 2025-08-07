@@ -12,20 +12,18 @@ import {
 } from "@/components/ui/pagination";
 
 import { PetCard } from "./pet-card";
-
-export type Filters = {
-  species?: "perro" | "gato";
-  ageRanges?: ("cachorro" | "joven" | "adulto" | "senior")[];
-  sizes?: ("pequeno" | "mediano" | "grande")[];
-  gender?: "macho" | "hembra";
-  sortBy?: "newest" | "ageAsc" | "ageDesc";
-};
+import {
+  DEFAULT_FILTERS,
+  DEFAULT_PAGE_INDEX,
+  DEFAULT_PAGE_SIZE,
+  type Filters,
+} from "@/config/pet-defaults";
 
 export default function PetsView() {
-  const [pageIndex, setPageIndex] = useState(0);
-  const pageSize = 9;
+  const [pageIndex, setPageIndex] = useState(DEFAULT_PAGE_INDEX);
+  const pageSize = DEFAULT_PAGE_SIZE;
 
-  const [filters, setFilters] = useState<Filters>({});
+  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
 
   const [data] = api.pets.getPublicPets.useSuspenseQuery({
     pageIndex,
