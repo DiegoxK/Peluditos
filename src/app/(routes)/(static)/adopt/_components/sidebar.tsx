@@ -185,7 +185,7 @@ export default function Sidebar({ onApplyFilters }: SidebarProps) {
           </div>
         </div>
       </div>
-      <div className="sticky bottom-0 z-10 border-t bg-white/50 p-6 backdrop-blur-sm">
+      <div className="sticky bottom-6 z-10 border-y bg-white/50 p-6 backdrop-blur-sm">
         <Button onClick={() => onApplyFilters(localFilters)} className="w-full">
           Aplicar Filtros
         </Button>
