@@ -446,4 +446,29 @@ export const petRouter = createTRPCRouter({
         total,
       };
     }),
+  getPetById: publicProcedure
+    .input(
+      z.object({
+        _id: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { _id } = input;
+      const objectId = new ObjectId(_id);
+
+      const pet = await ctx.db.collection<PetDB>("pets").findOne({
+        _id: objectId,
+        status: "disponible",
+      });
+
+      if (!pet) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message:
+            "No se encontró una mascota con ese ID o no está disponible.",
+        });
+      }
+
+      return JSON.parse(JSON.stringify(pet)) as Pet;
+    }),
 });
