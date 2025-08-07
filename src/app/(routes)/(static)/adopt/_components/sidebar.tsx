@@ -131,7 +131,7 @@ export default function Sidebar({ onApplyFilters }: SidebarProps) {
               <div key={age.id} className="flex items-center space-x-2">
                 <Checkbox
                   id={age.id}
-                  checked={localFilters.ageRanges?.includes(age.id)}
+                  checked={!!localFilters.ageRanges?.includes(age.id)}
                   onCheckedChange={(checked) =>
                     handleCheckboxChange("ageRanges", age.id, !!checked)
                   }
@@ -151,7 +151,7 @@ export default function Sidebar({ onApplyFilters }: SidebarProps) {
               <div key={size.id} className="flex items-center space-x-2">
                 <Checkbox
                   id={size.id}
-                  checked={localFilters.sizes?.includes(size.id)}
+                  checked={!!localFilters.sizes?.includes(size.id)}
                   onCheckedChange={(checked) =>
                     handleCheckboxChange("sizes", size.id, !!checked)
                   }
