@@ -97,7 +97,7 @@ body {
   --primary-foreground: oklch(0.98 0.015 175);
 
   --secondary: oklch(0.77 0.05 170);
-  --secondary-foreground: oklch(0.22 0.01 170);
+  --secondary-foreground: oklch(31.474% 0.02665 168.611);
 
   --muted: oklch(0.77 0.05 170);
   --muted-foreground: oklch(0.52 0.01 180);
