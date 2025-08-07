@@ -69,124 +69,127 @@ export default function Sidebar({ onApplyFilters }: SidebarProps) {
   };
 
   return (
-    <aside className="w-full shrink-0 space-y-6 rounded-md border bg-white/70 p-6 shadow-sm md:w-80">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Filtros</h2>
-        <Button variant="ghost" size="sm" onClick={handleClearFilters}>
-          Limpiar
+    <aside className="relative h-fit w-full shrink-0 space-y-6 rounded-md border bg-white/70 shadow-sm md:w-80">
+      <div className="px-6 pt-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">Filtros</h2>
+          <Button variant="outline" size="sm" onClick={handleClearFilters}>
+            Limpiar
+          </Button>
+        </div>
+
+        <div className="space-y-6">
+          <div className="space-y-3">
+            <Label className="text-base">Especie</Label>
+            <RadioGroup
+              value={localFilters.species ?? "all"}
+              onValueChange={(val) => handleRadioChange("species", val)}
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="all" id="specie-all" />
+                <Label htmlFor="specie-all">Todas</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="perro" id="specie-dog" />
+                <Label htmlFor="specie-dog">Perro</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="gato" id="specie-cat" />
+                <Label htmlFor="specie-cat">Gato</Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          <Separator />
+
+          <div className="space-y-3">
+            <Label className="text-base">Sexo</Label>
+            <RadioGroup
+              value={localFilters.gender ?? "all"}
+              onValueChange={(val) => handleRadioChange("gender", val)}
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="all" id="gender-all" />
+                <Label htmlFor="gender-all">Cualquiera</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="macho" id="gender-male" />
+                <Label htmlFor="gender-male">Macho</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="hembra" id="gender-female" />
+                <Label htmlFor="gender-female">Hembra</Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          <Separator />
+
+          <div className="space-y-3">
+            <Label className="text-base">Edad</Label>
+            {ageRanges.map((age) => (
+              <div key={age.id} className="flex items-center space-x-2">
+                <Checkbox
+                  id={age.id}
+                  checked={localFilters.ageRanges?.includes(age.id)}
+                  onCheckedChange={(checked) =>
+                    handleCheckboxChange("ageRanges", age.id, !!checked)
+                  }
+                />
+                <Label htmlFor={age.id} className="font-normal">
+                  {age.label}
+                </Label>
+              </div>
+            ))}
+          </div>
+
+          <Separator />
+
+          <div className="space-y-3">
+            <Label className="text-base">Tamaño</Label>
+            {sizes.map((size) => (
+              <div key={size.id} className="flex items-center space-x-2">
+                <Checkbox
+                  id={size.id}
+                  checked={localFilters.sizes?.includes(size.id)}
+                  onCheckedChange={(checked) =>
+                    handleCheckboxChange("sizes", size.id, !!checked)
+                  }
+                />
+                <Label htmlFor={size.id} className="font-normal">
+                  {size.label}
+                </Label>
+              </div>
+            ))}
+          </div>
+
+          <Separator />
+
+          <div className="space-y-3">
+            <Label htmlFor="sort-by" className="text-base">
+              Ordenar por
+            </Label>
+            <Select
+              value={localFilters.sortBy ?? "newest"}
+              onValueChange={handleSelectChange}
+            >
+              <SelectTrigger id="sort-by">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">Más Recientes</SelectItem>
+                <SelectItem value="ageAsc">Edad (Menor a Mayor)</SelectItem>
+                <SelectItem value="ageDesc">Edad (Mayor a Menor)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
+      <div className="sticky bottom-0 z-10 border-t bg-white/50 p-6 backdrop-blur-sm">
+        <Button onClick={() => onApplyFilters(localFilters)} className="w-full">
+          Aplicar Filtros
         </Button>
       </div>
-
-      <div className="space-y-6">
-        <div className="space-y-3">
-          <Label className="text-base">Especie</Label>
-          <RadioGroup
-            value={localFilters.species ?? "all"}
-            onValueChange={(val) => handleRadioChange("species", val)}
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="all" id="specie-all" />
-              <Label htmlFor="specie-all">Todas</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="perro" id="specie-dog" />
-              <Label htmlFor="specie-dog">Perro</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="gato" id="specie-cat" />
-              <Label htmlFor="specie-cat">Gato</Label>
-            </div>
-          </RadioGroup>
-        </div>
-
-        <Separator />
-
-        <div className="space-y-3">
-          <Label className="text-base">Sexo</Label>
-          <RadioGroup
-            value={localFilters.gender ?? "all"}
-            onValueChange={(val) => handleRadioChange("gender", val)}
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="all" id="gender-all" />
-              <Label htmlFor="gender-all">Cualquiera</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="macho" id="gender-male" />
-              <Label htmlFor="gender-male">Macho</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="hembra" id="gender-female" />
-              <Label htmlFor="gender-female">Hembra</Label>
-            </div>
-          </RadioGroup>
-        </div>
-
-        <Separator />
-
-        <div className="space-y-3">
-          <Label className="text-base">Edad</Label>
-          {ageRanges.map((age) => (
-            <div key={age.id} className="flex items-center space-x-2">
-              <Checkbox
-                id={age.id}
-                checked={localFilters.ageRanges?.includes(age.id)}
-                onCheckedChange={(checked) =>
-                  handleCheckboxChange("ageRanges", age.id, !!checked)
-                }
-              />
-              <Label htmlFor={age.id} className="font-normal">
-                {age.label}
-              </Label>
-            </div>
-          ))}
-        </div>
-
-        <Separator />
-
-        <div className="space-y-3">
-          <Label className="text-base">Tamaño</Label>
-          {sizes.map((size) => (
-            <div key={size.id} className="flex items-center space-x-2">
-              <Checkbox
-                id={size.id}
-                checked={localFilters.sizes?.includes(size.id)}
-                onCheckedChange={(checked) =>
-                  handleCheckboxChange("sizes", size.id, !!checked)
-                }
-              />
-              <Label htmlFor={size.id} className="font-normal">
-                {size.label}
-              </Label>
-            </div>
-          ))}
-        </div>
-
-        <Separator />
-
-        <div className="space-y-3">
-          <Label htmlFor="sort-by" className="text-base">
-            Ordenar por
-          </Label>
-          <Select
-            value={localFilters.sortBy ?? "newest"}
-            onValueChange={handleSelectChange}
-          >
-            <SelectTrigger id="sort-by">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="newest">Más Recientes</SelectItem>
-              <SelectItem value="ageAsc">Edad (Menor a Mayor)</SelectItem>
-              <SelectItem value="ageDesc">Edad (Mayor a Menor)</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <Button onClick={() => onApplyFilters(localFilters)} className="w-full">
-        Aplicar Filtros
-      </Button>
     </aside>
   );
 }
