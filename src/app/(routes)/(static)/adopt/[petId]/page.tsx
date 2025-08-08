@@ -12,14 +12,14 @@ import {
   XCircle,
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+
 import { notFound } from "next/navigation";
 import AdoptionInfoDialog from "./_components/adoption-info-dialog";
 
 interface PetPageProps {
-  params: {
+  params: Promise<{
     petId: string;
-  };
+  }>;
 }
 
 const InfoPill = ({
@@ -44,7 +44,8 @@ const InfoPill = ({
 
 export default async function PetPage({ params }: PetPageProps) {
   try {
-    const pet = await api.pets.getPetById({ _id: params.petId });
+    const { petId } = await params;
+    const pet = await api.pets.getPetById({ _id: petId });
 
     return (
       <>
