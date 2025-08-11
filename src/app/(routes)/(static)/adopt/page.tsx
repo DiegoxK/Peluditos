@@ -10,7 +10,7 @@ import PetsView from "./_components/pets-view";
 export const dynamic = "force-dynamic";
 
 export default async function AdoptionPage() {
-  await api.pets.getPublicPets.prefetch({
+  void api.pets.getPublicPets.prefetch({
     pageIndex: DEFAULT_PAGE_INDEX,
     pageSize: DEFAULT_PAGE_SIZE,
     ...DEFAULT_FILTERS,
@@ -18,9 +18,17 @@ export default async function AdoptionPage() {
 
   return (
     <>
-      <h1 className="bg-primary w-full py-8 text-center text-3xl font-medium text-white">
-        Adopción de mascotas
-      </h1>
+      <div className="bg-primary">
+        <div className="space-y-2 px-4 py-12 text-center text-white">
+          <h1 className="text-4xl font-bold tracking-tight">
+            Adopción de mascotas
+          </h1>
+          <p className="text-primary-foreground/80 text-lg">
+            Encuentra a tu nuevo mejor amigo y dale un hogar lleno de amor
+          </p>
+        </div>
+      </div>
+
       <div className="container mx-auto">
         <HydrateClient>
           <PetsView />
