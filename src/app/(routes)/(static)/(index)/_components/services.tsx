@@ -6,6 +6,7 @@ import Image from "next/image";
 import donations from "@/assets/images/services/donaciones.webp";
 import products from "@/assets/images/services/products.webp";
 import adoptions from "@/assets/images/services/adopciones.webp";
+import Link from "next/link";
 
 export default function Services() {
   return (
@@ -25,7 +26,9 @@ export default function Services() {
             <Separator className="bg-secondary mt-4" />
           </div>
           <div>
-            <Button className="w-full">Dona ya!</Button>
+            <Link href="/about">
+              <Button className="w-full">Dona ya!</Button>
+            </Link>
           </div>
         </div>
       </div>
@@ -44,7 +47,9 @@ export default function Services() {
             <Separator className="bg-secondary mt-4" />
           </div>
           <div>
-            <Button className="w-full">Compra ya!</Button>
+            <Link href="/products">
+              <Button className="w-full">Compra ya!</Button>
+            </Link>
           </div>
         </div>
         <Image className="rounded-md" width={400} src={products} alt="" />
@@ -65,7 +70,9 @@ export default function Services() {
             <Separator className="bg-secondary mt-4" />
           </div>
           <div>
-            <Button className="w-full">Adopta!</Button>
+            <Link href="/adopt">
+              <Button className="w-full">Adopta!</Button>
+            </Link>
           </div>
         </div>
       </div>
