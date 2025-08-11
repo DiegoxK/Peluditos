@@ -102,7 +102,7 @@ body {
   --muted: oklch(0.77 0.05 170);
   --muted-foreground: oklch(0.52 0.01 180);
 
-  --accent: oklch(0.68 0.1 145);
+  --accent: oklch(75.547% 0.08874 145.154);
   --accent-foreground: oklch(0.17 0.005 150);
 
   --destructive: oklch(0.66 0.2242 21.82);
