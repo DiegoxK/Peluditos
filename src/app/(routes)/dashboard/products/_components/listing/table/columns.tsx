@@ -40,7 +40,11 @@ export const columns: ColumnDef<Product>[] = [
     header: "Nombre",
     cell: ({ row }) => {
       const { name } = row.original;
-      return <span className="text-primary font-semibold">{name}</span>;
+      return (
+        <span className="text-primary block max-w-64 truncate overflow-hidden font-semibold">
+          {name}
+        </span>
+      );
     },
     enableGlobalFilter: true,
   },
