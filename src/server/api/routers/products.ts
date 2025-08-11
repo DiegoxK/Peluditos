@@ -6,7 +6,11 @@ import {
   type Product,
   type ProductDB,
 } from "@/server/db/schema";
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "@/server/api/trpc";
 import { ObjectId, type Filter } from "mongodb";
 import { utapi } from "@/server/uploadthing";
 import { TRPCError } from "@trpc/server";
@@ -531,4 +535,156 @@ export const productRouter = createTRPCRouter({
 
     return productStats;
   }),
+  getPublicProducts: publicProcedure
+    .input(
+      z.object({
+        pageIndex: z.number().min(0).default(0),
+        pageSize: z.number().min(1).max(100).default(12),
+        categories: z.array(z.string()).optional(),
+        subcategories: z.array(z.string()).optional(),
+        sortBy: z.string().optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { pageIndex, pageSize, categories, subcategories, sortBy } = input;
+
+      const matchStage: Filter<ProductDB> = {};
+
+      if (categories && categories.length > 0) {
+        matchStage.category = { $in: categories.map((c) => new ObjectId(c)) };
+      }
+      if (subcategories && subcategories.length > 0) {
+        matchStage.subcategory = {
+          $in: subcategories.map((s) => new ObjectId(s)),
+        };
+      }
+
+      let sortStage: Record<string, 1 | -1> = { createdAt: -1 };
+      if (sortBy === "priceAsc") sortStage = { price: 1 };
+      else if (sortBy === "priceDesc") sortStage = { price: -1 };
+      else if (sortBy === "sales") sortStage = { sales: -1 };
+
+      const productsAggregationPipeline = [
+        { $match: matchStage },
+        { $sort: sortStage },
+        { $skip: pageIndex * pageSize },
+        { $limit: pageSize },
+        {
+          $lookup: {
+            from: "categories",
+            localField: "category",
+            foreignField: "_id",
+            as: "categoryInfo",
+          },
+        },
+        {
+          $lookup: {
+            from: "subcategories",
+            localField: "subcategory",
+            foreignField: "_id",
+            as: "subcategoryInfo",
+          },
+        },
+        { $unwind: "$categoryInfo" },
+        { $unwind: "$subcategoryInfo" },
+        {
+          $project: {
+            name: 1,
+            price: 1,
+            previousPrice: 1,
+            image: 1,
+            stock: 1,
+            sales: 1,
+            featured: 1,
+
+            category: { id: "$categoryInfo._id", name: "$categoryInfo.name" },
+            subcategory: {
+              id: "$subcategoryInfo._id",
+              name: "$subcategoryInfo.name",
+            },
+          },
+        },
+      ];
+
+      const productsData = await ctx.db
+        .collection<ProductDB>("products")
+        .aggregate(productsAggregationPipeline)
+        .toArray();
+      const total = await ctx.db
+        .collection<ProductDB>("products")
+        .countDocuments(matchStage);
+
+      const products = JSON.parse(JSON.stringify(productsData)) as Product[];
+
+      return {
+        items: products,
+        total,
+      };
+    }),
+
+  getProductById: publicProcedure
+    .input(z.object({ _id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      if (!ObjectId.isValid(input._id)) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "ID de producto inválido.",
+        });
+      }
+
+      const aggregationPipeline = [
+        { $match: { _id: new ObjectId(input._id) } },
+        { $limit: 1 },
+        {
+          $lookup: {
+            from: "categories",
+            localField: "category",
+            foreignField: "_id",
+            as: "categoryInfo",
+          },
+        },
+        {
+          $lookup: {
+            from: "subcategories",
+            localField: "subcategory",
+            foreignField: "_id",
+            as: "subcategoryInfo",
+          },
+        },
+        { $unwind: "$categoryInfo" },
+        { $unwind: "$subcategoryInfo" },
+        {
+          $project: {
+            name: 1,
+            price: 1,
+            previousPrice: 1,
+            image: 1,
+            stock: 1,
+            sales: 1,
+            description: 1,
+            features: 1,
+            featured: 1,
+            category: { id: "$categoryInfo._id", name: "$categoryInfo.name" },
+            subcategory: {
+              id: "$subcategoryInfo._id",
+              name: "$subcategoryInfo.name",
+            },
+          },
+        },
+      ];
+
+      const results = await ctx.db
+        .collection<ProductDB>("products")
+        .aggregate(aggregationPipeline)
+        .toArray();
+
+      if (!results[0]) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Producto no encontrado.",
+        });
+      }
+
+      return JSON.parse(JSON.stringify(results[0])) as Product;
+    }),
 });
