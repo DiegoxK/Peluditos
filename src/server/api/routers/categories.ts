@@ -4,7 +4,11 @@ import {
   type ProductDB,
   type SubCategoryDB,
 } from "@/server/db/schema";
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "@/server/api/trpc";
 import { ObjectId } from "mongodb";
 import { TRPCError } from "@trpc/server";
 
@@ -40,7 +44,7 @@ export const categoryRouter = createTRPCRouter({
       return result;
     }),
 
-  getAll: protectedProcedure.query(async ({ ctx }) => {
+  getAll: publicProcedure.query(async ({ ctx }) => {
     const categoriesData = await ctx.db
       .collection<CategoryDB>("categories")
       .find()
