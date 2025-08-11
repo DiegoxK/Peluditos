@@ -71,14 +71,14 @@ export default function Sidebar({ onApplyFilters }: SidebarProps) {
   return (
     <aside className="relative h-fit w-full shrink-0 space-y-6 rounded-md border bg-white/70 shadow-sm md:w-80">
       <div className="px-6 pt-6">
-        <div className="flex items-center justify-between">
+        <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold">Filtros</h2>
           <Button variant="outline" size="sm" onClick={handleClearFilters}>
             Limpiar
           </Button>
         </div>
-
-        <div className="space-y-6">
+        <Separator />
+        <div className="mt-4 space-y-6">
           <div className="space-y-3">
             <Label className="text-base">Especie</Label>
             <RadioGroup
