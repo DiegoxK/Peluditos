@@ -7,15 +7,16 @@ import { notFound } from "next/navigation";
 import ProductPurchasePanel from "../_components/product-purchase-panel";
 
 interface ProductPageProps {
-  params: {
+  params: Promise<{
     productId: string;
-  };
+  }>;
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
   try {
+    const { productId } = await params;
     const product = await api.products.getProductById({
-      _id: params.productId,
+      _id: productId,
     });
 
     return (
