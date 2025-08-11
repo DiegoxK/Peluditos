@@ -15,7 +15,7 @@ export default function MainNav() {
       </div>
       {/* Call to action button */}
       <Button asChild className="bg-primary px-6">
-        <Link href="/join">Adopta!</Link>
+        <Link href="/adopt">Adopta!</Link>
       </Button>
     </nav>
   );
