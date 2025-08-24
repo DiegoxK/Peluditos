@@ -1,5 +1,6 @@
 import Footer from "@/components/footer";
 import Header from "@/components/header";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function Layout({
   children,
@@ -7,6 +8,7 @@ export default function Layout({
   return (
     <>
       <Header />
+      <Toaster richColors />
       {children}
       <Footer />
     </>
