@@ -2,7 +2,7 @@ import { navigation } from "@/config";
 import { Button } from "../ui/button";
 import { NavLink } from "./nav-link";
 import Link from "next/link";
-import { Cart } from "../ui/shopping-cart";
+import { Cart } from "../cart/shopping-cart";
 
 export default function MainNav() {
   return (
