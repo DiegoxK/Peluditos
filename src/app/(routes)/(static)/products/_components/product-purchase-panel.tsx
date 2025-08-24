@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { useCartStore } from "@/hooks/store/cart-store";
 import { formatPrice } from "@/lib/utils";
 import type { Product } from "@/server/db/schema";
 import { Minus, Plus, ShoppingCart } from "lucide-react";
@@ -18,12 +19,15 @@ export default function ProductPurchasePanel({
   product,
 }: ProductPurchasePanelProps) {
   const [quantity, setQuantity] = useState(1);
+  const addItemToCart = useCartStore((state) => state.addItem);
+
   const isSale = product.previousPrice && product.previousPrice > product.price;
 
   const handleAddToCart = () => {
-    toast.success(`${quantity} x "${product.name}" añadido al carrito!`, {
-      description:
-        "Esta es una demostración. No se ha procesado ningún pedido.",
+    addItemToCart(product, quantity);
+
+    toast.success(`"${product.name}" añadido al carrito!`, {
+      description: `Total de artículos en el carrito: ${useCartStore.getState().getTotalItems()}`,
       position: "bottom-right",
     });
   };
