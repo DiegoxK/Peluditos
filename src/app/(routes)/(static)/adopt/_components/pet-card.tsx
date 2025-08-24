@@ -19,6 +19,7 @@ export function PetCard({ pet }: PetCardProps) {
           src={pet.image}
           alt={`Imagen de ${pet.name}`}
           className="object-cover transition-transform duration-300 group-hover:scale-105"
+          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
         />
       </AspectRatio>
       <div className="space-y-1 p-4">
