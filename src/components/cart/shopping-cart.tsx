@@ -15,6 +15,7 @@ import CartView from "./cart-view";
 import { useCartStore } from "@/hooks/store/cart-store";
 import { useState } from "react";
 import { useHasHydrated } from "@/hooks/use-has-hydrated";
+import { Separator } from "../ui/separator";
 
 export function Cart() {
   const [isOpen, setIsOpen] = useState(false);
@@ -38,9 +39,10 @@ export function Cart() {
         </Button>
       </SheetTrigger>
       <SheetContent className="flex w-full flex-col pr-0 sm:max-w-lg">
-        <SheetHeader className="px-6">
+        <SheetHeader className="px-6 pt-9">
           <SheetTitle>Mi Carrito ({totalItems})</SheetTitle>
         </SheetHeader>
+        <Separator />
         <div className="flex-1 overflow-hidden px-6">
           <CartView setIsOpen={setIsOpen} />
         </div>

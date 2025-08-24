@@ -38,7 +38,7 @@ export default function CartView({
             <li key={item._id} className="flex items-start gap-4 py-4">
               <div className="relative size-20 shrink-0 overflow-hidden rounded-md border">
                 <Image
-                  src={item.image || "/placeholder.svg"} // Fallback image
+                  src={item.image}
                   alt={item.name}
                   fill
                   className="object-cover"
@@ -83,7 +83,7 @@ export default function CartView({
           ))}
         </ul>
       </div>
-      <div className="mt-auto border-t pt-4">
+      <div className="mt-auto py-4">
         <Separator className="my-4" />
         <div className="flex justify-between font-semibold">
           <p>Subtotal</p>

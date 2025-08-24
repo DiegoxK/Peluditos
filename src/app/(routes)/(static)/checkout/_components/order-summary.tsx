@@ -18,9 +18,9 @@ export default function OrderSummary() {
         <div className="space-y-4">
           {items.map((item) => (
             <div key={item._id} className="flex items-start gap-4">
-              <div className="relative size-16 shrink-0 overflow-hidden rounded-md border">
+              <div className="relative size-16 shrink-0 rounded-md border">
                 <Image
-                  src={item.image || "/placeholder.svg"}
+                  src={item.image}
                   alt={item.name}
                   fill
                   className="object-cover"
