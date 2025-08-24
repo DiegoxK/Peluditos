@@ -28,7 +28,7 @@ export default function ProductPurchasePanel({
 
     toast.success(`"${product.name}" añadido al carrito!`, {
       description: `Total de artículos en el carrito: ${useCartStore.getState().getTotalItems()}`,
-      position: "bottom-right",
+      position: "bottom-left",
     });
   };
 
