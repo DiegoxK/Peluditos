@@ -14,9 +14,11 @@ import { Badge } from "../ui/badge";
 import CartView from "./cart-view";
 import { useCartStore } from "@/hooks/store/cart-store";
 import { useState } from "react";
+import { useHasHydrated } from "@/hooks/use-has-hydrated";
 
 export function Cart() {
   const [isOpen, setIsOpen] = useState(false);
+  const hasHydrated = useHasHydrated();
   const totalItems = useCartStore((state) => state.getTotalItems());
 
   return (
@@ -24,7 +26,7 @@ export function Cart() {
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="text-primary relative">
           <ShoppingCart className="size-6" />
-          {totalItems > 0 && (
+          {hasHydrated && totalItems > 0 && (
             <Badge
               variant="destructive"
               className="absolute -top-2 -right-2 flex size-5 items-center justify-center rounded-full p-2 text-xs"

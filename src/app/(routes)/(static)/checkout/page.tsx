@@ -7,18 +7,20 @@ import CheckoutForm from "./_components/checkout-form";
 import OrderSummary from "./_components/order-summary";
 import { Separator } from "@/components/ui/separator";
 import { useCartStore } from "@/hooks/store/cart-store";
+import { useHasHydrated } from "@/hooks/use-has-hydrated";
 
 export default function CheckoutPage() {
   const { items } = useCartStore();
   const router = useRouter();
+  const hasHydrated = useHasHydrated();
 
   useEffect(() => {
-    if (items.length === 0) {
+    if (hasHydrated && items.length === 0) {
       router.replace("/products");
     }
-  }, [items, router]);
+  }, [items, router, hasHydrated]);
 
-  if (items.length === 0) {
+  if (!hasHydrated) {
     return null;
   }
 
