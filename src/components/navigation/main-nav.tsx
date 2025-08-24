@@ -2,6 +2,7 @@ import { navigation } from "@/config";
 import { Button } from "../ui/button";
 import { NavLink } from "./nav-link";
 import Link from "next/link";
+import { Cart } from "../ui/shopping-cart";
 
 export default function MainNav() {
   return (
@@ -17,6 +18,7 @@ export default function MainNav() {
       <Button asChild className="bg-primary px-6">
         <Link href="/adopt">Adopta!</Link>
       </Button>
+      <Cart />
     </nav>
   );
 }
