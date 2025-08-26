@@ -52,21 +52,21 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Amount mismatch" }, { status: 400 });
   }
 
+  if (internalOrder.paymentStatus === "aprobado") {
+    console.log(
+      `ePayco Webhook: Order ${orderId} is already approved. Ignoring subsequent webhook.`,
+    );
+    return NextResponse.json(
+      { message: "Confirmation already processed for a successful order." },
+      { status: 200 },
+    );
+  }
+
   try {
     const updatePayload: Partial<OrderDB> = {
       epaycoTransactionId: epaycoData.x_transaction_id,
       updatedAt: new Date().toISOString(),
     };
-
-    if (internalOrder.paymentStatus !== "pendiente") {
-      console.log(
-        `ePayco Webhook: Order ${orderId} already processed. Current status: ${internalOrder.paymentStatus}`,
-      );
-      return NextResponse.json(
-        { message: "Confirmation already processed." },
-        { status: 200 },
-      );
-    }
 
     switch (epaycoData.x_cod_response) {
       case "1": // Aprobada
@@ -74,6 +74,7 @@ export async function POST(req: NextRequest) {
           `ePayco Webhook: Transaction ${epaycoData.x_ref_payco} for order ${orderId} accepted.`,
         );
         updatePayload.paymentStatus = "aprobado";
+        updatePayload.orderStatus = "procesando";
 
         const productsCollection = db.collection<ProductDB>("products");
         for (const product of internalOrder.products) {
