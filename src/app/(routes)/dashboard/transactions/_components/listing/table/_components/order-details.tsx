@@ -14,17 +14,7 @@ export default function OrderDetails({ order }: OrderDetailsProps) {
 
   return (
     <div>
-      <div className="space-y-2 pb-4">
-        <h2 className="text-xl font-bold">
-          Detalles del Pedido {order.orderId}
-        </h2>
-        <p className="text-muted-foreground text-sm">
-          Información completa del pedido realizado el{" "}
-          {formatDate(order.createdAt)}.
-        </p>
-      </div>
-
-      <div className="grid max-h-[60vh] gap-6 space-y-4 overflow-y-scroll py-4 ps-1 pr-4">
+      <div className="grid max-h-[60vh] gap-6 space-y-4 overflow-y-scroll ps-1 pr-4">
         <InfoSection title="Información del Cliente">
           <div className="grid gap-1.5">
             <InfoRow label="Nombre" value={order.customer.name} />
@@ -76,13 +66,16 @@ export default function OrderDetails({ order }: OrderDetailsProps) {
                   <Badge
                     variant={
                       order.paymentStatus === "aprobado"
-                        ? "secondary"
-                        : "destructive"
+                        ? "default"
+                        : order.paymentStatus === "pendiente"
+                          ? "outline"
+                          : order.paymentStatus === "rechazado"
+                            ? "destructive"
+                            : "default"
                     }
                   >
-                    {order.paymentStatus === "aprobado"
-                      ? "Aprobado"
-                      : "Rechazado"}
+                    {order.paymentStatus.charAt(0).toUpperCase() +
+                      order.paymentStatus.slice(1)}
                   </Badge>
                 }
               />
@@ -131,7 +124,7 @@ export default function OrderDetails({ order }: OrderDetailsProps) {
             <MessageCircle className="mr-2 size-4" /> Enviar por WhatsApp
           </Button>
           <Button variant="outline">
-            <Mail className="mr-2 size-4" /> Enviar por Correo
+            <Mail className="mr-2 size-4" /> Enviar Correo
           </Button>
         </div>
         <DialogClose asChild>
