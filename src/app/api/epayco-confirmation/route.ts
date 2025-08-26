@@ -100,6 +100,7 @@ export async function POST(req: NextRequest) {
           `ePayco Webhook: Transaction ${epaycoData.x_ref_payco} for order ${orderId} is pending.`,
         );
         updatePayload.paymentStatus = "pendiente";
+        updatePayload.orderStatus = "procesando";
         break;
 
       default: // Fall trough
