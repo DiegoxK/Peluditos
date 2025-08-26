@@ -29,11 +29,21 @@ import { toast } from "sonner";
 const formSchema = z.object({
   name: z.string().min(3, "El nombre es obligatorio."),
   email: z.string().email("Por favor, ingresa un correo válido."),
-  phone: z.string().min(7, "El teléfono es obligatorio."),
+  phone: z
+    .string()
+    .regex(
+      /^3\d{9}$/,
+      "El número debe ser un celular colombiano válido (ej: 3001234567)",
+    ),
   typeDoc: z.enum(["CC", "CE", "NIT", "PAS"], {
     required_error: "El tipo de documento es obligatorio.",
   }),
-  numberDoc: z.string().min(5, "El número de documento es obligatorio."),
+  numberDoc: z
+    .string()
+    .regex(
+      /^\d{5,15}$/,
+      "El número de documento debe tener entre 5 y 15 dígitos.",
+    ),
   address: z.string().min(5, "La dirección es obligatoria."),
   notes: z.string().optional(),
 });
