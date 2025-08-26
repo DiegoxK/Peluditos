@@ -89,6 +89,7 @@ export const orderRouter = createTRPCRouter({
           typeDoc: z.string(),
           numberDoc: z.string(),
           address: z.string(),
+          notes: z.string().optional(),
         }),
         cartItems: z
           .array(
@@ -160,7 +161,7 @@ export const orderRouter = createTRPCRouter({
         paymentStatus: "pendiente",
         orderStatus: "procesando",
         shipping: { company: "", code: "", estimatedDate: "" },
-        notes: "",
+        notes: customerDetails.notes ?? "",
         createdAt: new Date().toISOString(),
       };
 
