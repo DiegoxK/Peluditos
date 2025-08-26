@@ -49,7 +49,7 @@
     "date-fns": "^4.1.0",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
-    "epayco-checkout-community-sdk": "^1.0.0",
+    "epayco-checkout-community-sdk": "^1.0.1",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.510.0",
     "mongodb": "^6.16.0",
