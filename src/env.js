@@ -27,6 +27,8 @@ export const env = createEnv({
     UPLOADTHING_TOKEN: z.string(),
     EPAYCO_PUBLIC_KEY: z.string(),
     EPAYCO_PRIVATE_KEY: z.string(),
+    EPAYCO_P_CUST_ID_CLIENTE: z.string(),
+    EPAYCO_P_KEY: z.string(),
     APP_URL: z.string(),
   },
 
@@ -59,6 +61,8 @@ export const env = createEnv({
     UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
     EPAYCO_PUBLIC_KEY: process.env.EPAYCO_PUBLIC_KEY,
     EPAYCO_PRIVATE_KEY: process.env.EPAYCO_PRIVATE_KEY,
+    EPAYCO_P_CUST_ID_CLIENTE: process.env.EPAYCO_P_CUST_ID_CLIENTE,
+    EPAYCO_P_KEY: process.env.EPAYCO_P_KEY,
     APP_URL: process.env.APP_URL,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
