@@ -21,6 +21,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useCartStore } from "@/hooks/store/cart-store";
+import { api } from "@/trpc/react";
+import { openEpaycoCheckout } from "epayco-checkout-community-sdk";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   name: z.string().min(3, "El nombre es obligatorio."),
@@ -30,13 +34,12 @@ const formSchema = z.object({
     required_error: "El tipo de documento es obligatorio.",
   }),
   numberDoc: z.string().min(5, "El número de documento es obligatorio."),
-  department: z.string().min(3, "El departamento es obligatorio."),
-  city: z.string().min(3, "La ciudad es obligatoria."),
   address: z.string().min(5, "La dirección es obligatoria."),
   notes: z.string().optional(),
 });
 
 export default function CheckoutForm() {
+  const { items } = useCartStore();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,17 +48,46 @@ export default function CheckoutForm() {
       phone: "",
       typeDoc: "CC",
       numberDoc: "",
-      department: "",
-      city: "",
       address: "",
       notes: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Checkout form data:", values);
-  }
+  const { mutate: createSession, isPending } =
+    api.orders.createPaymentSession.useMutation({
+      onSuccess: async ({ sessionId }) => {
+        try {
+          const handler = await openEpaycoCheckout({
+            sessionId,
+            external: false,
+          });
+          handler.onResponse((data) => {
+            console.log("ePayco Client-Side Response:", data);
+          });
+        } catch (error) {
+          const message =
+            error instanceof Error ? error.message : "Error desconocido";
+          toast.error("Error al abrir ePayco", { description: message });
+        }
+      },
+      onError: (error) => {
+        toast.error("Error al crear la sesión de pago", {
+          description: error.message,
+        });
+      },
+    });
 
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    if (items.length === 0) {
+      toast.error("Tu carrito está vacío.");
+      return;
+    }
+    const cartItemsForApi = items.map((item) => ({
+      _id: item._id,
+      quantity: item.quantity,
+    }));
+    createSession({ customerDetails: values, cartItems: cartItemsForApi });
+  }
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -153,10 +185,10 @@ export default function CheckoutForm() {
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-2">
           <h2 className="text-xl font-semibold">Dirección de Envío</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <FormField
+            {/* <FormField
               control={form.control}
               name="department"
               render={({ field }) => (
@@ -168,8 +200,8 @@ export default function CheckoutForm() {
                   <FormMessage />
                 </FormItem>
               )}
-            />
-            <FormField
+            /> */}
+            {/* <FormField
               control={form.control}
               name="city"
               render={({ field }) => (
@@ -181,7 +213,7 @@ export default function CheckoutForm() {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
           </div>
           <FormField
             control={form.control}
@@ -224,7 +256,7 @@ export default function CheckoutForm() {
         </div>
 
         <Button type="submit" size="lg" className="w-full">
-          Continuar al Pago
+          {isPending ? "Procesando..." : "Continuar al Pago"}
         </Button>
       </form>
     </Form>
