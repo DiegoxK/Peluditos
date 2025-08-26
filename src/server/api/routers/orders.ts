@@ -175,10 +175,11 @@ export const orderRouter = createTRPCRouter({
         const baseUrl = env.APP_URL;
 
         if (
-          process.env.NODE_ENV === "development" &&
+          env.NODE_ENV === "development" &&
+          process.env.TESTING_PUBLIC_IP &&
           (ip === "127.0.0.1" || ip === "::1")
         ) {
-          ip = env.TESTING_PUBLIC_IP;
+          ip = process.env.TESTING_PUBLIC_IP;
         }
 
         console.log(ip);
