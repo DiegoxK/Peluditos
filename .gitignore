@@ -47,3 +47,6 @@ yarn-error.log*
 
 # testing route
 src/app/\(routes\)/dashboard/test/*
+
+.yalc
+yalc.lock
