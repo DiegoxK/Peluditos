@@ -1,8 +1,23 @@
 import { z } from "zod";
-import { OrderSchema, type Order, type OrderDB } from "@/server/db/schema";
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import {
+  OrderSchema,
+  type Order,
+  type OrderDB,
+  type ProductDB,
+} from "@/server/db/schema";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "@/server/api/trpc";
 import { ObjectId, type Filter } from "mongodb";
 import { TRPCError } from "@trpc/server";
+import { headers } from "next/headers";
+import { env } from "@/env";
+import {
+  createEpaycoSession,
+  type EpaycoPaymentDetails,
+} from "epayco-checkout-community-sdk/server";
 
 const SortingStateSchema = z
   .array(
@@ -64,6 +79,162 @@ const createOrderId = (): string => {
 };
 
 export const orderRouter = createTRPCRouter({
+  createPaymentSession: publicProcedure
+    .input(
+      z.object({
+        customerDetails: z.object({
+          name: z.string(),
+          email: z.string().email(),
+          phone: z.string(),
+          typeDoc: z.string(),
+          numberDoc: z.string(),
+          address: z.string(),
+        }),
+        cartItems: z
+          .array(
+            z.object({
+              _id: z.string(),
+              quantity: z.number().min(1),
+            }),
+          )
+          .min(1, "El carrito no puede estar vacío."),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { customerDetails, cartItems } = input;
+
+      const productIds = cartItems.map((item) => new ObjectId(item._id));
+      const productsFromDb = await ctx.db
+        .collection<ProductDB>("products")
+        .find({ _id: { $in: productIds } })
+        .toArray();
+
+      if (productsFromDb.length !== cartItems.length) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Algunos productos en el carrito no existen.",
+        });
+      }
+
+      const productMap = new Map(
+        productsFromDb.map((p) => [p._id.toHexString(), p]),
+      );
+
+      let serverCalculatedTotal = 0;
+      const productsForOrder: OrderDB["products"] = [];
+
+      for (const item of cartItems) {
+        const product = productMap.get(item._id);
+        if (!product || product.stock < item.quantity) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: `Stock insuficiente para ${product?.name ?? item._id}`,
+          });
+        }
+        serverCalculatedTotal += product.price * item.quantity;
+        productsForOrder.push({
+          name: product.name,
+          price: product.price,
+          quantity: item.quantity,
+        });
+      }
+
+      const orderId = createOrderId();
+
+      const newOrder: Omit<OrderDB, "_id"> = {
+        orderId,
+        customer: {
+          name: customerDetails.name,
+          email: customerDetails.email,
+          phone: customerDetails.phone,
+          address: {
+            city: "",
+            department: "",
+            neighborhood: "",
+            details: customerDetails.address,
+          },
+        },
+        products: productsForOrder,
+        total: serverCalculatedTotal,
+        paymentMethod: "ePayco",
+        paymentStatus: "pendiente",
+        orderStatus: "procesando",
+        shipping: { company: "", code: "", estimatedDate: "" },
+        notes: "",
+        createdAt: new Date().toISOString(),
+      };
+
+      const insertResult = await ctx.db
+        .collection<OrderDB>("orders")
+        .insertOne(newOrder as OrderDB);
+      const newOrderId = insertResult.insertedId;
+
+      try {
+        const headerStore = await headers();
+        let ip = headerStore.get("x-forwarded-for") ?? "127.0.0.1";
+        const baseUrl = env.APP_URL;
+
+        if (
+          process.env.NODE_ENV === "development" &&
+          (ip === "127.0.0.1" || ip === "::1")
+        ) {
+          ip = env.TESTING_PUBLIC_IP;
+        }
+
+        console.log(ip);
+
+        const paymentDetails: EpaycoPaymentDetails = {
+          name: `Pedido ${orderId}`,
+          description: `Compra de ${productsForOrder.length} tipo(s) de producto(s)`,
+          invoice: orderId,
+          currency: "COP",
+          amount: serverCalculatedTotal,
+          country: "CO",
+          lang: "ES",
+          ip,
+          responseUrl: `${baseUrl}/checkout/response`,
+          confirmationUrl: `${baseUrl}/api/epayco-confirmation`,
+          billing: {
+            name: customerDetails.name,
+            email: customerDetails.email,
+            mobilePhone: customerDetails.phone,
+            typeDoc: customerDetails.typeDoc,
+            numberDoc: customerDetails.numberDoc,
+            address: customerDetails.address,
+          },
+          extras: {
+            extra1: orderId,
+          },
+        };
+
+        const sessionId = await createEpaycoSession({
+          publicKey: env.EPAYCO_PUBLIC_KEY,
+          privateKey: env.EPAYCO_PRIVATE_KEY,
+          paymentDetails,
+          isTestMode: true,
+        });
+        return { sessionId };
+      } catch (error) {
+        await ctx.db.collection<OrderDB>("orders").updateOne(
+          { _id: newOrderId },
+          {
+            $set: {
+              orderStatus: "cancelado",
+              notes:
+                "Fallo al crear la sesión de pago con ePayco. El pedido se canceló automáticamente.",
+            },
+          },
+        );
+
+        const message =
+          error instanceof Error ? error.message : "Error desconocido";
+        console.error("ePayco SDK Error:", message);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "No se pudo crear la sesión de pago.",
+        });
+      }
+    }),
   getAllOrders: protectedProcedure
     .input(GetAllOrdersInputSchema)
     .query(async ({ ctx, input }) => {
@@ -184,27 +355,27 @@ export const orderRouter = createTRPCRouter({
     };
   }),
 
-  createOrder: protectedProcedure
-    .input(OrderSchema.omit({ _id: true, orderId: true, createdAt: true }))
-    .mutation(async ({ ctx, input }) => {
-      const newOrderId = createOrderId();
+  // createOrder: protectedProcedure
+  //   .input(OrderSchema.omit({ _id: true, orderId: true, createdAt: true }))
+  //   .mutation(async ({ ctx, input }) => {
+  //     const newOrderId = createOrderId();
 
-      const newOrderData = {
-        ...input,
-        orderId: newOrderId,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+  //     const newOrderData = {
+  //       ...input,
+  //       orderId: newOrderId,
+  //       createdAt: new Date().toISOString(),
+  //       updatedAt: new Date().toISOString(),
+  //     };
 
-      const result = await ctx.db
-        .collection<OrderDB>("orders")
-        .insertOne(newOrderData);
+  //     const result = await ctx.db
+  //       .collection<OrderDB>("orders")
+  //       .insertOne(newOrderData);
 
-      return {
-        acknowledged: result.acknowledged,
-        insertedId: result.insertedId.toHexString(),
-      };
-    }),
+  //     return {
+  //       acknowledged: result.acknowledged,
+  //       insertedId: result.insertedId.toHexString(),
+  //     };
+  //   }),
   updateOrderNotes: protectedProcedure
     .input(
       z.object({
