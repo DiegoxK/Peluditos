@@ -164,6 +164,8 @@ export const OrderDbSchema = z.object({
   shipping: ShippingInfoSchema,
   notes: z.string().optional(),
   createdAt: z.string(),
+  updatedAt: z.string().optional(),
+  epaycoTransactionId: z.string().optional(),
 });
 
 export const OrderSchema = OrderDbSchema.extend({
