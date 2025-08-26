@@ -25,6 +25,10 @@ export const env = createEnv({
     MONGODB_URI: z.string(),
     MONGODB_DATABASE_NAME: z.string(),
     UPLOADTHING_TOKEN: z.string(),
+    EPAYCO_PUBLIC_KEY: z.string(),
+    EPAYCO_PRIVATE_KEY: z.string(),
+    TESTING_PUBLIC_IP: z.string().ip(),
+    APP_URL: z.string(),
   },
 
   /**
@@ -54,6 +58,10 @@ export const env = createEnv({
     MONGODB_URI: process.env.MONGODB_URI,
     MONGODB_DATABASE_NAME: process.env.MONGODB_DATABASE_NAME,
     UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
+    EPAYCO_PUBLIC_KEY: process.env.EPAYCO_PUBLIC_KEY,
+    EPAYCO_PRIVATE_KEY: process.env.EPAYCO_PRIVATE_KEY,
+    TESTING_PUBLIC_IP: process.env.TESTING_PUBLIC_IP,
+    APP_URL: process.env.APP_URL,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**
