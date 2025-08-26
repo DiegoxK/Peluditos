@@ -207,6 +207,8 @@ export const orderRouter = createTRPCRouter({
           },
         };
 
+        console.log("Payment Details: ", paymentDetails);
+
         const sessionId = await createEpaycoSession({
           publicKey: env.EPAYCO_PUBLIC_KEY,
           privateKey: env.EPAYCO_PRIVATE_KEY,
