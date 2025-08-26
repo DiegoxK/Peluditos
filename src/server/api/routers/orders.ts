@@ -182,8 +182,6 @@ export const orderRouter = createTRPCRouter({
           ip = process.env.TESTING_PUBLIC_IP;
         }
 
-        console.log(ip);
-
         const paymentDetails: EpaycoPaymentDetails = {
           name: `Pedido ${orderId}`,
           description: `Compra de ${productsForOrder.length} tipo(s) de producto(s)`,
@@ -221,6 +219,7 @@ export const orderRouter = createTRPCRouter({
           {
             $set: {
               orderStatus: "cancelado",
+              paymentStatus: "rechazado",
               notes:
                 "Fallo al crear la sesión de pago con ePayco. El pedido se canceló automáticamente.",
             },
