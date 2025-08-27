@@ -12,7 +12,7 @@ export default async function Login() {
 
   return (
     <main className="grid md:grid-cols-2">
-      <div className="bg-primary/90 items-center justify-center text-white md:flex">
+      <div className="bg-primary/90 hidden items-center justify-center text-white md:flex">
         <div className="relative flex flex-col items-center">
           <Logo className="mb-4 h-48 w-48 fill-white" />
           <h2 className="text-5xl font-bold uppercase">Peluditos</h2>

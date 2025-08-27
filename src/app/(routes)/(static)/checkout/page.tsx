@@ -44,7 +44,7 @@ export default function CheckoutPage() {
           <div className="lg:col-span-1">
             <CheckoutForm />
           </div>
-          <div className="lg:col-span-1">
+          <div className="order-first lg:order-last lg:col-span-1">
             <OrderSummary />
           </div>
         </div>

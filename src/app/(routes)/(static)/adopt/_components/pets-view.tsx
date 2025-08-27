@@ -81,7 +81,7 @@ export default function PetsView() {
                   }
                 />
               </PaginationItem>
-              <PaginationItem className="hidden md:flex">
+              <PaginationItem>
                 <span className="p-2 text-sm">
                   Página {pageIndex + 1} de {totalPages}
                 </span>
