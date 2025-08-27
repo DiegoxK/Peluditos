@@ -17,6 +17,7 @@ import { navigation } from "@/config";
 import { Logo } from "@/assets/vectors";
 import { Separator } from "@/components/ui/separator";
 import { NavLink } from "./nav-link";
+import { Cart } from "../cart/shopping-cart";
 
 export default function MobileNav() {
   return (
@@ -39,6 +40,10 @@ export default function MobileNav() {
               {link.label}
             </NavLink>
           ))}
+          <div className="flex items-center justify-center gap-2 border-t pt-4">
+            <Cart />
+            Carrito de compras
+          </div>
         </nav>
         <div className="px-4">
           <Separator />
