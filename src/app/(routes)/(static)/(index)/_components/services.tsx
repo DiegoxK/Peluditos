@@ -10,10 +10,10 @@ import Link from "next/link";
 
 export default function Services() {
   return (
-    <section className="container mx-auto space-y-10 px-32 py-10">
+    <section className="container mx-auto space-y-10 px-8 py-10 md:px-32">
       {/* Donations card */}
 
-      <div className="border-secondary bg-card/50 text-card-foreground flex gap-5 rounded-md border-2 p-5">
+      <div className="border-secondary bg-card/50 text-card-foreground flex flex-col gap-5 rounded-md border-2 p-5 md:flex-row">
         <Image className="rounded-md" width={400} src={donations} alt="" />
         <div className="flex flex-col justify-between p-4">
           <div className="space-y-2">
@@ -35,7 +35,7 @@ export default function Services() {
 
       {/* Products card */}
 
-      <div className="border-secondary bg-card/50 text-card-foreground flex gap-5 rounded-md border-2 p-5">
+      <div className="border-secondary bg-card/50 text-card-foreground flex flex-col-reverse gap-5 rounded-md border-2 p-5 md:flex-row">
         <div className="flex flex-col justify-between p-4">
           <div className="space-y-2">
             <h3 className="text-primary text-3xl font-medium">Productos</h3>
@@ -57,7 +57,7 @@ export default function Services() {
 
       {/* Adoptions card */}
 
-      <div className="border-secondary bg-card/50 text-card-foreground flex gap-5 rounded-md border-2 p-5">
+      <div className="border-secondary bg-card/50 text-card-foreground flex flex-col gap-5 rounded-md border-2 p-5 md:flex-row">
         <Image className="rounded-md" width={400} src={adoptions} alt="" />
         <div className="flex flex-col justify-between p-4">
           <div className="space-y-2">

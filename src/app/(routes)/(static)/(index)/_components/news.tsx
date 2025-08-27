@@ -9,7 +9,7 @@ export default function News() {
   return (
     <section className="bg-primary">
       <div className="container mx-auto flex items-center justify-center space-y-10 py-10">
-        <div className="flex">
+        <div className="flex flex-col gap-4 md:flex-row md:gap-0">
           {/* New 1 */}
           <Link
             href="https://www.univision.com/local/houston-kxln/mascotas-adopcion-houston-fotos"
@@ -17,7 +17,7 @@ export default function News() {
             className="group relative"
           >
             <Image width={330} src={news1} alt="" />
-            <div className="absolute top-0 flex h-full items-center bg-black/70 opacity-0 transition-all duration-600 group-hover:opacity-100">
+            <div className="absolute top-0 flex h-full items-center bg-black/70 transition-all duration-600 group-hover:opacity-100 md:opacity-0">
               <div className="space-y-8 p-8 text-center text-white">
                 <h3 className="text-lg font-bold">
                   ¿Podrías darles un hogar? Ofrecen 50% en tarifas de adopción
@@ -41,7 +41,7 @@ export default function News() {
             className="group relative"
           >
             <Image width={330} src={news2} alt="" />
-            <div className="absolute top-0 flex h-full items-center bg-black/70 opacity-0 transition-all duration-600 group-hover:opacity-100">
+            <div className="absolute top-0 flex h-full items-center bg-black/70 transition-all duration-600 group-hover:opacity-100 md:opacity-0">
               <div className="space-y-8 p-8 text-center text-white">
                 <h3 className="text-lg font-bold">
                   Adopción de perros y gatos en Bogotá, tendencia que crece
@@ -66,7 +66,7 @@ export default function News() {
             className="group relative"
           >
             <Image width={330} src={news3} alt="" />
-            <div className="absolute top-0 flex h-full items-center bg-black/70 opacity-0 transition-all duration-600 group-hover:opacity-100">
+            <div className="absolute top-0 flex h-full items-center bg-black/70 transition-all duration-600 group-hover:opacity-100 md:opacity-0">
               <div className="space-y-8 p-8 text-center text-white">
                 <h3 className="text-lg font-bold">
                   ¿Por qué los animales no son el regalo perfecto de Navidad?

@@ -8,7 +8,7 @@ import team4 from "@/assets/images/team/team4.webp";
 export default function Team() {
   return (
     <section className="container mx-auto space-y-10 py-10">
-      <div className="flex justify-center gap-4">
+      <div className="flex flex-col items-center justify-center gap-4 md:flex-row md:items-stretch">
         {/* Team 1 */}
 
         <div className="border-secondary bg-card/50 text-card-foreground flex w-[300px] flex-col items-center gap-4 rounded-md border-2">
