@@ -5,7 +5,7 @@ export default function About() {
         Acerca de este proyecto
       </h1>
 
-      <div className="mx-auto max-w-prose space-y-6">
+      <div className="mx-auto max-w-prose space-y-6 p-8 md:p-0">
         <p>
           Este sitio web fue creado como parte de un proyecto de portafolio con
           fines educativos y demostrativos. Su propósito es ilustrar el diseño y
@@ -24,7 +24,7 @@ export default function About() {
         Objetivo del proyecto
       </h2>
 
-      <div className="mx-auto max-w-prose space-y-6">
+      <div className="mx-auto max-w-prose space-y-6 p-8 md:p-0">
         <p>
           El objetivo principal es demostrar habilidades técnicas en desarrollo
           web utilizando tecnologías modernas como React, Tailwind CSS y
