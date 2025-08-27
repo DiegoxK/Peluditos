@@ -11,7 +11,7 @@ export default function PetStats() {
 
   return (
     <>
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <SpeciesPie species={{ cats: petStats.cats, dogs: petStats.dogs }} />
         <AdoptionRadial total={petStats.total} adopted={petStats.adopted} />
         <VaccineRadial
