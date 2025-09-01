@@ -7,6 +7,39 @@ Este proyecto fue construido desde cero para demostrar un amplio rango de tecnol
 
 Es importante destacar que **este proyecto es una demostración técnica con fines de portafolio y no está afiliado a ninguna fundación real**. La historia de la "Fundación Peluditos" sirvió como inspiración para crear una aplicación con funcionalidades del mundo real.
 
+    
+<div>
+  <h3>Core Stack</h3>
+  <div>
+    <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js"/>
+    <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React"/>
+    <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"/>
+    <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS"/>
+  </div>
+  <h3>Backend & Data</h3>
+  <div>
+    <img src="https://img.shields.io/badge/NextAuth.js-000?style=for-the-badge&logo=nextauth.js&logoColor=white" alt="NextAuth.js"/>
+    <img src="https://img.shields.io/badge/tRPC-2596BE?style=for-the-badge&logo=trpc&logoColor=white" alt="tRPC"/>
+    <img src="https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB"/>
+    <img src="https://img.shields.io/badge/Zod-3E67B7?style=for-the-badge&logo=zod&logoColor=white" alt="Zod"/>
+  </div>
+  <h3>UI & State</h3>
+  <div>
+    <img src="https://img.shields.io/badge/shadcn/ui-000000?style=for-the-badge&logo=shadcnui&logoColor=white" alt="shadcn/ui"/>
+    <img src="https://img.shields.io/badge/TanStack_Query-FF4154?style=for-the-badge&logo=tanstack&logoColor=white" alt="TanStack Query"/>
+    <img src="https://img.shields.io/badge/Zustand-553a1a?style=for-the-badge" alt="Zustand"/>
+    <img src="https://img.shields.io/badge/React_Hook_Form-EC5990?style=for-the-badge&logo=reacthookform&logoColor=white" alt="React Hook Form"/>
+  </div>
+    <h3>Key Services</h3>
+  <div>
+    <img src="https://img.shields.io/badge/UploadThing-AA00FF?style=for-the-badge" alt="UploadThing"/>
+    <img src="https://img.shields.io/badge/React_Email-000000?style=for-the-badge&logo=reactemail&logoColor=white" alt="React Email"/>
+    <img src="https://img.shields.io/badge/Recharts-8884d8?style=for-the-badge" alt="Recharts"/>
+  </div>
+</div>
+
+<br/>
+
 <img width="1360" height="768" alt="{99D24C82-3D52-49B8-A086-C3DE1922B9B7}" src="https://github.com/user-attachments/assets/a75a0f33-de69-4361-be0a-e8c93fc78ae8" />
 <img width="1360" height="768" alt="{C4D1600A-42B5-4AB0-8974-65C603224B28}" src="https://github.com/user-attachments/assets/b9c1636b-1b3d-4f3e-94c3-53dc17b108db" />
 <img width="1360" height="768" alt="{F1B8E773-8348-47A2-B554-BB6FD3175D6D}" src="https://github.com/user-attachments/assets/7ee91961-e28d-4e18-a7f3-fcaf1907b382" />
