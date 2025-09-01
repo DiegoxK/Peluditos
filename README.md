@@ -5,9 +5,8 @@
 
 Este proyecto fue construido desde cero para demostrar un amplio rango de tecnologías y buenas prácticas del desarrollo web moderno, incluyendo seguridad de tipos de extremo a extremo (end-to-end type safety), gestión de datos del lado del servidor y procesamiento de pagos seguro.
 
-Es importante destacar que **este proyecto es una demostración técnica con fines de portafolio y no está afiliado a ninguna fundación real**. La historia de la "Fundación Peluditos" sirvió como inspiración para crear una aplicación con funcionalidades del mundo real.
+Es importante destacar que **este proyecto es una demostración técnica con fines de portafolio y no está afiliado a ninguna fundación real**.
 
-    
 <div>
   <h3>Core Stack</h3>
   <div>
