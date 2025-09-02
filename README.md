@@ -8,33 +8,21 @@ Este proyecto fue construido desde cero para demostrar un amplio rango de tecnol
 Es importante destacar que **este proyecto es una demostración técnica con fines de portafolio y no está afiliado a ninguna fundación real**.
 
 <div>
-  <h3>Core Stack</h3>
-  <div>
-    <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js"/>
-    <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React"/>
-    <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"/>
-    <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS"/>
-  </div>
-  <h3>Backend & Data</h3>
-  <div>
-    <img src="https://img.shields.io/badge/NextAuth.js-000?style=for-the-badge&logo=nextauth.js&logoColor=white" alt="NextAuth.js"/>
-    <img src="https://img.shields.io/badge/tRPC-2596BE?style=for-the-badge&logo=trpc&logoColor=white" alt="tRPC"/>
-    <img src="https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB"/>
-    <img src="https://img.shields.io/badge/Zod-3E67B7?style=for-the-badge&logo=zod&logoColor=white" alt="Zod"/>
-  </div>
-  <h3>UI & State</h3>
-  <div>
-    <img src="https://img.shields.io/badge/shadcn/ui-000000?style=for-the-badge&logo=shadcnui&logoColor=white" alt="shadcn/ui"/>
-    <img src="https://img.shields.io/badge/Recharts-8884d8?style=for-the-badge" alt="Recharts"/>
-    <img src="https://img.shields.io/badge/TanStack_Query-FF4154?style=for-the-badge&logo=tanstack&logoColor=white" alt="TanStack Query"/>
-    <img src="https://img.shields.io/badge/Zustand-553a1a?style=for-the-badge" alt="Zustand"/>
-    <img src="https://img.shields.io/badge/React_Hook_Form-EC5990?style=for-the-badge&logo=reacthookform&logoColor=white" alt="React Hook Form"/>
-  </div>
-    <h3>Key Services</h3>
-  <div>
-    <img src="https://img.shields.io/badge/UploadThing-AA00FF?style=for-the-badge" alt="UploadThing"/>
-    <img src="https://img.shields.io/badge/React_Email-000000?style=for-the-badge&logo=reactemail&logoColor=white" alt="React Email"/>
-  </div>
+  <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js"/>
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React"/>
+  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"/>
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS"/>
+  <img src="https://img.shields.io/badge/NextAuth.js-000?style=for-the-badge&logo=nextauth.js&logoColor=white" alt="NextAuth.js"/>
+  <img src="https://img.shields.io/badge/tRPC-2596BE?style=for-the-badge&logo=trpc&logoColor=white" alt="tRPC"/>
+  <img src="https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB"/>
+  <img src="https://img.shields.io/badge/Zod-3E67B7?style=for-the-badge&logo=zod&logoColor=white" alt="Zod"/>
+  <img src="https://img.shields.io/badge/shadcn/ui-000000?style=for-the-badge&logo=shadcnui&logoColor=white" alt="shadcn/ui"/>
+  <img src="https://img.shields.io/badge/Recharts-8884d8?style=for-the-badge" alt="Recharts"/>
+  <img src="https://img.shields.io/badge/TanStack_Query-FF4154?style=for-the-badge&logo=tanstack&logoColor=white" alt="TanStack Query"/>
+  <img src="https://img.shields.io/badge/Zustand-553a1a?style=for-the-badge" alt="Zustand"/>
+  <img src="https://img.shields.io/badge/React_Hook_Form-EC5990?style=for-the-badge&logo=reacthookform&logoColor=white" alt="React Hook Form"/>
+  <img src="https://img.shields.io/badge/UploadThing-CC3443?style=for-the-badge" alt="UploadThing"/>
+  <img src="https://img.shields.io/badge/React_Email-000000?style=for-the-badge&logo=reactemail&logoColor=white" alt="React Email"/>
 </div>
 
 <br/>
