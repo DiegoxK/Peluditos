@@ -25,6 +25,7 @@ Es importante destacar que **este proyecto es una demostración técnica con fin
   <h3>UI & State</h3>
   <div>
     <img src="https://img.shields.io/badge/shadcn/ui-000000?style=for-the-badge&logo=shadcnui&logoColor=white" alt="shadcn/ui"/>
+    <img src="https://img.shields.io/badge/Recharts-8884d8?style=for-the-badge" alt="Recharts"/>
     <img src="https://img.shields.io/badge/TanStack_Query-FF4154?style=for-the-badge&logo=tanstack&logoColor=white" alt="TanStack Query"/>
     <img src="https://img.shields.io/badge/Zustand-553a1a?style=for-the-badge" alt="Zustand"/>
     <img src="https://img.shields.io/badge/React_Hook_Form-EC5990?style=for-the-badge&logo=reacthookform&logoColor=white" alt="React Hook Form"/>
@@ -33,7 +34,6 @@ Es importante destacar que **este proyecto es una demostración técnica con fin
   <div>
     <img src="https://img.shields.io/badge/UploadThing-AA00FF?style=for-the-badge" alt="UploadThing"/>
     <img src="https://img.shields.io/badge/React_Email-000000?style=for-the-badge&logo=reactemail&logoColor=white" alt="React Email"/>
-    <img src="https://img.shields.io/badge/Recharts-8884d8?style=for-the-badge" alt="Recharts"/>
   </div>
 </div>
 
@@ -102,7 +102,7 @@ Este proyecto está construido con un enfoque moderno y type-safe, utilizando Ne
 *   **React Server Components (RSC):** La aplicación utiliza estratégicamente Server Components para cargas iniciales rápidas y un excelente SEO, reservando los Client Components para la interactividad.
 *   **Separación de Responsabilidades en Esquemas:** Existe una clara distinción entre los esquemas de la base de datos (`DbSchema`) y los esquemas de la API de cara al cliente (`Schema`) para controlar qué datos se exponen y para crear una capa de traducción (ej. para los roles de usuario).
 *   **Lógica de Backend Segura:** Todas las operaciones críticas, como el cálculo de precios y la confirmación de pagos, se manejan de forma segura en el servidor para prevenir la manipulación de datos. El webhook de confirmación de ePayco incluye validación de firma y de lógica de negocio.
-
+*   **Diseño responsivo:** Una interfaz de usuario responsiva y compatible con dispositivos móviles creada con Tailwind CSS y Shadcn/UI.
 ---
 
 ## 📦 Instalación y Puesta en Marcha
