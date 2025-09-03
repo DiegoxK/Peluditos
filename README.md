@@ -39,6 +39,10 @@ Es importante destacar que **este proyecto es una demostración técnica con fin
 
 Las credenciales para el panel de administración se pueden proporcionar bajo petición para una demostración privada.
 
+## 📎 Original Project
+
+[Ver la idea original desarrollada en vue!](https://github.com/DiegoxK/G23_ProyectoG7_Ciclo3)
+
 ---
 
 ## 🚀 Características Principales
